@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { ArrowRight, CircleUserRound, Facebook, Heart, Instagram, Mail, Menu, MessageCircle, Phone, Send, X } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, CircleUserRound, Facebook, Heart, Instagram, Mail, Menu, MessageCircle, Phone, Send, X } from 'lucide-react';
 import { type Project, formatPrice } from '@/data/projects';
+import { FadeIn } from '@/components/animations';
 
 export const CONTACT = {
   phone: '+20 100 555 0190',
@@ -201,11 +202,64 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
 }
 
 export function SectionHeading({ eyebrow, title, copy, light = false, centered = false }: { eyebrow: string; title: string; copy?: string; light?: boolean; centered?: boolean }) {
-  return <div className={`max-w-2xl ${centered ? 'mx-auto text-center' : ''} ${light ? 'text-[#fff7e9]' : 'text-[#56293a]'}`}><p className="eyebrow">{eyebrow}</p><h2 className="mt-3 font-display text-4xl leading-[1.05] md:text-5xl">{title}</h2>{copy && <p className={`mt-4 max-w-lg text-sm leading-6 ${centered ? 'mx-auto' : ''} ${light ? 'text-[#dfc9be]' : 'text-[#735e57]'}`}>{copy}</p>}</div>;
+  return <FadeIn className={`max-w-2xl ${centered ? 'mx-auto text-center' : ''} ${light ? 'text-[#fff7e9]' : 'text-[#56293a]'}`}><p className="eyebrow">{eyebrow}</p><h2 className="mt-3 font-display text-4xl leading-[1.05] md:text-5xl">{title}</h2>{copy && <p className={`mt-4 max-w-lg text-sm leading-6 ${centered ? 'mx-auto' : ''} ${light ? 'text-[#dfc9be]' : 'text-[#735e57]'}`}>{copy}</p>}</FadeIn>;
 }
 
 export function Shell({ children }: { children: React.ReactNode }) {
   return <div className="site-shell grain"><Header />{children}<Footer /><FloatingActions /></div>;
+}
+
+export function BookVisitModal({ isOpen, onClose, projectName }: { isOpen: boolean, onClose: () => void, projectName: string }) {
+  const [visitSent, setVisitSent] = useState(false);
+  
+  if (!isOpen) return null;
+
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setVisitSent(true);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-[#3c1d2a]/90 p-5 overflow-y-auto" role="dialog" aria-modal="true">
+      <div className="relative w-full max-w-lg rounded-2xl bg-[#eadbc4] p-7 md:p-9 shadow-2xl my-8">
+        <button onClick={onClose} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-md bg-[#fff8ea] text-[#56293a] transition-colors hover:bg-[#56293a] hover:text-[#fff8ea]" aria-label="Close modal">
+          <X size={18} />
+        </button>
+        
+        <h2 className="font-display text-3xl text-[#56293a]">Book a private visit</h2>
+        <p className="mt-2 text-sm leading-6 text-[#735e57]">See {projectName} in your own time.</p>
+        
+        {visitSent ? (
+          <div className="mt-8 rounded-xl bg-[#f5ead9] p-7" data-testid="status-visit-success">
+            <Check className="text-[#9b702c]" size={26} />
+            <h3 className="mt-4 font-display text-2xl text-[#56293a]">Your visit request is with us.</h3>
+            <p className="mt-2 text-sm leading-6 text-[#735e57]">A Capital Hills representative will call shortly to confirm the details.</p>
+            <button onClick={onClose} className="mt-6 w-full rounded-md bg-[#56293a] py-3 text-sm font-bold text-[#fff8ea]">Close</button>
+          </div>
+        ) : (
+          <form onSubmit={submit} className="mt-8 space-y-4">
+            <label className="block">
+              <span className="mb-2 block text-xs font-bold text-[#56293a]">Your name</span>
+              <input required name="name" autoComplete="name" className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="e.g. Mariam Hassan" data-testid="input-visit-name" />
+            </label>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold text-[#56293a]">Phone number</span>
+                <input required type="tel" name="phone" autoComplete="tel" className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="+20..." data-testid="input-visit-phone" />
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-xs font-bold text-[#56293a]">Preferred date</span>
+                <input required type="date" name="date" min={new Date().toISOString().slice(0, 10)} className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" data-testid="input-visit-date" />
+              </label>
+            </div>
+            <button type="submit" className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#56293a] px-5 py-3 text-sm font-bold text-[#fff8ea]" data-testid="button-submit-visit">
+              <CalendarDays size={15} /> Request a visit
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function pdfEscape(value: string) {

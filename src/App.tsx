@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -8,6 +8,7 @@ import Home from '@/pages/home';
 import Contact from '@/pages/contact';
 import ProjectDetail from '@/pages/project-detail';
 import WhyUs from '@/pages/why-us';
+import { PageTransition } from '@/components/animations';
 import {
   Route,
   Switch,
@@ -18,17 +19,25 @@ import {
 const queryClient = new QueryClient();
 
 function Router() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
   return (
     // Keep a shared shell (sidebar, navbar) outside the boundary so it
     // survives a page crash.
     <RoutedErrorBoundary>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/projects/:slug" component={ProjectDetail} />
-        <Route path="/contact" component={Contact} />
-        <Route path="/why-us" component={WhyUs} />
-        <Route component={NotFound} />
-      </Switch>
+      <PageTransition keyProp={location}>
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/projects/:slug" component={ProjectDetail} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/why-us" component={WhyUs} />
+          <Route component={NotFound} />
+        </Switch>
+      </PageTransition>
     </RoutedErrorBoundary>
   );
 }
