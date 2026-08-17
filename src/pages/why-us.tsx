@@ -14,12 +14,12 @@ export default function WhyUs() {
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(61,15,20,0.8)_0%,rgba(61,15,20,0.95)_100%)]" />
           <div className="container-shell relative flex h-full min-h-[450px] flex-col justify-end pb-24 md:pb-32">
             <FadeIn className="max-w-3xl">
-              <p className="eyebrow">Why Capital Hills</p>
+              <p className="eyebrow">Capital Hills Developments</p>
               <h1 className="mt-5 font-display text-5xl leading-[1.05] tracking-[-.02em] md:text-7xl">
-                The calm is in <span className="text-[#d9ad51]">the details.</span>
+                Invest With Trust..<br /><span className="text-[#d9ad51]">Grow With Community.</span>
               </h1>
               <p className="mt-8 max-w-xl text-base leading-7 text-[#ead9cc]">
-                Buying a home is a monumental decision. We believe the process shouldn't be chaotic. Our job is to make the information around it feel simple, honest, and distinctly human.
+                Established in 2017, we have built a growing portfolio of residential, commercial, and mixed-use developments across key destinations in Egypt. We believe real estate is more than a property—it is a decision about your future.
               </p>
             </FadeIn>
           </div>
@@ -30,8 +30,8 @@ export default function WhyUs() {
             <div className="mx-auto max-w-2xl text-center">
               <SectionHeading 
                 eyebrow="Our approach" 
-                title="A fundamentally different experience." 
-                copy="We've taken everything that makes home-buying stressful and replaced it with clarity and respect for your time."
+                title="What matters most." 
+                copy="From East to West, our projects are designed around what matters most to our customers: strategic locations, quality, thoughtful design, and long-term investment value."
                 centered
               />
             </div>
@@ -41,9 +41,9 @@ export default function WhyUs() {
                 <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#56293a] group-hover:text-[#d9ad51]">
                   <ShieldCheck size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="font-display text-3xl text-[#56293a]">Sound foundations</h3>
+                <h3 className="font-display text-3xl text-[#56293a]">Trusted relationships</h3>
                 <p className="mt-4 text-sm leading-7 text-[#735e57]">
-                  Before we even talk about layouts and finishes, we ensure the absolute basics are flawless. Clear titles, trusted legal partners, and practical structural planning that guarantees a home you can actually live in for generations.
+                  We focus on building trusted relationships with our customers, partners, and communities — creating spaces where people can live, work, grow, and connect.
                 </p>
               </StaggerItem>
 
@@ -51,9 +51,9 @@ export default function WhyUs() {
                 <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#56293a] group-hover:text-[#d9ad51]">
                   <BadgeCheck size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="font-display text-3xl text-[#56293a]">Straight answers</h3>
+                <h3 className="font-display text-3xl text-[#56293a]">18 key projects</h3>
                 <p className="mt-4 text-sm leading-7 text-[#735e57]">
-                  No hidden fees, no complex financial jargon, and no mystery listings. You get transparent pricing from day one and a payment plan explained in plain language, so you know exactly what to expect.
+                  Our portfolio spans across New Cairo, Sheikh Zayed, October, and the New Administrative Capital, serving different needs across residential, commercial, and mixed-use developments.
                 </p>
               </StaggerItem>
 
@@ -61,9 +61,9 @@ export default function WhyUs() {
                 <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#56293a] group-hover:text-[#d9ad51]">
                   <CalendarDays size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="font-display text-3xl text-[#56293a]">You set the pace</h3>
+                <h3 className="font-display text-3xl text-[#56293a]">Established partners</h3>
                 <p className="mt-4 text-sm leading-7 text-[#735e57]">
-                  We don't do pressure tactics. Book a visit, take your time walking through the details, ask as many questions as you need, and decide only when you feel completely ready to make your move.
+                  We work with established brands and partners across different industries, strengthening the communities and destinations we create to deliver lasting value.
                 </p>
               </StaggerItem>
 
@@ -71,9 +71,9 @@ export default function WhyUs() {
                 <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#3c1d2a] text-[#d9ad51]">
                   <CircleCheck size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="font-display text-3xl text-[#fff7e9]">A team that stays close</h3>
+                <h3 className="font-display text-3xl text-[#fff7e9]">Our people at the heart</h3>
                 <p className="mt-4 text-sm leading-7 text-[#e2cbbd]">
-                  From the very first phone call to the day you receive your keys, you won't be passed around between departments. There is always a dedicated person who knows your name and your file, ready to help.
+                  We believe in creating a collaborative and supportive work environment where our teams can grow, contribute, and make a meaningful impact on our vision.
                 </p>
               </StaggerItem>
             </StaggerContainer>
