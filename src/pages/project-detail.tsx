@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, Download, Heart, MapPin, MessageCircle, Share2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Download, Heart, MapPin, MessageCircle, Share2, X } from 'lucide-react';
 import { Link, useParams } from 'wouter';
 import { formatPrice, getProject, projects } from '@/data/projects';
 import { CONTACT, ProjectCard, SectionHeading, Shell, downloadBrochure, BookVisitModal } from '@/components/site';
@@ -10,8 +10,6 @@ export default function ProjectDetail() {
   const project = getProject(slug);
   const [activeImage, setActiveImage] = useState(0);
   const [saved, setSaved] = useState(false);
-  const [deposit, setDeposit] = useState(30);
-  const [term, setTerm] = useState(12);
   const [shareMessage, setShareMessage] = useState('');
   const [compare, setCompare] = useState(projects.find((item) => item.slug !== slug)?.slug || projects[0].slug);
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -42,7 +40,6 @@ export default function ProjectDetail() {
   }
 
   const comparison = projects.find((item) => item.slug === compare) || projects.find((item) => item.slug !== project.slug) || projects[0];
-  const monthly = Math.round((project.startingPrice * (1 - deposit / 100)) / term);
   const whatsappUrl = `https://wa.me/201005550190?text=${encodeURIComponent(`Hello Capital Hills, I am interested in ${project.name}.`)}`;
 
   const saveProject = () => {
@@ -135,23 +132,6 @@ export default function ProjectDetail() {
           </FadeIn>
         </section>
 
-        <section className="bg-[#f1e6d6] py-16 md:py-24">
-          <div className="container-shell grid gap-10 md:grid-cols-[.9fr_1.1fr]">
-            <FadeIn>
-              <SectionHeading eyebrow="Plan it comfortably" title="See what your monthly plan could look like." copy="A quick guide, not a loan quote. We will confirm the full schedule with you." />
-              <div className="mt-8 space-y-7">
-                <label className="block"><div className="flex justify-between text-sm font-bold text-[#4a1e2c]"><span>Initial deposit</span><span>{deposit}%</span></div><input type="range" min="10" max="50" step="5" value={deposit} onChange={(event) => setDeposit(Number(event.target.value))} className="mt-3 w-full accent-[#4a1e2c]" data-testid="input-calculator-deposit" /><div className="mt-1 flex justify-between text-[10px] text-[#967b70]"><span>10%</span><span>50%</span></div></label>
-                <label className="block"><div className="flex justify-between text-sm font-bold text-[#4a1e2c]"><span>Payment period</span><span>{term} months</span></div><input type="range" min="6" max="24" step="6" value={term} onChange={(event) => setTerm(Number(event.target.value))} className="mt-3 w-full accent-[#4a1e2c]" data-testid="input-calculator-term" /><div className="mt-1 flex justify-between text-[10px] text-[#967b70]"><span>6 months</span><span>24 months</span></div></label>
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.2} className="rounded-2xl bg-[#4a1e2c] p-7 text-[#fff8ea] md:p-10">
-              <p className="text-xs uppercase tracking-[.13em] text-[#d9ad51]">Your estimate</p>
-              <div className="mt-8 grid gap-6 sm:grid-cols-2"><div><p className="text-xs text-[#dfc9be]">Deposit today</p><p className="mt-2 font-display text-3xl">{formatPrice(project.startingPrice * deposit / 100)}</p></div><div><p className="text-xs text-[#dfc9be]">Then about</p><p className="mt-2 font-display text-3xl">{formatPrice(monthly)}<span className="font-sans text-xs text-[#dfc9be]"> / month</span></p></div></div>
-              <div className="mt-10 border-t border-[#f7eede]/20 pt-5 text-sm text-[#dfc9be]"><p className="flex items-center gap-2"><Check size={15} className="text-[#d9ad51]" /> No hidden calculator fees</p><p className="mt-3 flex items-center gap-2"><Check size={15} className="text-[#d9ad51]" /> A representative will confirm your plan</p></div>
-              <Link href="/contact" className="mt-8 inline-flex items-center gap-2 rounded-md bg-[#c49743] px-5 py-3 text-sm font-bold text-[#3c1d2a]" data-testid="link-calculator-contact">Talk through this plan <ArrowRight size={15} /></Link>
-            </FadeIn>
-          </div>
-        </section>
 
         <section className="container-shell py-16 md:py-24">
           <div className="grid gap-10 md:grid-cols-[1fr_1fr]">
