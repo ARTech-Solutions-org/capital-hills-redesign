@@ -1,14 +1,8 @@
 import { type FormEvent, useState } from 'react';
-import { ArrowRight, Check, Mail, MapPin, MessageCircle, Phone, Clock, Send } from 'lucide-react';
+import { ArrowRight, Check, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { Link } from 'wouter';
 import { CONTACT, Shell } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
-
-const offices = [
-  { label: 'Main HQ', address: 'Down Town, Bldg S1 A\nNew Cairo' },
-  { label: 'West Arkan HQ', address: 'Arkan Plaza, Bldg 10\nSheikh Zayed' },
-  { label: 'West Galleria HQ', address: 'Galleria 40, North Tower\nSheikh Zayed' },
-];
 
 export default function Contact() {
   const [sent, setSent] = useState(false);
@@ -83,23 +77,6 @@ export default function Contact() {
                   </a>
                 </StaggerItem>
               </StaggerContainer>
-            </div>
-
-            {/* Office info */}
-            <div className="mt-12 border-t border-white/15 pt-8">
-              <p className="eyebrow mb-5">Our offices</p>
-              <div className="grid gap-6 sm:grid-cols-3 md:grid-cols-1">
-                {offices.map(({ label, address }) => (
-                  <div key={label}>
-                    <p className="text-xs font-bold text-[#d9ad51]">{label}</p>
-                    <p className="mt-1 whitespace-pre-line text-xs leading-5 text-[#c4a98a]">{address}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 flex items-center gap-2 text-xs text-[#c4a98a]">
-                <Clock size={13} className="text-[#d9ad51]" />
-                Sat – Thu, 10:00am – 6:00pm
-              </div>
             </div>
           </div>
         </aside>
