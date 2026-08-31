@@ -25,6 +25,21 @@ export default function ProjectDetail() {
     setBookModalOpen(false);
   }, [project]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!project) return;
+      if (e.key === 'ArrowRight') {
+        setActiveImage((prev) => (prev + 1) % project.gallery.length);
+      } else if (e.key === 'ArrowLeft') {
+        setActiveImage((prev) => (prev - 1 + project.gallery.length) % project.gallery.length);
+      } else if (e.key === 'Escape' && galleryOpen) {
+        setGalleryOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [project, galleryOpen]);
+
   if (!project) {
     return (
       <Shell>
@@ -93,19 +108,25 @@ export default function ProjectDetail() {
                   onClick={() => setGalleryOpen(true)}
                   data-testid="img-project-hero"
                 />
-                <div className="absolute inset-x-4 bottom-4 flex items-center justify-between">
-                  <span className="rounded-full bg-[#26131b]/70 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[.15em] text-[#f6f0e4] backdrop-blur-sm">
+                <div className="absolute inset-x-4 bottom-4 flex items-center justify-between pointer-events-none">
+                  <span className="rounded-full bg-[#26131b]/70 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[.15em] text-[#f6f0e4] backdrop-blur-sm pointer-events-auto">
                     {activeImage + 1} / {project.gallery.length}
                   </span>
-                  <div className="flex gap-2">
-                    <button onClick={() => setActiveImage((activeImage - 1 + project.gallery.length) % project.gallery.length)} className="grid h-9 w-9 place-items-center rounded-full bg-[#26131b]/70 text-white backdrop-blur-sm" aria-label="Previous project image" data-testid="button-project-previous-image">
-                      <ChevronLeft size={17} />
-                    </button>
-                    <button onClick={() => setActiveImage((activeImage + 1) % project.gallery.length)} className="grid h-9 w-9 place-items-center rounded-full bg-[#26131b]/70 text-white backdrop-blur-sm" aria-label="Next project image" data-testid="button-project-next-image">
-                      <ChevronRight size={17} />
-                    </button>
-                  </div>
                 </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setActiveImage((activeImage - 1 + project.gallery.length) % project.gallery.length); }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-[#26131b]/50 text-white backdrop-blur-sm transition hover:bg-[#26131b]/80"
+                  aria-label="Previous project image"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setActiveImage((activeImage + 1) % project.gallery.length); }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-[#26131b]/50 text-white backdrop-blur-sm transition hover:bg-[#26131b]/80"
+                  aria-label="Next project image"
+                >
+                  <ChevronRight size={20} />
+                </button>
               </div>
               {/* Thumbnails */}
               <div className="mt-3 grid grid-cols-4 gap-2" aria-label="Project gallery thumbnails">
@@ -282,11 +303,17 @@ export default function ProjectDetail() {
 
       <BookVisitModal isOpen={bookModalOpen} onClose={() => setBookModalOpen(false)} projectName={project.name} />
       {galleryOpen && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-[#3c1d2a]/95 p-5" role="dialog" aria-modal="true" aria-label={`${project.name} photo gallery`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3c1d2a]/95 p-5" role="dialog" aria-modal="true" aria-label={`${project.name} photo gallery`}>
           <button onClick={() => setGalleryOpen(false)} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-lg bg-[#fff8ea] text-[#4a1e2c]" aria-label="Close gallery" data-testid="button-close-gallery">
             <X size={18} />
           </button>
+          <button onClick={() => setActiveImage((activeImage - 1 + project.gallery.length) % project.gallery.length)} className="absolute left-5 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full bg-[#fff8ea]/10 text-white transition hover:bg-[#fff8ea]/20" aria-label="Previous image">
+            <ChevronLeft size={24} />
+          </button>
           <img src={project.gallery[activeImage]} alt={`${project.name} enlarged`} className="max-h-[85vh] max-w-full rounded-xl object-contain" />
+          <button onClick={() => setActiveImage((activeImage + 1) % project.gallery.length)} className="absolute right-5 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full bg-[#fff8ea]/10 text-white transition hover:bg-[#fff8ea]/20" aria-label="Next image">
+            <ChevronRight size={24} />
+          </button>
         </div>
       )}
     </Shell>
