@@ -192,7 +192,7 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
   return (
     <article
       className={`group relative flex flex-col overflow-hidden bg-[#eadbc4] transition duration-400 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(74,30,44,.15)] ${featured ? 'md:col-span-2' : ''}`}
-      style={{ borderRadius: 2 }}
+      style={{ borderRadius: 16 }}
       data-testid={`card-project-${project.slug}`}
     >
       <Link href={`/projects/${project.slug}`} className="block relative overflow-hidden" aria-label={`View ${project.name}`}>

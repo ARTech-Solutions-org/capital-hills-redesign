@@ -123,24 +123,7 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#f6f0e4]/30" />
             </motion.div>
-            {/* Small floating image 1 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 0.7, 0.25, 1] }}
-              className="absolute bottom-16 left-[-60px] z-10 h-44 w-64 overflow-hidden rounded-lg shadow-[0_20px_60px_rgba(26,13,27,.3)]"
-            >
-              <img src={heroImages[1]} alt="" className="h-full w-full object-cover" />
-            </motion.div>
-            {/* Small floating image 2 */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 0.7, 0.25, 1] }}
-              className="absolute right-8 top-[15%] z-10 h-36 w-52 overflow-hidden rounded-lg shadow-[0_20px_60px_rgba(26,13,27,.25)]"
-            >
-              <img src={heroImages[2]} alt="" className="h-full w-full object-cover" />
-            </motion.div>
+
           </div>
         </section>
 
@@ -335,7 +318,7 @@ export default function Home() {
           {/* Left: image */}
           <div className="relative min-h-[260px] overflow-hidden">
             <img
-              src="https://images.pexels.com/photos/7031612/pexels-photo-7031612.jpeg?auto=compress&cs=tinysrgb&w=1000"
+              src="https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg?auto=compress&cs=tinysrgb&w=1000"
               alt="Capital Hills home"
               className="absolute inset-0 h-full w-full object-cover"
             />

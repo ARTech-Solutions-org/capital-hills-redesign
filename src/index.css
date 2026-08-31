@@ -4,7 +4,7 @@
 
 :root {
   /* Instrument Serif for headings, DM Sans for readable body text, DM Mono for eyebrows. */
-  --background: 40 41% 93%; /* #f6f0e4 */
+  --background: 49 33% 95%; /* #f7f5ec */
   --foreground: 340 43% 21%; /* #4b1e2d */
   --card: 38 42% 96%; /* #faf6ef */
   --card-foreground: 340 43% 21%;
@@ -23,7 +23,7 @@
   --destructive-foreground: 39 45% 96%;
   --popover: 38 42% 96%;
   --popover-foreground: 340 43% 21%;
-  --radius: 4px;
+  --radius: 16px;
   --app-font-sans: 'DM Sans', sans-serif;
   --app-font-serif: 'Instrument Serif', serif;
   --app-font-mono: 'DM Mono', monospace;
