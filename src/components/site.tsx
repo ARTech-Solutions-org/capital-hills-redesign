@@ -32,7 +32,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
-  const nav = [['Projects', '/projects'], ['Why us', '/why-us'], ['Contact', '/contact']];
+  const nav = [['Home', '/'], ['Projects', '/projects'], ['Why us', '/why-us'], ['Contact', '/contact']];
   const lightPage = location === '/' || location === '/contact' || location === '/why-us' || location === '/projects';
 
   useEffect(() => {
