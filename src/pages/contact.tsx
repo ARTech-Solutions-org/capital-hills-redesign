@@ -56,21 +56,21 @@ export default function Contact() {
             {sent ? (
               <div className="mt-10 rounded-xl bg-[#f5ead9] p-5" data-testid="status-question-success">
                 <Check className="text-[#9b702c]" size={24} />
-                <p className="mt-3 text-sm font-bold text-[#56293a]">Message received.</p>
+                <p className="mt-3 text-sm font-bold text-[#4a1e2c]">Message received.</p>
                 <p className="mt-1 text-xs leading-5 text-[#735e57]">We will be in touch with a clear answer soon.</p>
               </div>
             ) : (
               <form onSubmit={submit} className="mt-8 space-y-4">
                 <label className="block">
-                  <span className="mb-2 block text-xs font-bold text-[#56293a]">Name</span>
+                  <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Name</span>
                   <input required name="name" autoComplete="name" className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="Your name" data-testid="input-question-name" />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-bold text-[#56293a]">Mobile or email</span>
+                  <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Mobile or email</span>
                   <input required name="contact" autoComplete="email tel" className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="How should we reach you?" data-testid="input-question-contact" />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-bold text-[#56293a]">What can we help with?</span>
+                  <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">What can we help with?</span>
                   <textarea required name="message" rows={4} className="w-full resize-none rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="I would like to understand..." data-testid="textarea-question" />
                 </label>
                 <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-[#c49743] px-5 py-3 text-sm font-bold text-[#3c1d2a]" data-testid="button-submit-question">

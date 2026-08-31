@@ -38,36 +38,36 @@ export default function WhyUs() {
 
             <StaggerContainer className="mt-20 grid gap-8 md:grid-cols-2 lg:gap-12">
               <StaggerItem className="group rounded-3xl border border-[#ead8ba] bg-[#fffdf8] p-8 transition-shadow hover:shadow-xl md:p-12">
-                <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#56293a] group-hover:text-[#d9ad51]">
+                <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#4a1e2c] group-hover:text-[#d9ad51]">
                   <ShieldCheck size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="font-display text-3xl text-[#56293a]">Trusted relationships</h3>
+                <h3 className="font-display text-3xl text-[#4a1e2c]">Trusted relationships</h3>
                 <p className="mt-4 text-sm leading-7 text-[#735e57]">
                   We focus on building trusted relationships with our customers, partners, and communities — creating spaces where people can live, work, grow, and connect.
                 </p>
               </StaggerItem>
 
               <StaggerItem className="group rounded-3xl border border-[#ead8ba] bg-[#fffdf8] p-8 transition-shadow hover:shadow-xl md:p-12">
-                <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#56293a] group-hover:text-[#d9ad51]">
+                <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#4a1e2c] group-hover:text-[#d9ad51]">
                   <BadgeCheck size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="font-display text-3xl text-[#56293a]">18 key projects</h3>
+                <h3 className="font-display text-3xl text-[#4a1e2c]">18 key projects</h3>
                 <p className="mt-4 text-sm leading-7 text-[#735e57]">
                   Our portfolio spans across New Cairo, Sheikh Zayed, October, and the New Administrative Capital, serving different needs across residential, commercial, and mixed-use developments.
                 </p>
               </StaggerItem>
 
               <StaggerItem className="group rounded-3xl border border-[#ead8ba] bg-[#fffdf8] p-8 transition-shadow hover:shadow-xl md:p-12">
-                <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#56293a] group-hover:text-[#d9ad51]">
+                <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition-colors group-hover:bg-[#4a1e2c] group-hover:text-[#d9ad51]">
                   <CalendarDays size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="font-display text-3xl text-[#56293a]">Established partners</h3>
+                <h3 className="font-display text-3xl text-[#4a1e2c]">Established partners</h3>
                 <p className="mt-4 text-sm leading-7 text-[#735e57]">
                   We work with established brands and partners across different industries, strengthening the communities and destinations we create to deliver lasting value.
                 </p>
               </StaggerItem>
 
-              <StaggerItem className="group rounded-3xl bg-[#56293a] p-8 transition-shadow hover:shadow-xl md:p-12">
+              <StaggerItem className="group rounded-3xl bg-[#4a1e2c] p-8 transition-shadow hover:shadow-xl md:p-12">
                 <div className="mb-8 grid h-16 w-16 place-items-center rounded-full bg-[#3c1d2a] text-[#d9ad51]">
                   <CircleCheck size={32} strokeWidth={1.5} />
                 </div>
@@ -85,14 +85,14 @@ export default function WhyUs() {
             <h2 className="mx-auto max-w-2xl font-display text-4xl leading-tight text-[#3c1d2a] md:text-5xl">
               Ready to see what we've built?
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-sm leading-6 text-[#56293a]/80">
+            <p className="mx-auto mt-6 max-w-xl text-sm leading-6 text-[#4a1e2c]/80">
               Browse our latest projects or reach out directly to a specialist who can guide you to the right fit.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Link href="/#projects" className="inline-flex items-center gap-2 rounded-full bg-[#56293a] px-6 py-3.5 text-sm font-bold text-[#fff7e9]">
+              <Link href="/#projects" className="inline-flex items-center gap-2 rounded-full bg-[#4a1e2c] px-6 py-3.5 text-sm font-bold text-[#fff7e9]">
                 View projects <ArrowRight size={16} />
               </Link>
-              <Link href="/contact" className="inline-flex items-center gap-2 rounded-full border border-[#56293a]/30 bg-transparent px-6 py-3.5 text-sm font-bold text-[#56293a]">
+              <Link href="/contact" className="inline-flex items-center gap-2 rounded-full border border-[#4a1e2c]/30 bg-transparent px-6 py-3.5 text-sm font-bold text-[#4a1e2c]">
                 Contact us
               </Link>
             </div>

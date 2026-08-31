@@ -18,7 +18,7 @@ export function Logo({ light = false }: { light?: boolean }) {
       <img 
         src="/capital-hills-logo.png" 
         alt="Capital Hills Developments" 
-        className={`h-11 w-auto object-contain transition-all ${!light ? 'invert brightness-0' : ''}`}
+        className={`h-11 w-auto object-contain transition-all ${light ? 'brightness-0 invert' : ''}`}
       />
     </Link>
   );
@@ -39,7 +39,7 @@ export function Header() {
               key={href} 
               href={href} 
               className={`focus-ring text-[13px] font-semibold transition ${
-                darkHeader ? 'text-[#f7eede]/80 hover:text-[#d9ad51]' : 'text-[#56293a]/80 hover:text-[#9b702c]'
+                darkHeader ? 'text-[#f7eede]/80 hover:text-[#d9ad51]' : 'text-[#4a1e2c]/80 hover:text-[#9b702c]'
               }`} 
               data-testid={`link-nav-${label.toLowerCase().replace(' ', '-')}`}
             >
@@ -51,7 +51,7 @@ export function Header() {
           <a 
             href={CONTACT.tel} 
             className={`focus-ring hidden items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold md:flex ${
-              darkHeader ? 'border-[#e8cf9f]/40 text-[#fbf3e6]' : 'border-[#56293a]/30 text-[#56293a]'
+              darkHeader ? 'border-[#e8cf9f]/40 text-[#fbf3e6]' : 'border-[#4a1e2c]/30 text-[#4a1e2c]'
             }`} 
             data-testid="link-header-call"
           >
@@ -60,7 +60,7 @@ export function Header() {
           <button 
             onClick={() => setOpen(!open)} 
             className={`focus-ring grid h-10 w-10 place-items-center rounded-full border md:hidden ${
-              darkHeader ? 'border-[#e8cf9f]/40 text-[#fbf3e6]' : 'border-[#56293a]/30 text-[#56293a]'
+              darkHeader ? 'border-[#e8cf9f]/40 text-[#fbf3e6]' : 'border-[#4a1e2c]/30 text-[#4a1e2c]'
             }`} 
             aria-label="Open menu" 
             data-testid="button-open-menu"
@@ -70,8 +70,8 @@ export function Header() {
         </div>
       </div>
       {open && <div className="mx-3 rounded-2xl border border-[#ead8ba] bg-[#fbf3e6] p-4 shadow-xl md:hidden">
-        {nav.map(([label, href]) => <Link key={href} href={href} onClick={() => setOpen(false)} className="block border-b border-[#e6d7c0] px-3 py-3 text-sm font-semibold text-[#56293a]" data-testid={`link-mobile-${label.toLowerCase().replace(' ', '-')}`}>{label}</Link>)}
-        <a href={CONTACT.tel} className="flex items-center gap-2 px-3 pt-3 text-sm font-semibold text-[#56293a]" data-testid="link-mobile-call"><Phone size={15} /> Call a representative</a>
+        {nav.map(([label, href]) => <Link key={href} href={href} onClick={() => setOpen(false)} className="block border-b border-[#e6d7c0] px-3 py-3 text-sm font-semibold text-[#4a1e2c]" data-testid={`link-mobile-${label.toLowerCase().replace(' ', '-')}`}>{label}</Link>)}
+        <a href={CONTACT.tel} className="flex items-center gap-2 px-3 pt-3 text-sm font-semibold text-[#4a1e2c]" data-testid="link-mobile-call"><Phone size={15} /> Call a representative</a>
       </div>}
     </header>
   );
@@ -167,8 +167,8 @@ export function ChatWidget() {
   const prompts = ['What can I buy under EGP 3m?', 'Can I inspect this weekend?', 'Send me the New Cairo brochure'];
   return <div className="fixed bottom-[82px] right-4 z-40 md:bottom-20 md:right-6">
     {open && <div className="mb-3 w-[min(340px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-[#e1cda9] bg-[#fffaf1] shadow-[0_18px_50px_rgba(60,29,42,.18)]">
-      <div className="bg-[#56293a] p-4 text-[#fbf3e6]"><div className="flex items-center justify-between"><div className="flex items-center gap-2"><CircleUserRound size={22} className="text-[#d9ad51]" /><div><strong className="block text-sm">Capital Hills desk</strong><span className="text-[11px] text-[#dfc9be]">Usually replies in 5 minutes</span></div></div><button onClick={() => setOpen(false)} className="text-[#dfc9be]" aria-label="Close chat" data-testid="button-close-chat"><X size={17} /></button></div></div>
-       <div className="space-y-3 p-4"><div className="rounded-xl rounded-tl-sm bg-[#f0e4d2] p-3 text-xs leading-5 text-[#56293a]">Hello. I can help you find a project, understand a payment plan, or arrange a visit.</div>{sent && <div className="ml-6 rounded-xl rounded-tr-sm bg-[#56293a] p-3 text-xs leading-5 text-[#fff7e9]">{sent}</div>}<div className="space-y-2">{prompts.map((prompt) => <button key={prompt} onClick={() => setSent(`“${prompt}” — thanks. A representative will follow up shortly.`)} className="block w-full rounded-lg border border-[#decbaa] px-3 py-2 text-left text-xs font-semibold text-[#56293a] transition hover:border-[#9b702c] hover:bg-[#f8eddd]" data-testid={`chat-prompt-${prompt.slice(0, 4).replace(' ', '-')}`}>{prompt}</button>)}</div><Link href="/contact" className="block pt-1 text-center text-xs font-bold text-[#9b702c]" data-testid="link-chat-contact">Prefer to talk to someone? →</Link></div>
+      <div className="bg-[#4a1e2c] p-4 text-[#fbf3e6]"><div className="flex items-center justify-between"><div className="flex items-center gap-2"><CircleUserRound size={22} className="text-[#d9ad51]" /><div><strong className="block text-sm">Capital Hills desk</strong><span className="text-[11px] text-[#dfc9be]">Usually replies in 5 minutes</span></div></div><button onClick={() => setOpen(false)} className="text-[#dfc9be]" aria-label="Close chat" data-testid="button-close-chat"><X size={17} /></button></div></div>
+       <div className="space-y-3 p-4"><div className="rounded-xl rounded-tl-sm bg-[#f0e4d2] p-3 text-xs leading-5 text-[#4a1e2c]">Hello. I can help you find a project, understand a payment plan, or arrange a visit.</div>{sent && <div className="ml-6 rounded-xl rounded-tr-sm bg-[#4a1e2c] p-3 text-xs leading-5 text-[#fff7e9]">{sent}</div>}<div className="space-y-2">{prompts.map((prompt) => <button key={prompt} onClick={() => setSent(`“${prompt}” — thanks. A representative will follow up shortly.`)} className="block w-full rounded-lg border border-[#decbaa] px-3 py-2 text-left text-xs font-semibold text-[#4a1e2c] transition hover:border-[#9b702c] hover:bg-[#f8eddd]" data-testid={`chat-prompt-${prompt.slice(0, 4).replace(' ', '-')}`}>{prompt}</button>)}</div><Link href="/contact" className="block pt-1 text-center text-xs font-bold text-[#9b702c]" data-testid="link-chat-contact">Prefer to talk to someone? →</Link></div>
     </div>}
     <button onClick={() => setOpen(!open)} className="focus-ring flex items-center gap-2 rounded-full bg-[#c49743] px-4 py-3 text-xs font-bold text-[#3c1d2a] shadow-lg transition hover:bg-[#d9ad51]" data-testid="button-open-chat"><MessageCircle size={17} /> {open ? 'Close desk' : 'Chat with us'}</button>
   </div>;
@@ -185,22 +185,22 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
   };
   return <article className={`group relative flex flex-col overflow-hidden rounded-2xl border border-[#e5d4b9] bg-[#fffaf1] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(61,15,20,.12)] ${featured ? 'md:col-span-2' : ''}`} data-testid={`card-project-${project.slug}`}>
     <Link href={`/projects/${project.slug}`} className="block relative" aria-label={`View ${project.name}`}>
-      <div className={`relative overflow-hidden ${featured ? 'h-72 md:h-[390px]' : 'h-60'}`}><img src={project.gallery[0]} alt={`${project.name} exterior`} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-0 bg-gradient-to-t from-[#3c1d2a]/75 via-transparent to-transparent" /><span className="absolute left-4 top-4 rounded-full bg-[#fff8ea]/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.12em] text-[#56293a]">{project.city}</span><div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-[#fff8ea]"><div><p className="text-xs text-[#ecd9c2]">{project.location}</p><h3 className="mt-1 font-display text-2xl">{project.name}</h3></div><ArrowRight size={20} className="mb-1 transition group-hover:translate-x-1" /></div></div>
-      <div className="grid grid-cols-2 gap-4 p-4"><div><p className="text-[10px] uppercase tracking-[.12em] text-[#8d756c]">From</p><p className="mt-1 text-sm font-bold text-[#56293a]">{formatPrice(project.startingPrice)}</p></div><div className="text-right"><p className="text-[10px] uppercase tracking-[.12em] text-[#8d756c]">Availability</p><p className="mt-1 text-sm font-bold text-[#56293a]">{project.availability}</p></div></div>
+      <div className={`relative overflow-hidden ${featured ? 'h-72 md:h-[390px]' : 'h-60'}`}><img src={project.gallery[0]} alt={`${project.name} exterior`} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-0 bg-gradient-to-t from-[#3c1d2a]/75 via-transparent to-transparent" /><span className="absolute left-4 top-4 rounded-full bg-[#fff8ea]/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.12em] text-[#4a1e2c]">{project.city}</span><div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-[#fff8ea]"><div><p className="text-xs text-[#ecd9c2]">{project.location}</p><h3 className="mt-1 font-display text-2xl">{project.name}</h3></div><ArrowRight size={20} className="mb-1 transition group-hover:translate-x-1" /></div></div>
+      <div className="grid grid-cols-2 gap-4 p-4"><div><p className="text-[10px] uppercase tracking-[.12em] text-[#8d756c]">From</p><p className="mt-1 text-sm font-bold text-[#4a1e2c]">{formatPrice(project.startingPrice)}</p></div><div className="text-right"><p className="text-[10px] uppercase tracking-[.12em] text-[#8d756c]">Availability</p><p className="mt-1 text-sm font-bold text-[#4a1e2c]">{project.availability}</p></div></div>
     </Link>
     <div className="mt-auto flex items-center justify-between border-t border-[#e5d4b9] px-4 py-3">
-      <Link href={`/projects/${project.slug}`} className="text-[11px] font-bold uppercase tracking-[.13em] text-[#9b702c] transition hover:text-[#56293a]">View details</Link>
+      <Link href={`/projects/${project.slug}`} className="text-[11px] font-bold uppercase tracking-[.13em] text-[#9b702c] transition hover:text-[#4a1e2c]">View details</Link>
       <div className="flex gap-2">
-        <a href={CONTACT.tel} aria-label="Call" className="grid h-8 w-8 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition hover:bg-[#56293a] hover:text-[#d9ad51]"><Phone size={14} /></a>
-        <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-8 w-8 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition hover:bg-[#56293a] hover:text-[#d9ad51]"><MessageCircle size={14} /></a>
+        <a href={CONTACT.tel} aria-label="Call" className="grid h-8 w-8 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition hover:bg-[#4a1e2c] hover:text-[#d9ad51]"><Phone size={14} /></a>
+        <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-8 w-8 place-items-center rounded-full bg-[#f4e8d6] text-[#9b702c] transition hover:bg-[#4a1e2c] hover:text-[#d9ad51]"><MessageCircle size={14} /></a>
       </div>
     </div>
-    <button onClick={toggleSave} aria-label={saved ? 'Remove from saved projects' : 'Save project'} className="absolute right-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full bg-[#fff8ea]/90 text-[#56293a] shadow-sm" data-testid={`button-save-${project.slug}`}><Heart size={16} fill={saved ? '#9b702c' : 'none'} className={saved ? 'text-[#9b702c]' : ''} /></button>
+    <button onClick={toggleSave} aria-label={saved ? 'Remove from saved projects' : 'Save project'} className="absolute right-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full bg-[#fff8ea]/90 text-[#4a1e2c] shadow-sm" data-testid={`button-save-${project.slug}`}><Heart size={16} fill={saved ? '#9b702c' : 'none'} className={saved ? 'text-[#9b702c]' : ''} /></button>
   </article>;
 }
 
 export function SectionHeading({ eyebrow, title, copy, light = false, centered = false }: { eyebrow: string; title: string; copy?: string; light?: boolean; centered?: boolean }) {
-  return <FadeIn className={`max-w-2xl ${centered ? 'mx-auto text-center' : ''} ${light ? 'text-[#fff7e9]' : 'text-[#56293a]'}`}><p className="eyebrow">{eyebrow}</p><h2 className="mt-3 font-display text-4xl leading-[1.05] md:text-5xl">{title}</h2>{copy && <p className={`mt-4 max-w-lg text-sm leading-6 ${centered ? 'mx-auto' : ''} ${light ? 'text-[#dfc9be]' : 'text-[#735e57]'}`}>{copy}</p>}</FadeIn>;
+  return <FadeIn className={`max-w-2xl ${centered ? 'mx-auto text-center' : ''} ${light ? 'text-[#fff7e9]' : 'text-[#4a1e2c]'}`}><p className="eyebrow">{eyebrow}</p><h2 className="mt-3 font-display text-4xl leading-[1.05] md:text-5xl">{title}</h2>{copy && <p className={`mt-4 max-w-lg text-sm leading-6 ${centered ? 'mx-auto' : ''} ${light ? 'text-[#dfc9be]' : 'text-[#735e57]'}`}>{copy}</p>}</FadeIn>;
 }
 
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -220,37 +220,37 @@ export function BookVisitModal({ isOpen, onClose, projectName }: { isOpen: boole
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-[#3c1d2a]/90 p-5 overflow-y-auto" role="dialog" aria-modal="true">
       <div className="relative w-full max-w-lg rounded-2xl bg-[#eadbc4] p-7 md:p-9 shadow-2xl my-8">
-        <button onClick={onClose} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-md bg-[#fff8ea] text-[#56293a] transition-colors hover:bg-[#56293a] hover:text-[#fff8ea]" aria-label="Close modal">
+        <button onClick={onClose} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-md bg-[#fff8ea] text-[#4a1e2c] transition-colors hover:bg-[#4a1e2c] hover:text-[#fff8ea]" aria-label="Close modal">
           <X size={18} />
         </button>
         
-        <h2 className="font-display text-3xl text-[#56293a]">Book a private visit</h2>
+        <h2 className="font-display text-3xl text-[#4a1e2c]">Book a private visit</h2>
         <p className="mt-2 text-sm leading-6 text-[#735e57]">See {projectName} in your own time.</p>
         
         {visitSent ? (
           <div className="mt-8 rounded-xl bg-[#f5ead9] p-7" data-testid="status-visit-success">
             <Check className="text-[#9b702c]" size={26} />
-            <h3 className="mt-4 font-display text-2xl text-[#56293a]">Your visit request is with us.</h3>
+            <h3 className="mt-4 font-display text-2xl text-[#4a1e2c]">Your visit request is with us.</h3>
             <p className="mt-2 text-sm leading-6 text-[#735e57]">A Capital Hills representative will call shortly to confirm the details.</p>
-            <button onClick={onClose} className="mt-6 w-full rounded-md bg-[#56293a] py-3 text-sm font-bold text-[#fff8ea]">Close</button>
+            <button onClick={onClose} className="mt-6 w-full rounded-md bg-[#4a1e2c] py-3 text-sm font-bold text-[#fff8ea]">Close</button>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-8 space-y-4">
             <label className="block">
-              <span className="mb-2 block text-xs font-bold text-[#56293a]">Your name</span>
+              <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Your name</span>
               <input required name="name" autoComplete="name" className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="e.g. Mariam Hassan" data-testid="input-visit-name" />
             </label>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className="mb-2 block text-xs font-bold text-[#56293a]">Phone number</span>
+                <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Phone number</span>
                 <input required type="tel" name="phone" autoComplete="tel" className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="+20..." data-testid="input-visit-phone" />
               </label>
               <label className="block">
-                <span className="mb-2 block text-xs font-bold text-[#56293a]">Preferred date</span>
+                <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Preferred date</span>
                 <input required type="date" name="date" min={new Date().toISOString().slice(0, 10)} className="w-full rounded-md border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" data-testid="input-visit-date" />
               </label>
             </div>
-            <button type="submit" className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#56293a] px-5 py-3 text-sm font-bold text-[#fff8ea]" data-testid="button-submit-visit">
+            <button type="submit" className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#4a1e2c] px-5 py-3 text-sm font-bold text-[#fff8ea]" data-testid="button-submit-visit">
               <CalendarDays size={15} /> Request a visit
             </button>
           </form>
