@@ -41,6 +41,7 @@ export default function ProjectDetail() {
     );
   }
 
+  const comparison = getProject(compare) || projects.find((item) => item.slug !== project.slug) || projects[0];
   const whatsappUrl = `https://wa.me/201005550190?text=${encodeURIComponent(`Hello Capital Hills, I am interested in ${project.name}.`)}`;
 
   const saveProject = () => {
