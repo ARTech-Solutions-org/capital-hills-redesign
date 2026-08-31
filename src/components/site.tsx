@@ -130,22 +130,49 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="bg-[#26131b] py-10 text-[#f7eede]">
-      <div className="container-shell flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-        <Logo light />
-        <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#c4a98a]">
-          <Link href="/#projects" className="hover:text-[#d9ad51] transition" data-testid="link-footer-projects">Projects</Link>
-          <Link href="/why-us" className="hover:text-[#d9ad51] transition" data-testid="link-footer-why">Why us</Link>
-          <Link href="/contact" className="hover:text-[#d9ad51] transition" data-testid="link-footer-contact">Contact</Link>
-        </nav>
-        <div className="flex items-center gap-3">
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-full border border-white/15 text-[#c4a98a] transition hover:border-[#d9ad51] hover:text-[#d9ad51]" data-testid="link-footer-instagram"><Instagram size={14} /></a>
-          <a href="https://facebook.com" target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-full border border-white/15 text-[#c4a98a] transition hover:border-[#d9ad51] hover:text-[#d9ad51]" data-testid="link-footer-facebook"><Facebook size={14} /></a>
+    <footer className="bg-[#421318] pb-24 pt-16 text-[#f7f5ec] md:pb-12">
+      <div className="container-shell grid gap-12 md:grid-cols-[1.4fr_.8fr_.8fr_1.2fr]">
+        <div>
+          <Logo light />
+          <p className="mt-5 max-w-xs text-sm leading-6 text-[#947e82]">
+            Homes with sound thinking behind them. For the way Egyptians actually live.
+          </p>
+          <div className="mt-6 flex gap-3">
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#240d10] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-instagram">
+              <Instagram size={16} />
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#240d10] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-facebook">
+              <Facebook size={16} />
+            </a>
+          </div>
+        </div>
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Explore</p>
+          <div className="space-y-3 text-sm text-[#947e82]">
+            <Link href="/#projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">Our projects</Link>
+            <Link href="/why-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">Why Capital Hills</Link>
+            <Link href="/contact" className="block transition-colors hover:text-white" data-testid="link-footer-contact">Contact us</Link>
+          </div>
+        </div>
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Visit</p>
+          <div className="space-y-4 text-sm leading-5 text-[#947e82]">
+            <div><strong className="font-bold text-[#f7f5ec]">Main HQ</strong><br />Down Town, Bldg S1 A<br />New Cairo</div>
+            <div><strong className="font-bold text-[#f7f5ec]">West Arkan HQ</strong><br />Arkan Plaza, Bldg 10<br />Sheikh Zayed</div>
+            <div><strong className="font-bold text-[#f7f5ec]">West Galleria HQ</strong><br />Galleria 40, North Tower<br />Sheikh Zayed</div>
+          </div>
+        </div>
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Need a second opinion?</p>
+          <p className="text-sm leading-6 text-[#947e82]">Tell us what you are looking for. A real person will call with a clear answer.</p>
+          <a href={CONTACT.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f7f5ec] px-5 py-3 text-sm font-bold text-[#050505] transition-colors hover:bg-white" data-testid="link-footer-phone">
+            <Phone size={14} /> {CONTACT.phone}
+          </a>
         </div>
       </div>
-      <div className="container-shell mt-8 border-t border-white/10 pt-6 flex flex-col gap-1 md:flex-row md:justify-between text-xs text-[#7a5c50]">
-        <span>© 2026 Capital Hills Developments</span>
-        <span>NAC · Sheikh Zayed · 6th of October · New Cairo</span>
+      <div className="container-shell mt-16 flex flex-col items-center justify-between border-t border-[#493337] pt-6 text-xs text-[#947e82] md:flex-row">
+        <p>© 2026 Capital Hills Developments</p>
+        <p className="mt-2 md:mt-0">Built for better decisions.</p>
       </div>
     </footer>
   );

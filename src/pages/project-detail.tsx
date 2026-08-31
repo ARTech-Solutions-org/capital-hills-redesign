@@ -9,9 +9,6 @@ export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
   const project = getProject(slug);
   const [activeImage, setActiveImage] = useState(0);
-  const [saved, setSaved] = useState(false);
-  const [deposit, setDeposit] = useState(30);
-  const [term, setTerm] = useState(12);
   const [shareMessage, setShareMessage] = useState('');
   const [compare, setCompare] = useState(projects.find((item) => item.slug !== slug)?.slug || projects[0].slug);
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -43,8 +40,6 @@ export default function ProjectDetail() {
     );
   }
 
-  const comparison = projects.find((item) => item.slug === compare) || projects.find((item) => item.slug !== project.slug) || projects[0];
-  const monthly = Math.round((project.startingPrice * (1 - deposit / 100)) / term);
   const whatsappUrl = `https://wa.me/201005550190?text=${encodeURIComponent(`Hello Capital Hills, I am interested in ${project.name}.`)}`;
 
   const saveProject = () => {
@@ -167,45 +162,6 @@ export default function ProjectDetail() {
               <div className="mt-5 rounded-xl bg-[#f5ead9] p-4">
                 <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#967b70]">Current offer</p>
                 <p className="mt-1 text-sm font-bold text-[#4a1e2c]">{project.offer}</p>
-              </div>
-            </FadeIn>
-
-            {/* Calculator */}
-            <FadeIn delay={0.1} className="mt-10 border-t border-[#e5d4b9] pt-10">
-              <p className="eyebrow">Plan it comfortably</p>
-              <h3 className="mt-3 font-display text-2xl text-[#4a1e2c]">See what your monthly plan could look like.</h3>
-              <p className="mt-2 text-sm text-[#735e57]">A quick guide, not a loan quote. We will confirm the full schedule with you.</p>
-              <div className="mt-8 grid gap-8 md:grid-cols-2">
-                <div className="space-y-6">
-                  <label className="block">
-                    <div className="flex justify-between text-sm font-bold text-[#4a1e2c]"><span>Initial deposit</span><span>{deposit}%</span></div>
-                    <input type="range" min="10" max="50" step="5" value={deposit} onChange={(e) => setDeposit(Number(e.target.value))} className="mt-3 w-full accent-[#4a1e2c]" data-testid="input-calculator-deposit" />
-                    <div className="mt-1 flex justify-between font-mono text-[9px] text-[#967b70]"><span>10%</span><span>50%</span></div>
-                  </label>
-                  <label className="block">
-                    <div className="flex justify-between text-sm font-bold text-[#4a1e2c]"><span>Payment period</span><span>{term} months</span></div>
-                    <input type="range" min="6" max="24" step="6" value={term} onChange={(e) => setTerm(Number(e.target.value))} className="mt-3 w-full accent-[#4a1e2c]" data-testid="input-calculator-term" />
-                    <div className="mt-1 flex justify-between font-mono text-[9px] text-[#967b70]"><span>6 months</span><span>24 months</span></div>
-                  </label>
-                </div>
-                <div className="flex flex-col justify-between rounded-2xl bg-[#4a1e2c] p-6 text-[#fff8ea]">
-                  <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[.2em] text-[#d9ad51]">Your estimate</p>
-                    <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                      <div>
-                        <p className="text-xs text-[#dfc9be]">Deposit today</p>
-                        <p className="mt-1 font-display text-2xl">{formatPrice(project.startingPrice * deposit / 100)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-[#dfc9be]">Then about</p>
-                        <p className="mt-1 font-display text-2xl">{formatPrice(monthly)}<span className="font-sans text-[10px] text-[#dfc9be]"> / mo</span></p>
-                      </div>
-                    </div>
-                  </div>
-                  <Link href="/contact" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#c49743] px-4 py-2.5 text-sm font-bold text-[#3c1d2a]" data-testid="link-calculator-contact">
-                    Talk through this plan <ArrowRight size={14} />
-                  </Link>
-                </div>
               </div>
             </FadeIn>
 
