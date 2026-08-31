@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, Download, Heart, MapPin, MessageCircle, Share2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Download, Heart, MapPin, MessageCircle, Share2, X } from 'lucide-react';
 import { Link, useParams } from 'wouter';
 import { formatPrice, getProject, projects } from '@/data/projects';
 import { CONTACT, ProjectCard, Shell, downloadBrochure, BookVisitModal } from '@/components/site';
