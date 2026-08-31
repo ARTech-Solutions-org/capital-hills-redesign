@@ -14,14 +14,12 @@ export const CONTACT = {
 
 export function Logo({ light = false }: { light?: boolean }) {
   return (
-    <Link href="/" className={`focus-ring flex items-center gap-2.5 ${light ? 'text-[#fbf3e6]' : 'text-[#56293a]'}`} data-testid="link-logo">
-      <span className={`grid h-9 w-9 place-items-center rounded-full border ${light ? 'border-[#d9ad51]' : 'border-[#b88a36]'}`}>
-        <span className="font-display text-xl leading-none text-[#c89b43]">C</span>
-      </span>
-      <span className="leading-none">
-        <strong className="block text-[13px] font-bold tracking-[.08em]">CAPITAL HILLS</strong>
-        <small className={`block pt-1 text-[8px] tracking-[.22em] ${light ? 'text-[#d9ad51]' : 'text-[#9c6f2b]'}`}>DEVELOPMENTS</small>
-      </span>
+    <Link href="/" className="focus-ring block" data-testid="link-logo">
+      <img 
+        src="/capital-hills-logo.png" 
+        alt="Capital Hills Developments" 
+        className={`h-11 w-auto object-contain transition-all ${!light ? 'invert brightness-0' : ''}`}
+      />
     </Link>
   );
 }

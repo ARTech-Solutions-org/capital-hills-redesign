@@ -1,33 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
 :root {
-  /* Fraunces gives the headlines a warm, editorial character; DM Sans keeps prices,
-     addresses, and payment details exceptionally readable on small screens. */
-  --background: 39 33% 95%;
-  --foreground: 347 61% 11%;
-  --card: 40 43% 98%;
-  --card-foreground: 347 61% 11%;
+  /* Instrument Serif for headings, DM Sans for readable body text, DM Mono for eyebrows. */
+  --background: 40 41% 93%; /* #f6f0e4 */
+  --foreground: 340 43% 21%; /* #4b1e2d */
+  --card: 38 42% 96%; /* #faf6ef */
+  --card-foreground: 340 43% 21%;
   --border: 37 27% 85%;
   --input: 37 27% 85%;
-  --ring: 42 55% 47%;
-  --primary: 349 64% 15%;
-  --primary-foreground: 39 33% 95%;
-  --secondary: 39 30% 90%;
-  --secondary-foreground: 349 64% 15%;
-  --muted: 38 25% 90%;
+  --ring: 36 45% 60%; /* #c9a36a */
+  --primary: 340 43% 21%; /* #4b1e2d */
+  --primary-foreground: 40 41% 93%;
+  --secondary: 39 40% 86%; /* #eadfce */
+  --secondary-foreground: 340 43% 21%;
+  --muted: 39 40% 86%;
   --muted-foreground: 345 16% 42%;
-  --accent: 42 55% 47%;
-  --accent-foreground: 349 64% 15%;
+  --accent: 36 45% 60%; /* #c9a36a */
+  --accent-foreground: 40 41% 93%;
   --destructive: 0 65% 48%;
   --destructive-foreground: 39 45% 96%;
-  --popover: 40 43% 98%;
-  --popover-foreground: 347 34% 16%;
-  --radius: 0.85rem;
+  --popover: 38 42% 96%;
+  --popover-foreground: 340 43% 21%;
+  --radius: 18px; /* Standard from design system */
   --app-font-sans: 'DM Sans', sans-serif;
-  --app-font-serif: 'Fraunces', serif;
-  --app-font-mono: 'DM Sans', sans-serif;
+  --app-font-serif: 'Instrument Serif', serif;
+  --app-font-mono: 'DM Mono', monospace;
 }
 
 * { box-sizing: border-box; }
