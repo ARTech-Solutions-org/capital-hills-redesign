@@ -71,16 +71,7 @@ export default function Home() {
                 Thoughtfully planned communities. A better tomorrow.
               </p>
 
-              {/* Swipe up button */}
-              <div className="mt-16 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#f7f5ec]/20 transition hover:bg-[#f7f5ec]/10">
-                  <ChevronRight size={16} className="-rotate-90 text-[#f7f5ec]/70" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold">Swipe up to open</p>
-                  <p className="font-mono text-[8px] uppercase tracking-[.2em] text-[#c49743] mt-1">Your place awaits</p>
-                </div>
-              </div>
+
             </FadeIn>
           </div>
           
