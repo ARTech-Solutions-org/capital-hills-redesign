@@ -8,6 +8,7 @@ import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
   const project = getProject(slug);
+  const [saved, setSaved] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [shareMessage, setShareMessage] = useState('');
   const [compare, setCompare] = useState(projects.find((item) => item.slug !== slug)?.slug || projects[0].slug);

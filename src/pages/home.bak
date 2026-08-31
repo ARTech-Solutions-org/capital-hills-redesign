@@ -24,8 +24,14 @@ const heroImages = [
 const tickerItems = projects.flatMap((p) => [`${p.name} — ${p.city}`, '·']);
 
 export default function Home() {
+  const [cityFilter, setCityFilter] = useState('all');
   const [review, setReview] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
+
+  const filtered = useMemo(
+    () => projects.filter((p) => cityFilter === 'all' || p.city === cityFilter),
+    [cityFilter]
+  );
 
   // Auto-rotate reviews
   useEffect(() => {
@@ -34,68 +40,146 @@ export default function Home() {
     return () => clearInterval(t);
   }, [autoPlay]);
 
+  const cities = ['all', ...Array.from(new Set(projects.map((p) => p.city)))];
+
   return (
     <Shell>
       <main>
-        {/* ── HERO: Dark Immersive ── */}
-        <section className="relative min-h-[100dvh] overflow-hidden bg-[#240d10] text-[#f7f5ec] flex flex-col justify-center px-6 py-28 md:py-32 md:pl-[max(40px,calc((100vw-1220px)/2+40px))]">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000"
-              alt="Capital Hills Building"
-              className="h-full w-full object-cover opacity-60 mix-blend-luminosity"
-            />
-            {/* Dark Maroon overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#240d10]/95 via-[#421318]/80 to-[#240d10]/40" />
-            
-            {/* Watermark Logo */}
-            <div className="absolute right-[-10%] top-[20%] w-[800px] opacity-[0.03] pointer-events-none">
-              <img src="/capital-hills-logo.png" alt="" className="w-full h-auto brightness-0 invert" />
-            </div>
-            {/* Thin circle lines */}
-            <div className="absolute right-[10%] top-[-10%] w-[600px] h-[600px] rounded-full border border-[#f7f5ec]/5 pointer-events-none" />
-            <div className="absolute left-[5%] bottom-[-20%] w-[400px] h-[400px] rounded-full border border-[#f7f5ec]/5 pointer-events-none" />
-          </div>
-
-          <div className="relative z-10 w-full max-w-2xl">
+        {/* ── HERO: Cream split-screen ── */}
+        <section className="relative min-h-[100dvh] overflow-hidden bg-[#f6f0e4] pt-28 md:pt-0 md:flex md:items-stretch">
+          {/* Left column */}
+          <div className="relative z-10 flex flex-col justify-center px-6 py-16 md:w-[55%] md:py-0 md:pl-[max(40px,calc((100vw-1220px)/2+40px))] md:pr-16">
             <FadeIn>
-              <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#c49743] mb-6">
-                Homes worth coming home to
-              </p>
-              <h1 className="font-display text-[clamp(4rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f7f5ec]">
-                A clearer path<br />
+              <p className="eyebrow">Homes worth coming home to</p>
+              <h1 className="mt-6 font-display text-[clamp(3rem,6vw,5.5rem)] leading-[.95] tracking-[-0.02em] text-[#4a1e2c]">
+                A clear path<br />
                 to <span className="italic text-[#c49743]">your place.</span>
               </h1>
-              <p className="mt-8 max-w-md text-base leading-7 text-[#e2cbbd]">
-                Thoughtfully planned communities. A better tomorrow.
+              <p className="mt-7 max-w-md text-base leading-7 text-[#735e57]">
+                Thoughtfully planned homes, clear payment plans, and a real person ready to help you take the next step in Egypt.
               </p>
+              <div className="mt-10 flex flex-wrap gap-3">
+                <a
+                  href={CONTACT.tel}
+                  className="focus-ring inline-flex items-center gap-2 rounded-full bg-[#4a1e2c] px-6 py-3 text-sm font-bold text-[#f6f0e4] transition hover:bg-[#3c1d2a]"
+                  data-testid="link-hero-call"
+                >
+                  <Phone size={14} /> Call now
+                </a>
+                <a
+                  href={CONTACT.whatsapp}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="focus-ring inline-flex items-center gap-2 rounded-full border border-[#4a1e2c]/25 px-6 py-3 text-sm font-bold text-[#4a1e2c] transition hover:bg-[#4a1e2c]/08"
+                  data-testid="link-hero-whatsapp"
+                >
+                  <MessageCircle size={14} /> WhatsApp
+                </a>
+              </div>
+              <div className="mt-6">
+                <Link
+                  href="/contact"
+                  className="focus-ring inline-flex items-center gap-2 rounded-full bg-[#c49743] px-7 py-3.5 text-sm font-bold text-[#3c1d2a] shadow-[0_4px_20px_rgba(196,151,67,.35)] transition hover:bg-[#d9ad51]"
+                  data-testid="link-hero-book-viewing"
+                >
+                  Book a Viewing <CalendarDays size={15} />
+                </Link>
+              </div>
+            </FadeIn>
 
-              {/* Swipe up button */}
-              <div className="mt-16 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#f7f5ec]/20 transition hover:bg-[#f7f5ec]/10">
-                  <ChevronRight size={16} className="-rotate-90 text-[#f7f5ec]/70" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold">Swipe up to open</p>
-                  <p className="font-mono text-[8px] uppercase tracking-[.2em] text-[#c49743] mt-1">Your place awaits</p>
-                </div>
+            {/* Stat */}
+            <FadeIn delay={0.3} className="mt-14 flex items-center gap-8 border-t border-[#4a1e2c]/12 pt-8">
+              <div>
+                <p className="font-display text-4xl text-[#4a1e2c]">18</p>
+                <p className="font-mono text-[9px] uppercase tracking-[.2em] text-[#9b702c]">Key Projects</p>
+              </div>
+              <div className="h-10 w-px bg-[#4a1e2c]/15" />
+              <div>
+                <p className="font-display text-4xl text-[#4a1e2c]">4</p>
+                <p className="font-mono text-[9px] uppercase tracking-[.2em] text-[#9b702c]">Prime Cities</p>
+              </div>
+              <div className="h-10 w-px bg-[#4a1e2c]/15" />
+              <div>
+                <p className="font-display text-4xl text-[#4a1e2c]">2017</p>
+                <p className="font-mono text-[9px] uppercase tracking-[.2em] text-[#9b702c]">Est.</p>
               </div>
             </FadeIn>
           </div>
-          
-          {/* Bottom left corner text */}
-          <div className="absolute bottom-8 left-6 md:left-[max(40px,calc((100vw-1220px)/2+40px))] z-10">
-            <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#c49743]/80 leading-relaxed">
-              Planning<br/>The Future
-            </p>
+
+          {/* Right column — stacked image collage */}
+          <div className="relative hidden md:flex md:w-[45%] md:items-stretch">
+            <div className="absolute inset-0 bg-[#eadbc4]" />
+            {/* Main large image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.1, ease: [0.22, 0.7, 0.25, 1] }}
+              className="absolute inset-0"
+            >
+              <img
+                src={heroImages[0]}
+                alt="Capital Hills development"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#f6f0e4]/30" />
+            </motion.div>
+
           </div>
-          
-          {/* Bottom right corner text */}
-          <div className="absolute bottom-8 right-6 md:right-[max(40px,calc((100vw-1220px)/2+40px))] z-10 text-right">
-            <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#c49743]/80 leading-relaxed">
-              Cairo - Egypt<br/>Since 2017
-            </p>
+        </section>
+
+        {/* ── PROJECTS: Horizontal filmstrip ── */}
+        <section id="projects" className="scroll-mt-24 py-20 md:py-28">
+          <div className="container-shell">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <FadeIn>
+                <p className="eyebrow">Find your footing</p>
+                <h2 className="mt-3 font-display text-4xl leading-tight text-[#4a1e2c] md:text-5xl">
+                  Projects built<br />for real life.
+                </h2>
+              </FadeIn>
+              <FadeIn delay={0.15}>
+                <div className="flex flex-wrap gap-2">
+                  {cities.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setCityFilter(c)}
+                      className={`rounded-full px-4 py-1.5 font-mono text-[10px] uppercase tracking-[.15em] transition ${
+                        cityFilter === c
+                          ? 'bg-[#4a1e2c] text-[#f6f0e4]'
+                          : 'border border-[#4a1e2c]/20 text-[#735e57] hover:border-[#4a1e2c]/50 hover:text-[#4a1e2c]'
+                      }`}
+                    >
+                      {c === 'all' ? 'All cities' : c}
+                    </button>
+                  ))}
+                </div>
+              </FadeIn>
+            </div>
+
+            {filtered.length > 0 ? (
+              <StaggerContainer className="mt-10 grid gap-4 md:grid-cols-3">
+                {filtered.map((project, index) => (
+                  <StaggerItem
+                    key={project.slug}
+                    className={index === 0 && filtered.length > 1 ? 'md:col-span-2' : ''}
+                  >
+                    <ProjectCard project={project} featured={index === 0 && filtered.length > 1} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            ) : (
+              <div className="mt-10 rounded-2xl border border-dashed border-[#d9c5a5] p-12 text-center">
+                <p className="font-display text-2xl text-[#4a1e2c]">Nothing in that city yet.</p>
+                <p className="mt-2 text-sm text-[#735e57]">Try another city or talk to our team.</p>
+                <button
+                  onClick={() => setCityFilter('all')}
+                  className="mt-5 rounded-full bg-[#4a1e2c] px-5 py-2.5 text-sm font-bold text-[#fff8ea]"
+                  data-testid="button-reset-search"
+                >
+                  Show all projects
+                </button>
+              </div>
+            )}
           </div>
         </section>
 

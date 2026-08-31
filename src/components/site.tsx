@@ -32,8 +32,8 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
-  const nav = [['Projects', '/#projects'], ['Why us', '/why-us'], ['Contact', '/contact']];
-  const lightPage = location === '/' || location === '/contact' || location === '/why-us';
+  const nav = [['Projects', '/projects'], ['Why us', '/why-us'], ['Contact', '/contact']];
+  const lightPage = location === '/' || location === '/contact' || location === '/why-us' || location === '/projects';
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);

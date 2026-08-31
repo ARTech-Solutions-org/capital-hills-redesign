@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import Home from '@/pages/home';
+import Projects from '@/pages/projects';
 import Contact from '@/pages/contact';
 import ProjectDetail from '@/pages/project-detail';
 import WhyUs from '@/pages/why-us';
@@ -26,12 +27,11 @@ function Router() {
   }, [location]);
 
   return (
-    // Keep a shared shell (sidebar, navbar) outside the boundary so it
-    // survives a page crash.
     <RoutedErrorBoundary>
       <PageTransition keyProp={location}>
         <Switch>
           <Route path="/" component={Home} />
+          <Route path="/projects" component={Projects} />
           <Route path="/projects/:slug" component={ProjectDetail} />
           <Route path="/contact" component={Contact} />
           <Route path="/why-us" component={WhyUs} />
