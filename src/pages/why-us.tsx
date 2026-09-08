@@ -37,8 +37,12 @@ export default function WhyUs() {
         {/* ── HERO: Horizontal split ── */}
         <section className="min-h-[100dvh] md:grid md:grid-cols-[1fr_1fr]">
           {/* Left — text on dark */}
-          <div className="flex flex-col justify-end bg-[#4a1e2c] px-8 py-20 pt-36 text-[#fff7e9] md:px-16 md:pt-20">
-            <FadeIn>
+          <div className="relative flex flex-col justify-end overflow-hidden bg-[#4a1e2c] px-8 py-20 pt-36 text-[#fff7e9] md:px-16 md:pt-20">
+            {/* Watermark Logo (Emblem without wordmark) */}
+            <div className="absolute right-[-10%] top-[10%] w-[450px] opacity-[0.035] pointer-events-none">
+              <img src="/capital-hills-icon-light.png" alt="" className="w-full h-auto" />
+            </div>
+            <FadeIn className="relative z-10">
               <p className="eyebrow">Capital Hills Developments</p>
               <h1 className="mt-6 font-display text-5xl leading-[1.02] tracking-[-0.02em] md:text-[clamp(3rem,5vw,4.5rem)]">
                 Invest With Trust.<br />

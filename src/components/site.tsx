@@ -16,13 +16,34 @@ export const CONTACT = {
   sms: 'sms:+201005550190',
 };
 
-export function Logo({ light = false }: { light?: boolean }) {
+export function Logo({
+  light = false,
+  variant = 'full',
+  className = '',
+}: {
+  light?: boolean;
+  variant?: 'full' | 'icon';
+  className?: string;
+}) {
+  const fullSrc = light
+    ? '/capital-hills-logo-full-light.png'
+    : '/capital-hills-logo-full-maroon.png';
+  const iconSrc = light
+    ? '/capital-hills-icon-light.png'
+    : '/capital-hills-icon-maroon.png';
+
+  const src = variant === 'icon' ? iconSrc : fullSrc;
+  const defaultClass =
+    variant === 'icon'
+      ? 'h-9 w-auto object-contain transition-all'
+      : 'h-8 md:h-9 w-auto object-contain transition-all';
+
   return (
     <Link href="/" className="focus-ring block shrink-0" data-testid="link-logo">
       <img
-        src="/capital-hills-logo.png"
+        src={src}
         alt="Capital Hills Developments"
-        className={`h-9 w-auto object-contain transition-all ${light ? 'brightness-0 invert' : ''}`}
+        className={className || defaultClass}
       />
     </Link>
   );
@@ -133,7 +154,7 @@ export function Footer() {
     <footer className="bg-[#421318] pb-24 pt-16 text-[#f7f5ec] md:pb-12">
       <div className="container-shell grid gap-12 md:grid-cols-[1.4fr_.8fr_.8fr_1.2fr]">
         <div>
-          <Logo light />
+          <Logo light variant="full" className="h-10 md:h-12 w-auto object-contain" />
           <p className="mt-5 max-w-xs text-sm leading-6 text-[#947e82]">
             Homes with sound thinking behind them. For the way Egyptians actually live.
           </p>
@@ -405,6 +426,10 @@ export function BookVisitModal({ isOpen, onClose, projectName }: { isOpen: boole
         <button onClick={onClose} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-lg bg-[#fff8ea] text-[#4a1e2c] transition-colors hover:bg-[#4a1e2c] hover:text-[#fff8ea]" aria-label="Close modal">
           <X size={18} />
         </button>
+        <div className="flex items-center gap-2.5 mb-2">
+          <img src="/capital-hills-icon-maroon.png" alt="" className="h-7 w-auto object-contain" />
+          <span className="font-mono text-[9px] uppercase tracking-[.25em] text-[#9b702c]">Capital Hills</span>
+        </div>
         <h2 className="font-display text-3xl text-[#4a1e2c]">Book a private visit</h2>
         <p className="mt-2 text-sm leading-6 text-[#735e57]">See {projectName} in your own time.</p>
         {visitSent ? (

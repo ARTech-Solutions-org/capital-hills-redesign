@@ -49,9 +49,9 @@ export default function Home() {
             {/* Dark Maroon overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#240d10]/95 via-[#421318]/80 to-[#240d10]/40" />
             
-            {/* Watermark Logo */}
-            <div className="absolute right-[-10%] top-[20%] w-[800px] opacity-[0.03] pointer-events-none">
-              <img src="/capital-hills-logo.png" alt="" className="w-full h-auto brightness-0 invert" />
+            {/* Watermark Logo (Emblem without wordmark) */}
+            <div className="absolute right-[-10%] top-[20%] w-[800px] opacity-[0.035] pointer-events-none">
+              <img src="/capital-hills-icon-light.png" alt="" className="w-full h-auto" />
             </div>
             {/* Thin circle lines */}
             <div className="absolute right-[10%] top-[-10%] w-[600px] h-[600px] rounded-full border border-[#f7f5ec]/5 pointer-events-none" />

@@ -16,8 +16,12 @@ export default function Contact() {
     <Shell>
       <main className="min-h-[100dvh] md:grid md:grid-cols-[420px_1fr] lg:grid-cols-[480px_1fr]">
         {/* ── Left sticky panel ── */}
-        <aside className="bg-[#4a1e2c] text-[#f7eede] md:sticky md:top-0 md:h-screen md:overflow-y-auto">
-          <div className="flex flex-col justify-between p-8 pt-28 md:h-full md:p-12 md:pt-32">
+        <aside className="relative overflow-hidden bg-[#4a1e2c] text-[#f7eede] md:sticky md:top-0 md:h-screen md:overflow-y-auto">
+          {/* Watermark Logo (Emblem without wordmark) */}
+          <div className="absolute right-[-15%] bottom-[5%] w-[450px] opacity-[0.035] pointer-events-none">
+            <img src="/capital-hills-icon-light.png" alt="" className="w-full h-auto" />
+          </div>
+          <div className="relative z-10 flex flex-col justify-between p-8 pt-28 md:h-full md:p-12 md:pt-32">
             <div>
               <FadeIn>
                 <p className="eyebrow">A real person is close by</p>
