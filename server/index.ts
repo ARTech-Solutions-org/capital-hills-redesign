@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import multer from 'multer';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { db } from './db';
-import { contentBlocks, projects, directMessages } from './db/schema';
+import { db } from './db/index.js';
+import { contentBlocks, projects, directMessages } from './db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
