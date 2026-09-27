@@ -4,7 +4,8 @@ import { PartnersEditor } from '@/components/PartnersEditor';
 import { GenericListEditor } from '@/components/GenericListEditor';
 import { SingleImageEditor } from '@/components/SingleImageEditor';
 
-const API_URL = 'http://localhost:3001/api';
+const isDev = typeof window !== 'undefined' && window.location.port === '5173';
+const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState<'home' | 'whyus' | 'contact' | 'global' | 'projects' | 'messages'>('home');
