@@ -14,6 +14,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Normalization for Vercel
+app.use((req, res, next) => {
+  if (req.url.startsWith('/projects') || req.url.startsWith('/content') || req.url.startsWith('/messages') || req.url.startsWith('/upload')) {
+    req.url = '/api' + req.url;
+  }
+  next();
+});
+
 // S3 Client for Cloudflare R2
 const S3 = new S3Client({
   region: 'auto',
