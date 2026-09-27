@@ -595,7 +595,7 @@ export function downloadBrochure(project: Project, phone: string = '16794') {
   const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = ${project.slug}-brochure.pdf;
+  anchor.download = `${project.slug}-brochure.pdf`;
   anchor.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
