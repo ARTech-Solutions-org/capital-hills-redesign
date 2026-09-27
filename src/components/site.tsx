@@ -408,7 +408,7 @@ export function FloatingActions() {
   const activate = (label: string, event: React.MouseEvent<HTMLAnchorElement>) => {
     if ((label === 'Call' || label === 'SMS') && !isHandset) {
       event.preventDefault();
-      setNotice(`${label} is ready on mobile at ${phone}.`);
+      setNotice(`${label} is ready on mobile at ${contact.phone}.`);
       window.setTimeout(() => setNotice(''), 2600);
     }
   };
@@ -569,12 +569,12 @@ function pdfEscape(value: string) {
   return value.replace(/([\\\(\)])/g, '\\$1');
 }
 
-export function downloadBrochure(project: Project) {
+export function downloadBrochure(project: Project, phone: string = '16794') {
   const lines = [
     'Capital Hills Developments',
     project.name,
     '',
-    project.description,
+    project.description || '',
     '',
     `Space: ${project.projectSpace || 'N/A'}`,
     `Location: ${project.location}`,
@@ -595,7 +595,7 @@ export function downloadBrochure(project: Project) {
   const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = project.brochure;
+  anchor.download = ${project.slug}-brochure.pdf;
   anchor.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
