@@ -25,10 +25,10 @@ app.use((req, res, next) => {
 // S3 Client for Cloudflare R2
 const S3 = new S3Client({
   region: 'auto',
-  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID || 'dummy'}.r2.cloudflarestorage.com`,
   credentials: {
-    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID || 'dummy',
+    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY || 'dummy',
   },
 });
 
