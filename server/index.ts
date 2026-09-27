@@ -161,6 +161,17 @@ app.patch('/api/messages/read', async (req, res) => {
   }
 });
 
+// Fallback for debugging
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found in API',
+    url: req.url,
+    originalUrl: req.originalUrl,
+    path: req.path,
+    method: req.method
+  });
+});
+
 const PORT = process.env.PORT || 3001;
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
