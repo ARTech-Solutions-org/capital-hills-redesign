@@ -21,6 +21,7 @@ export default function Admin() {
   const [projects, setProjects] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
+  const [activeSubTabs, setActiveSubTabs] = useState<Record<string, string>>({});
 
   // For adding new content blocks
   const [newKey, setNewKey] = useState('');
@@ -176,90 +177,90 @@ export default function Admin() {
   const contactBlocks = contentBlocks.filter(b => b.id.startsWith('contact_'));
   const globalBlocks = contentBlocks.filter(b => b.id.startsWith('global_') || b.id.startsWith('site_') || b.id.startsWith('footer_') || b.id.startsWith('header_'));
 
-  const KNOWN_KEYS: Record<string, { id: string, label: string }[]> = {
+  const KNOWN_KEYS: Record<string, { id: string, label: string, group?: string }[]> = {
     home: [
-      { id: 'hero_title', label: 'Hero Title 1' },
-      { id: 'hero_title_2', label: 'Hero Title 2 (Italic)' },
-      { id: 'hero_title_3', label: 'Hero Title 3 (Mono)' },
-      { id: 'hero_subtitle', label: 'Hero Subtitle' },
-      { id: 'home_hero_bg', label: 'Hero Background Image' },
-      { id: 'home_cta_bg', label: 'CTA Section Background Image' },
-      { id: 'home_chairman_img', label: 'Chairman Photo Image' },
-      { id: 'stat_1_val', label: 'Stat 1 Value' },
-      { id: 'stat_1_suf', label: 'Stat 1 Suffix' },
-      { id: 'stat_1_lbl', label: 'Stat 1 Label' },
-      { id: 'stat_2_val', label: 'Stat 2 Value' },
-      { id: 'stat_2_suf', label: 'Stat 2 Suffix' },
-      { id: 'stat_2_lbl', label: 'Stat 2 Label' },
-      { id: 'stat_3_val', label: 'Stat 3 Value' },
-      { id: 'stat_3_suf', label: 'Stat 3 Suffix' },
-      { id: 'stat_3_lbl', label: 'Stat 3 Label' },
-      { id: 'stat_4_val', label: 'Stat 4 Value' },
-      { id: 'stat_4_suf', label: 'Stat 4 Suffix' },
-      { id: 'stat_4_lbl', label: 'Stat 4 Label' },
-      { id: 'home_why_eyebrow', label: 'Why Us Eyebrow' },
-      { id: 'home_why_title_1', label: 'Why Us Title Line 1' },
-      { id: 'home_why_title_2', label: 'Why Us Title Line 2 (Italic)' },
-      { id: 'home_why_desc', label: 'Why Us Description' },
-      { id: 'home_cta_title', label: 'CTA Title' },
-      { id: 'home_cta_desc', label: 'CTA Description' },
-      { id: 'chairman_quote', label: 'Chairman Quote' },
-      { id: 'chairman_name_1', label: 'Chairman Name Line 1' },
-      { id: 'chairman_name_2', label: 'Chairman Name Line 2' },
-      { id: 'chairman_title', label: 'Chairman Title' },
-      { id: 'chairman_p1', label: 'Chairman Paragraph 1' },
-      { id: 'chairman_p2', label: 'Chairman Paragraph 2' },
-      { id: 'chairman_p3', label: 'Chairman Paragraph 3' },
-      { id: 'chairman_p4', label: 'Chairman Paragraph 4' },
-            { id: 'home_why_list', label: 'Why Us List' },
-      { id: 'home_reviews_list', label: 'Reviews List' },
-      { id: 'chairman_stats_list', label: 'Chairman Stats List' },
-      { id: 'home_ticker_list', label: 'Ticker List' },
-      { id: 'home_partners_list', label: 'Home Partners List' }
+      { id: 'hero_title', label: 'Hero Title 1', group: 'Hero' },
+      { id: 'hero_title_2', label: 'Hero Title 2 (Italic)', group: 'Hero' },
+      { id: 'hero_title_3', label: 'Hero Title 3 (Mono)', group: 'Hero' },
+      { id: 'hero_subtitle', label: 'Hero Subtitle', group: 'Hero' },
+      { id: 'home_hero_bg', label: 'Hero Background Image', group: 'Hero' },
+      { id: 'home_cta_bg', label: 'CTA Section Background Image', group: 'CTA' },
+      { id: 'home_cta_title', label: 'CTA Title', group: 'CTA' },
+      { id: 'home_cta_desc', label: 'CTA Description', group: 'CTA' },
+      { id: 'home_chairman_img', label: 'Chairman Photo Image', group: 'Chairman' },
+      { id: 'chairman_quote', label: 'Chairman Quote', group: 'Chairman' },
+      { id: 'chairman_name_1', label: 'Chairman Name Line 1', group: 'Chairman' },
+      { id: 'chairman_name_2', label: 'Chairman Name Line 2', group: 'Chairman' },
+      { id: 'chairman_title', label: 'Chairman Title', group: 'Chairman' },
+      { id: 'chairman_p1', label: 'Chairman Paragraph 1', group: 'Chairman' },
+      { id: 'chairman_p2', label: 'Chairman Paragraph 2', group: 'Chairman' },
+      { id: 'chairman_p3', label: 'Chairman Paragraph 3', group: 'Chairman' },
+      { id: 'chairman_p4', label: 'Chairman Paragraph 4', group: 'Chairman' },
+      { id: 'chairman_stats_list', label: 'Chairman Stats List', group: 'Chairman' },
+      { id: 'stat_1_val', label: 'Stat 1 Value', group: 'Stats' },
+      { id: 'stat_1_suf', label: 'Stat 1 Suffix', group: 'Stats' },
+      { id: 'stat_1_lbl', label: 'Stat 1 Label', group: 'Stats' },
+      { id: 'stat_2_val', label: 'Stat 2 Value', group: 'Stats' },
+      { id: 'stat_2_suf', label: 'Stat 2 Suffix', group: 'Stats' },
+      { id: 'stat_2_lbl', label: 'Stat 2 Label', group: 'Stats' },
+      { id: 'stat_3_val', label: 'Stat 3 Value', group: 'Stats' },
+      { id: 'stat_3_suf', label: 'Stat 3 Suffix', group: 'Stats' },
+      { id: 'stat_3_lbl', label: 'Stat 3 Label', group: 'Stats' },
+      { id: 'stat_4_val', label: 'Stat 4 Value', group: 'Stats' },
+      { id: 'stat_4_suf', label: 'Stat 4 Suffix', group: 'Stats' },
+      { id: 'stat_4_lbl', label: 'Stat 4 Label', group: 'Stats' },
+      { id: 'home_why_eyebrow', label: 'Why Us Eyebrow', group: 'Why Us' },
+      { id: 'home_why_title_1', label: 'Why Us Title Line 1', group: 'Why Us' },
+      { id: 'home_why_title_2', label: 'Why Us Title Line 2 (Italic)', group: 'Why Us' },
+      { id: 'home_why_desc', label: 'Why Us Description', group: 'Why Us' },
+      { id: 'home_why_list', label: 'Why Us List', group: 'Why Us' },
+      { id: 'home_reviews_list', label: 'Reviews List', group: 'Reviews' },
+      { id: 'home_ticker_list', label: 'Ticker List', group: 'Ticker' },
+      { id: 'home_partners_list', label: 'Home Partners List', group: 'Partners' }
     ],
     whyus: [
-      { id: 'whyus_hero_title', label: 'Hero Title' },
-      { id: 'whyus_hero_desc_1', label: 'Hero Description Paragraph 1' },
-      { id: 'whyus_hero_desc_2', label: 'Hero Description Paragraph 2' },
-      { id: 'whyus_core_title', label: 'Core Values Title' },
-      { id: 'whyus_story_eyebrow', label: 'Story Eyebrow' },
-      { id: 'whyus_story_title_1', label: 'Story Title Line 1' },
-      { id: 'whyus_story_title_2', label: 'Story Title Line 2' },
-      { id: 'whyus_story_title_3', label: 'Story Title Line 3' },
-      { id: 'whyus_story_p1', label: 'Story Paragraph 1' },
-      { id: 'whyus_story_p2', label: 'Story Paragraph 2' },
-      { id: 'whyus_story_p3', label: 'Story Paragraph 3' },
-      { id: 'whyus_mission_title', label: 'Mission Title' },
-      { id: 'whyus_mission_desc', label: 'Mission Description' },
-      { id: 'whyus_vision_title', label: 'Vision Title' },
-      { id: 'whyus_vision_desc', label: 'Vision Description' },
-      { id: 'whyus_hero_bg', label: 'Hero Background Image' },
-      { id: 'whyus_cta_eyebrow', label: 'CTA Eyebrow' },
-      { id: 'whyus_cta_title', label: 'CTA Title' },
-      { id: 'whyus_core_list', label: 'Core Values List' },
-      { id: 'whyus_categories_list', label: 'Categories List' }
+      { id: 'whyus_hero_title', label: 'Hero Title', group: 'Hero' },
+      { id: 'whyus_hero_desc_1', label: 'Hero Description Paragraph 1', group: 'Hero' },
+      { id: 'whyus_hero_desc_2', label: 'Hero Description Paragraph 2', group: 'Hero' },
+      { id: 'whyus_hero_bg', label: 'Hero Background Image', group: 'Hero' },
+      { id: 'whyus_core_title', label: 'Core Values Title', group: 'Core Values' },
+      { id: 'whyus_core_list', label: 'Core Values List', group: 'Core Values' },
+      { id: 'whyus_story_eyebrow', label: 'Story Eyebrow', group: 'Story' },
+      { id: 'whyus_story_title_1', label: 'Story Title Line 1', group: 'Story' },
+      { id: 'whyus_story_title_2', label: 'Story Title Line 2', group: 'Story' },
+      { id: 'whyus_story_title_3', label: 'Story Title Line 3', group: 'Story' },
+      { id: 'whyus_story_p1', label: 'Story Paragraph 1', group: 'Story' },
+      { id: 'whyus_story_p2', label: 'Story Paragraph 2', group: 'Story' },
+      { id: 'whyus_story_p3', label: 'Story Paragraph 3', group: 'Story' },
+      { id: 'whyus_mission_title', label: 'Mission Title', group: 'Mission & Vision' },
+      { id: 'whyus_mission_desc', label: 'Mission Description', group: 'Mission & Vision' },
+      { id: 'whyus_vision_title', label: 'Vision Title', group: 'Mission & Vision' },
+      { id: 'whyus_vision_desc', label: 'Vision Description', group: 'Mission & Vision' },
+      { id: 'whyus_cta_eyebrow', label: 'CTA Eyebrow', group: 'CTA' },
+      { id: 'whyus_cta_title', label: 'CTA Title', group: 'CTA' },
+      { id: 'whyus_categories_list', label: 'Categories List', group: 'Categories' }
     ],
     contact: [
-      { id: 'contact_eyebrow', label: 'Hero Eyebrow' },
-      { id: 'contact_title_1', label: 'Hero Title 1' },
-      { id: 'contact_title_2', label: 'Hero Title 2 (Italic)' },
-      { id: 'contact_desc', label: 'Hero Description' },
-      { id: 'contact_phone', label: 'Phone Number' },
-      { id: 'contact_email', label: 'Email' },
-      { id: 'contact_address', label: 'Address' },
-      { id: 'contact_form_eyebrow', label: 'Form Eyebrow' },
-      { id: 'contact_form_title', label: 'Form Title' },
-      { id: 'contact_form_desc', label: 'Form Description' },
-      { id: 'contact_map_url', label: 'Google Maps Embed URL' }
+      { id: 'contact_eyebrow', label: 'Hero Eyebrow', group: 'Hero' },
+      { id: 'contact_title_1', label: 'Hero Title 1', group: 'Hero' },
+      { id: 'contact_title_2', label: 'Hero Title 2 (Italic)', group: 'Hero' },
+      { id: 'contact_desc', label: 'Hero Description', group: 'Hero' },
+      { id: 'contact_phone', label: 'Phone Number', group: 'Info' },
+      { id: 'contact_email', label: 'Email', group: 'Info' },
+      { id: 'contact_address', label: 'Address', group: 'Info' },
+      { id: 'contact_map_url', label: 'Google Maps Embed URL', group: 'Info' },
+      { id: 'contact_form_eyebrow', label: 'Form Eyebrow', group: 'Form' },
+      { id: 'contact_form_title', label: 'Form Title', group: 'Form' },
+      { id: 'contact_form_desc', label: 'Form Description', group: 'Form' }
     ],
     global: [
-      { id: 'global_footer_desc', label: 'Footer Description' },
-      { id: 'global_footer_phone', label: 'Footer Phone' },
-      { id: 'global_footer_email', label: 'Footer Email' },
-      { id: 'global_logo_full_light', label: 'Main Logo (Light version - for dark backgrounds)' },
-      { id: 'global_logo_full_maroon', label: 'Main Logo (Maroon version - for light backgrounds)' },
-      { id: 'global_logo_icon_light', label: 'Icon Logo (Light version)' },
-      { id: 'global_logo_icon_maroon', label: 'Icon Logo (Maroon version)' }
+      { id: 'global_footer_desc', label: 'Footer Description', group: 'Footer' },
+      { id: 'global_footer_phone', label: 'Footer Phone', group: 'Footer' },
+      { id: 'global_footer_email', label: 'Footer Email', group: 'Footer' },
+      { id: 'global_logo_full_light', label: 'Main Logo (Light version - for dark backgrounds)', group: 'Logos' },
+      { id: 'global_logo_full_maroon', label: 'Main Logo (Maroon version - for light backgrounds)', group: 'Logos' },
+      { id: 'global_logo_icon_light', label: 'Icon Logo (Light version)', group: 'Logos' },
+      { id: 'global_logo_icon_maroon', label: 'Icon Logo (Maroon version)', group: 'Logos' }
     ]
   };
 
@@ -271,14 +272,37 @@ export default function Admin() {
     // Add any dynamically created blocks that aren't in KNOWN_KEYS
     blocks.forEach(b => {
       if (!allBlocks.find(kb => kb.id === b.id)) {
-        allBlocks.push({ id: b.id, label: b.id });
+        allBlocks.push({ id: b.id, label: b.id, group: 'Other' });
       }
     });
 
+    // Determine groups
+    const groups = Array.from(new Set(allBlocks.map(b => b.group || 'Other')));
+    const currentSubTab = activeSubTabs[tabKey] || groups[0] || 'Other';
+
+    const blocksToRender = allBlocks.filter(b => (b.group || 'Other') === currentSubTab);
+
     return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-display text-[#421319] mb-4">{title}</h2>
-      <p className="text-sm text-[#493337] mb-8">{desc}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+        <div>
+          <h2 className="text-2xl font-display text-[#421319]">{title}</h2>
+          <p className="text-sm text-[#493337] mt-1">{desc}</p>
+        </div>
+      </div>
+      
+      {/* Sub-tabs navigation */}
+      <div className="flex gap-2 mb-8 overflow-x-auto pb-2 border-b border-[#947e82]/10">
+        {groups.map(group => (
+          <button 
+            key={group}
+            onClick={() => setActiveSubTabs(prev => ({ ...prev, [tabKey]: group }))}
+            className={`text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${currentSubTab === group ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}
+          >
+            {group}
+          </button>
+        ))}
+      </div>
       
       {/* Add new block */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-[#421319]/30 mb-8 flex flex-col md:flex-row gap-4 items-end">
@@ -316,7 +340,7 @@ export default function Admin() {
       </div>
 
       <div className="grid gap-6">
-        {allBlocks.map((blockDef) => {
+        {blocksToRender.map((blockDef) => {
           // Find value in DB blocks
           const dbBlock = blocks.find(b => b.id === blockDef.id);
           const value = dbBlock ? dbBlock.value : '';
