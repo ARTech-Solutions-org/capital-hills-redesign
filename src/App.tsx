@@ -9,7 +9,7 @@ import Projects from '@/pages/projects';
 import Admin from '@/pages/admin';
 import Contact from '@/pages/contact';
 import ProjectDetail from '@/pages/project-detail';
-import WhyUs from '@/pages/why-us';
+import AboutUs from '@/pages/about-us';
 import { PageTransition } from '@/components/animations';
 import { DataProvider } from '@/context/DataContext';
 import {
@@ -37,7 +37,7 @@ function Router() {
           <Route path="/projects/:slug" component={ProjectDetail} />
           <Route path="/admin" component={Admin} />
           <Route path="/contact" component={Contact} />
-          <Route path="/why-us" component={WhyUs} />
+          <Route path="/about-us" component={AboutUs} />
           <Route component={NotFound} />
         </Switch>
       </PageTransition>

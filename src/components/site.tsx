@@ -132,8 +132,8 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
-  const nav = [['Home', '/'], ['Projects', '/projects'], ['Why us', '/why-us'], ['Contact', '/contact']];
-  const lightPage = location === '/' || location === '/contact' || location === '/why-us' || location === '/projects';
+  const nav = [['Home', '/'], ['Projects', '/projects'], ['About us', '/about-us'], ['Contact', '/contact']];
+  const lightPage = location === '/' || location === '/contact' || location === '/about-us' || location === '/projects';
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
@@ -253,7 +253,7 @@ export function Footer() {
           <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_explore'] || 'Explore'}</p>
           <div className="space-y-3 text-sm text-[#947e82]">
             <Link href="/projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">Our projects</Link>
-            <Link href="/why-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">Why Capital Hills</Link>
+            <Link href="/about-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">About Capital Hills</Link>
             <Link href="/contact" className="block transition-colors hover:text-white" data-testid="link-footer-contact">Contact us</Link>
           </div>
         </div>

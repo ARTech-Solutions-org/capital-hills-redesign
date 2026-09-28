@@ -8,7 +8,7 @@ const isDev = typeof window !== 'undefined' && window.location.port === '5173';
 const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState<'home' | 'whyus' | 'contact' | 'global' | 'projects' | 'messages'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'aboutus' | 'contact' | 'global' | 'projects' | 'messages'>('home');
   useEffect(() => {
     if (activeTab === 'messages' && unreadCount > 0) {
       fetch(`${API_URL}/messages/read`, { method: 'PATCH' }).then(() => {
@@ -173,7 +173,7 @@ export default function Admin() {
 
   // Group content blocks by page
   const homeBlocks = contentBlocks.filter(b => b.id.startsWith('home_') || b.id.startsWith('stat_') || b.id.startsWith('chairman_') || b.id.startsWith('hero_title') || b.id === 'hero_subtitle');
-  const whyUsBlocks = contentBlocks.filter(b => b.id.startsWith('whyus_'));
+  const aboutusBlocks = contentBlocks.filter(b => b.id.startsWith('aboutus_'));
   const contactBlocks = contentBlocks.filter(b => b.id.startsWith('contact_'));
   const globalBlocks = contentBlocks.filter(b => b.id.startsWith('global_') || b.id.startsWith('site_') || b.id.startsWith('footer_') || b.id.startsWith('header_'));
 
@@ -209,36 +209,36 @@ export default function Admin() {
       { id: 'stat_4_val', label: 'Stat 4 Value', group: 'Stats' },
       { id: 'stat_4_suf', label: 'Stat 4 Suffix', group: 'Stats' },
       { id: 'stat_4_lbl', label: 'Stat 4 Label', group: 'Stats' },
-      { id: 'home_why_eyebrow', label: 'Why Us Eyebrow', group: 'Why Us' },
-      { id: 'home_why_title_1', label: 'Why Us Title Line 1', group: 'Why Us' },
-      { id: 'home_why_title_2', label: 'Why Us Title Line 2 (Italic)', group: 'Why Us' },
-      { id: 'home_why_desc', label: 'Why Us Description', group: 'Why Us' },
-      { id: 'home_why_list', label: 'Why Us List', group: 'Why Us' },
+      { id: 'home_why_eyebrow', label: 'About us Eyebrow', group: 'About us' },
+      { id: 'home_why_title_1', label: 'About us Title Line 1', group: 'About us' },
+      { id: 'home_why_title_2', label: 'About us Title Line 2 (Italic)', group: 'About us' },
+      { id: 'home_why_desc', label: 'About us Description', group: 'About us' },
+      { id: 'home_why_list', label: 'About us List', group: 'About us' },
       { id: 'home_reviews_list', label: 'Reviews List', group: 'Reviews' },
       { id: 'home_ticker_list', label: 'Ticker List', group: 'Ticker' },
       { id: 'home_partners_list', label: 'Home Partners List', group: 'Partners' }
     ],
-    whyus: [
-      { id: 'whyus_hero_title', label: 'Hero Title', group: 'Hero' },
-      { id: 'whyus_hero_desc_1', label: 'Hero Description Paragraph 1', group: 'Hero' },
-      { id: 'whyus_hero_desc_2', label: 'Hero Description Paragraph 2', group: 'Hero' },
-      { id: 'whyus_hero_bg', label: 'Hero Background Image', group: 'Hero' },
-      { id: 'whyus_core_title', label: 'Core Values Title', group: 'Core Values' },
-      { id: 'whyus_core_list', label: 'Core Values List', group: 'Core Values' },
-      { id: 'whyus_story_eyebrow', label: 'Story Eyebrow', group: 'Story' },
-      { id: 'whyus_story_title_1', label: 'Story Title Line 1', group: 'Story' },
-      { id: 'whyus_story_title_2', label: 'Story Title Line 2', group: 'Story' },
-      { id: 'whyus_story_title_3', label: 'Story Title Line 3', group: 'Story' },
-      { id: 'whyus_story_p1', label: 'Story Paragraph 1', group: 'Story' },
-      { id: 'whyus_story_p2', label: 'Story Paragraph 2', group: 'Story' },
-      { id: 'whyus_story_p3', label: 'Story Paragraph 3', group: 'Story' },
-      { id: 'whyus_mission_title', label: 'Mission Title', group: 'Mission & Vision' },
-      { id: 'whyus_mission_desc', label: 'Mission Description', group: 'Mission & Vision' },
-      { id: 'whyus_vision_title', label: 'Vision Title', group: 'Mission & Vision' },
-      { id: 'whyus_vision_desc', label: 'Vision Description', group: 'Mission & Vision' },
-      { id: 'whyus_cta_eyebrow', label: 'CTA Eyebrow', group: 'CTA' },
-      { id: 'whyus_cta_title', label: 'CTA Title', group: 'CTA' },
-      { id: 'whyus_categories_list', label: 'Categories List', group: 'Categories' }
+    aboutus: [
+      { id: 'aboutus_hero_title', label: 'Hero Title', group: 'Hero' },
+      { id: 'aboutus_hero_desc_1', label: 'Hero Description Paragraph 1', group: 'Hero' },
+      { id: 'aboutus_hero_desc_2', label: 'Hero Description Paragraph 2', group: 'Hero' },
+      { id: 'aboutus_hero_bg', label: 'Hero Background Image', group: 'Hero' },
+      { id: 'aboutus_core_title', label: 'Core Values Title', group: 'Core Values' },
+      { id: 'aboutus_core_list', label: 'Core Values List', group: 'Core Values' },
+      { id: 'aboutus_story_eyebrow', label: 'Story Eyebrow', group: 'Story' },
+      { id: 'aboutus_story_title_1', label: 'Story Title Line 1', group: 'Story' },
+      { id: 'aboutus_story_title_2', label: 'Story Title Line 2', group: 'Story' },
+      { id: 'aboutus_story_title_3', label: 'Story Title Line 3', group: 'Story' },
+      { id: 'aboutus_story_p1', label: 'Story Paragraph 1', group: 'Story' },
+      { id: 'aboutus_story_p2', label: 'Story Paragraph 2', group: 'Story' },
+      { id: 'aboutus_story_p3', label: 'Story Paragraph 3', group: 'Story' },
+      { id: 'aboutus_mission_title', label: 'Mission Title', group: 'Mission & Vision' },
+      { id: 'aboutus_mission_desc', label: 'Mission Description', group: 'Mission & Vision' },
+      { id: 'aboutus_vision_title', label: 'Vision Title', group: 'Mission & Vision' },
+      { id: 'aboutus_vision_desc', label: 'Vision Description', group: 'Mission & Vision' },
+      { id: 'aboutus_cta_eyebrow', label: 'CTA Eyebrow', group: 'CTA' },
+      { id: 'aboutus_cta_title', label: 'CTA Title', group: 'CTA' },
+      { id: 'aboutus_categories_list', label: 'Categories List', group: 'Categories' }
     ],
     contact: [
       { id: 'contact_eyebrow', label: 'Hero Eyebrow', group: 'Hero' },
@@ -328,14 +328,14 @@ export default function Admin() {
             ]} />;
           }
 
-          if (blockDef.id === 'whyus_core_list') {
+          if (blockDef.id === 'aboutus_core_list') {
             return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'title', label: 'Title', type: 'text' },
               { name: 'copy', label: 'Description', type: 'textarea' },
             ]} />;
           }
 
-          if (blockDef.id === 'whyus_categories_list') {
+          if (blockDef.id === 'aboutus_categories_list') {
             return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'title', label: 'Category Name', type: 'text' },
               { name: 'subtitle', label: 'Subtitle', type: 'text' },
@@ -398,7 +398,7 @@ export default function Admin() {
             
             <div className="flex gap-4 mb-8 border-b border-[#947e82]/20 pb-4 overflow-x-auto">
               <button onClick={() => setActiveTab('home')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'home' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Home Page</button>
-              <button onClick={() => setActiveTab('whyus')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'whyus' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Why Us Page</button>
+              <button onClick={() => setActiveTab('aboutus')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'aboutus' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>About us Page</button>
               <button onClick={() => setActiveTab('contact')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'contact' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Contact Page</button>
               <button onClick={() => setActiveTab('global')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'global' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Global (Footer/Header)</button>
               <button onClick={() => { setActiveTab('projects'); setEditingProject(null); }} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'projects' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Projects</button>
@@ -417,7 +417,7 @@ export default function Admin() {
             ) : (
               <div>
                 {activeTab === 'home' && renderContentTab(homeBlocks, 'Home Page Content', 'Edit the hero, stats, and text on the Home page.', 'home_', 'home')}
-                {activeTab === 'whyus' && renderContentTab(whyUsBlocks, 'Why Us Page Content', 'Edit the pillars and text on the Why Us page.', 'whyus_', 'whyus')}
+                {activeTab === 'aboutus' && renderContentTab(aboutusBlocks, 'About us Page Content', 'Edit the pillars and text on the About us page.', 'aboutus_', 'aboutus')}
                 {activeTab === 'contact' && renderContentTab(contactBlocks, 'Contact Page Content', 'Edit the contact information and titles.', 'contact_', 'contact')}
                 {activeTab === 'global' && renderContentTab(globalBlocks, 'Global Content', 'Edit footer text, header text, and overall site elements.', 'global_', 'global')}
 
@@ -568,7 +568,7 @@ export default function Admin() {
                             <div className="flex justify-between items-start border-b border-[#421319]/10 pb-3">
                               <div>
                                 <h3 className="font-bold text-lg text-[#421319]">{msg.name}</h3>
-                                <p className="text-sm text-[#947e82]">{msg.phone} {msg.email && <span className="mx-2">•</span>} {msg.email}</p>
+                                <p className="text-sm text-[#947e82]">{msg.phone} {msg.email && <span className="mx-2">â€¢</span>} {msg.email}</p>
                               </div>
                               <span className="text-xs text-[#947e82] bg-[#f5f2e9] px-2 py-1 rounded">
                                 {new Date(msg.createdAt).toLocaleDateString()}

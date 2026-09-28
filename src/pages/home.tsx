@@ -26,7 +26,7 @@ const heroImages = [
 export default function Home() {
   const contactInfo = useContactInfo();
   const { content, projects } = useData();
-  const tickerItems = projects.flatMap((p) => [`${p.name} — ${p.city}`, '·']);
+  const tickerItems = projects.flatMap((p) => [`${p.name} â€” ${p.city}`, 'Â·']);
   const [review, setReview] = useState(0);
   const activeReviews = useMemo(() => {
     try {
@@ -52,7 +52,7 @@ export default function Home() {
   return (
     <Shell>
       <main>
-        {/* ── HERO: Dark Immersive ── */}
+        {/* â”€â”€ HERO: Dark Immersive â”€â”€ */}
         <section className="relative min-h-[100dvh] overflow-hidden bg-[#250f12] text-[#f5f2e9] flex flex-col justify-center px-6 py-28 md:py-32 md:pl-[max(40px,calc((100vw-1220px)/2+40px))]">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
@@ -106,7 +106,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── STATS BAND ── */}
+        {/* â”€â”€ STATS BAND â”€â”€ */}
         <section className="bg-[#421319] py-16">
           <div className="container-shell">
             <StaggerContainer className="grid grid-cols-2 gap-8 md:grid-cols-4">
@@ -125,7 +125,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── TICKER + WHY US ── */}
+        {/* â”€â”€ TICKER + About us â”€â”€ */}
         <section className="bg-[#947e82] py-20 md:py-28 overflow-hidden">
           <div className="container-shell mb-12">
             <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-center">
@@ -137,7 +137,7 @@ export default function Home() {
                 <p className="mt-5 max-w-sm text-sm leading-7 text-[#493337]">
                   {content['home_why_desc'] || 'We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.'}
                 </p>
-                <Link href="/why-us" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#421319]" data-testid="link-home-why-us">
+                <Link href="/about-us" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#421319]" data-testid="link-home-why-us">
                   Learn more about us <ArrowRight size={15} />
                 </Link>
               </FadeIn>
@@ -169,7 +169,7 @@ export default function Home() {
           <div className="relative overflow-hidden border-y border-[#947e82] py-4">
             <div className="ticker-track">
               {[...tickerItems, ...tickerItems].map((item, i) => (
-                <span key={i} className={`shrink-0 px-5 font-mono text-[10px] uppercase tracking-[.2em] ${item === '·' ? 'text-[#947e82]' : 'text-[#947e82]'}`}>
+                <span key={i} className={`shrink-0 px-5 font-mono text-[10px] uppercase tracking-[.2em] ${item === 'Â·' ? 'text-[#947e82]' : 'text-[#947e82]'}`}>
                   {item}
                 </span>
               ))}
@@ -177,7 +177,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── TESTIMONIALS: Full-width centered ── */}
+        {/* â”€â”€ TESTIMONIALS: Full-width centered â”€â”€ */}
         {activeReviews.length > 0 && (
         <section className="py-20 md:py-28 bg-[#f5f2e9]">
           <div className="container-shell max-w-3xl text-center">
@@ -210,7 +210,7 @@ export default function Home() {
         </section>
         )}
 
-        {/* ── PARTNERSHIPS & PARTNERS ── */}
+        {/* â”€â”€ PARTNERSHIPS & PARTNERS â”€â”€ */}
         <section className="bg-[#421319] py-20 text-[#f5f2e9] md:py-32 overflow-hidden relative">
           <div className="absolute inset-0 z-0">
              <div className="absolute right-[-10%] top-[0%] w-[500px] h-[500px] rounded-full border border-[#f5f2e9]/5 pointer-events-none" />
@@ -246,7 +246,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CTA SPLIT ── */}
+        {/* â”€â”€ CTA SPLIT â”€â”€ */}
         <section className="md:grid md:grid-cols-2 md:min-h-[480px]">
           {/* Left: image */}
           <div className="relative min-h-[260px] overflow-hidden">
@@ -277,10 +277,10 @@ export default function Home() {
             </FadeIn>
           </div>
         </section>
-      {/* ── CHAIRMAN'S MESSAGE ── */}
+      {/* â”€â”€ CHAIRMAN'S MESSAGE â”€â”€ */}
         <section className="relative bg-[#231f20] overflow-hidden">
 
-          {/* ── Decorative geometry layer ── */}
+          {/* â”€â”€ Decorative geometry layer â”€â”€ */}
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
             {/* Massive faint ring top-right */}
             <div className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] rounded-full border border-[#947e82]/10" />
@@ -292,7 +292,7 @@ export default function Home() {
           </div>
 
           <div className="container-shell relative z-10 py-24 md:py-36">
-            {/* ── Top eyebrow ── */}
+            {/* â”€â”€ Top eyebrow â”€â”€ */}
             <FadeIn>
               <div className="flex items-center gap-6 mb-16">
                 <div className="w-10 h-[2px] bg-[#947e82]" />
@@ -302,16 +302,16 @@ export default function Home() {
 
             <div className="grid md:grid-cols-12 gap-12 md:gap-0 items-start">
 
-              {/* ── LEFT: Photo column ── */}
+              {/* â”€â”€ LEFT: Photo column â”€â”€ */}
               <FadeIn delay={0.1} className="md:col-span-5 md:sticky md:top-28 self-start">
                 <div className="relative">
-                  {/* Accent border frame — offset behind photo */}
+                  {/* Accent border frame â€” offset behind photo */}
                   <div className="absolute -bottom-4 -right-4 w-full h-full border border-[#947e82]/30 rounded-xl" />
                   {/* Photo */}
                   <div className="relative overflow-hidden rounded-xl aspect-[3/4]">
                     <img
                       src={content['home_chairman_img'] || "/chairman.png"}
-                      alt="Eng. Mohamed Salah Abdel Qader — Chairman"
+                      alt="Eng. Mohamed Salah Abdel Qader â€” Chairman"
                       className="absolute inset-0 h-full w-full object-cover object-top"
                     />
                     {/* Subtle brand tint at bottom */}
@@ -319,15 +319,15 @@ export default function Home() {
                     {/* Name badge pinned bottom */}
                     <div className="absolute bottom-0 inset-x-0 p-6">
                       <p className="font-display text-2xl text-[#f5f2e9] leading-tight">{content['chairman_name_1'] || 'Eng. Mohamed Salah'}<br />{content['chairman_name_2'] || 'Abdel Qader'}</p>
-                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">{content['chairman_title'] || 'Chairman — Capital Hills Developments'}</p>
+                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">{content['chairman_title'] || 'Chairman â€” Capital Hills Developments'}</p>
                     </div>
                   </div>
                 </div>
               </FadeIn>
 
-              {/* ── RIGHT: Quote + body ── */}
+              {/* â”€â”€ RIGHT: Quote + body â”€â”€ */}
               <div className="md:col-span-7 md:pl-16 flex flex-col gap-10">
-                {/* Pull-quote — the most visually impactful element */}
+                {/* Pull-quote â€” the most visually impactful element */}
                 <FadeIn delay={0.2}>
                   <div className="relative">
                     <span aria-hidden="true" className="absolute -top-6 -left-2 font-display text-[120px] leading-none text-[#947e82]/20 select-none">"</span>
@@ -349,8 +349,8 @@ export default function Home() {
                 <FadeIn delay={0.3}>
                   <div className="space-y-5 text-[15px] leading-8 text-[#f5f2e9]/65 font-sans">
                     <p>{content['chairman_p1'] || 'At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.'}</p>
-                    <p>{content['chairman_p2'] || "For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs — combining thoughtful planning, quality, and strategic locations with a long-term perspective."}</p>
-                    <p>{content['chairman_p3'] || 'We recognize that every project represents an important decision for our customers — whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.'}</p>
+                    <p>{content['chairman_p2'] || "For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs â€” combining thoughtful planning, quality, and strategic locations with a long-term perspective."}</p>
+                    <p>{content['chairman_p3'] || 'We recognize that every project represents an important decision for our customers â€” whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.'}</p>
                     <p>{content['chairman_p4'] || 'As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.'}</p>
                   </div>
                 </FadeIn>
