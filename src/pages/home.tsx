@@ -30,7 +30,8 @@ export default function Home() {
   const [review, setReview] = useState(0);
   const activeReviews = useMemo(() => {
     try {
-      const parsed = content['home_reviews_list'] ? JSON.parse(content['home_reviews_list']) : [];
+      let parsed = content['home_reviews_list'] ? JSON.parse(content['home_reviews_list']) : [];
+      parsed = parsed.filter((r: any) => !r.hide);
       return parsed.length > 0 ? parsed : reviews;
     } catch(e) {
       return reviews;

@@ -348,6 +348,7 @@ export default function Admin() {
               { name: 'quote', label: 'Quote', type: 'textarea' },
               { name: 'name', label: 'Name', type: 'text' },
               { name: 'detail', label: 'Detail (e.g. Investor)', type: 'text' },
+              { name: 'hide', label: 'Hide Review', type: 'checkbox' },
             ]} />;
           }
 

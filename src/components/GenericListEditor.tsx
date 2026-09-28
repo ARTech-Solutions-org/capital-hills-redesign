@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 export interface FieldDef {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'image';
+  type: 'text' | 'textarea' | 'image' | 'checkbox';
 }
 
 interface GenericListEditorProps {
@@ -124,6 +124,17 @@ export function GenericListEditor({ blockId, title, fields, value, onSave }: Gen
                       className="w-full min-h-[80px] bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2 outline-none focus:border-[#421319]"
                     />
                   </>
+                ) : f.type === 'checkbox' ? (
+                  <div className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      checked={!!item[f.name]} 
+                      onChange={e => handleChange(i, f.name, e.target.checked as any)} 
+                      id={`checkbox-${i}-${f.name}`}
+                      className="w-4 h-4 text-[#421319] bg-[#f5f2e9] border-[#947e82]/30 rounded focus:ring-[#421319]"
+                    />
+                    <label htmlFor={`checkbox-${i}-${f.name}`} className="text-sm font-bold text-[#947e82]">{f.label}</label>
+                  </div>
                 ) : (
                   <>
                     <label className="block text-xs font-bold text-[#947e82] mb-2">{f.label}</label>

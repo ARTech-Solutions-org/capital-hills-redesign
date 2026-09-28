@@ -15,15 +15,23 @@ async function seedHome() {
       { id: 'home_why_4_title', value: 'People at the Heart' },
       { id: 'home_why_4_copy', value: 'A collaborative team committed to making a meaningful impact.' },
       
-      { id: 'home_review_1_quote', value: 'The attention to detail and commitment to quality is evident in every aspect of the project. A truly reliable partner.' },
-      { id: 'home_review_1_name', value: 'Ahmed Youssef' },
-      { id: 'home_review_1_detail', value: 'Business Owner / Resident' },
-      { id: 'home_review_2_quote', value: 'Capital Hills provided us with a seamless experience from start to finish. Their transparency is unmatched.' },
-      { id: 'home_review_2_name', value: 'Sarah Mahmoud' },
-      { id: 'home_review_2_detail', value: 'Investor' },
-      { id: 'home_review_3_quote', value: 'We found exactly what we were looking for. The design and community feel are truly exceptional.' },
-      { id: 'home_review_3_name', value: 'Omar & Laila' },
-      { id: 'home_review_3_detail', value: 'Homeowners' },
+      { id: 'home_reviews_list', value: JSON.stringify([
+        {
+          quote: 'The attention to detail and commitment to quality is evident in every aspect of the project. A truly reliable partner.',
+          name: 'Ahmed Youssef',
+          detail: 'Business Owner / Resident'
+        },
+        {
+          quote: 'Capital Hills provided us with a seamless experience from start to finish. Their transparency is unmatched.',
+          name: 'Sarah Mahmoud',
+          detail: 'Investor'
+        },
+        {
+          quote: 'We found exactly what we were looking for. The design and community feel are truly exceptional.',
+          name: 'Omar & Laila',
+          detail: 'Homeowners'
+        }
+      ])},
       
       { id: 'chairman_stat_1_val', value: '10+' },
       { id: 'chairman_stat_1_lbl', value: 'Years of trust' },
