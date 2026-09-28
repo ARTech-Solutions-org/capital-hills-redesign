@@ -30,9 +30,11 @@ export default function Home() {
   const [review, setReview] = useState(0);
   const activeReviews = useMemo(() => {
     try {
-      let parsed = content['home_reviews_list'] ? JSON.parse(content['home_reviews_list']) : [];
-      parsed = parsed.filter((r: any) => !r.hide);
-      return parsed.length > 0 ? parsed : reviews;
+      if (content['home_reviews_list']) {
+        let parsed = JSON.parse(content['home_reviews_list']);
+        return parsed.filter((r: any) => !r.hide);
+      }
+      return reviews;
     } catch(e) {
       return reviews;
     }
@@ -42,7 +44,7 @@ export default function Home() {
 
   // Auto-rotate reviews
   useEffect(() => {
-    if (!autoPlay) return;
+    if (!autoPlay || activeReviews.length === 0) return;
     const t = setInterval(() => setReview((r) => (r + 1) % activeReviews.length), 5000);
     return () => clearInterval(t);
   }, [autoPlay]);
@@ -176,6 +178,7 @@ export default function Home() {
         </section>
 
         {/* ── TESTIMONIALS: Full-width centered ── */}
+        {activeReviews.length > 0 && (
         <section className="py-20 md:py-28 bg-[#f5f2e9]">
           <div className="container-shell max-w-3xl text-center">
             <FadeIn>
@@ -205,6 +208,7 @@ export default function Home() {
             </FadeIn>
           </div>
         </section>
+        )}
 
         {/* ── PARTNERSHIPS & PARTNERS ── */}
         <section className="bg-[#421319] py-20 text-[#f5f2e9] md:py-32 overflow-hidden relative">
