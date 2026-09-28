@@ -13,6 +13,8 @@ interface GenericListEditorProps {
   value: string;
   onSave: (val: string) => void;
 }
+const isDev = typeof window !== 'undefined' && window.location.port === '5173';
+const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
 
 export function GenericListEditor({ blockId, title, fields, value, onSave }: GenericListEditorProps) {
   const [items, setItems] = useState<any[]>([]);
@@ -31,7 +33,7 @@ export function GenericListEditor({ blockId, title, fields, value, onSave }: Gen
       setLoading(true);
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch('http://localhost:3001/api/upload', {
+      const res = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         body: formData,
       });

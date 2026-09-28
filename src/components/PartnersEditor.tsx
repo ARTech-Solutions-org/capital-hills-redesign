@@ -10,6 +10,8 @@ interface PartnersEditorProps {
   value: string;
   onSave: (val: string) => void;
 }
+const isDev = typeof window !== 'undefined' && window.location.port === '5173';
+const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
 
 export function PartnersEditor({ value, onSave }: PartnersEditorProps) {
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -28,7 +30,7 @@ export function PartnersEditor({ value, onSave }: PartnersEditorProps) {
       setLoading(true);
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch('http://localhost:3001/api/upload', {
+      const res = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         body: formData,
       });
