@@ -304,40 +304,7 @@ export default function Admin() {
         ))}
       </div>
       
-      {/* Add new block */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-[#421319]/30 mb-8 flex flex-col md:flex-row gap-4 items-end">
-        <div className="flex-1 w-full">
-          <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-3">New Block Key (Must start with {prefix})</label>
-          <input 
-            type="text" 
-            value={newKey}
-            onChange={e => setNewKey(e.target.value)}
-            placeholder={`${prefix}my_new_text`}
-            className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 outline-none focus:border-[#421319]"
-          />
-        </div>
-        <div className="flex-1 w-full">
-          <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-3">Value (Text)</label>
-          <input 
-            type="text" 
-            value={newValue}
-            onChange={e => setNewValue(e.target.value)}
-            className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 outline-none focus:border-[#421319]"
-          />
-        </div>
-        <button 
-          onClick={() => {
-            if(newKey && newValue) {
-              handleSaveContent(newKey, newValue);
-              setNewKey('');
-              setNewValue('');
-            }
-          }}
-          className="bg-[#421319] text-[#f5f2e9] px-6 py-3 rounded-lg text-sm font-bold hover:bg-[#250f12] transition h-full w-full md:w-auto"
-        >
-          + Add Text
-        </button>
-      </div>
+
 
       <div className="grid gap-6">
         {blocksToRender.map((blockDef) => {
