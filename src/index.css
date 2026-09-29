@@ -79,8 +79,12 @@ button, a { -webkit-tap-highlight-color: transparent; cursor: pointer; }
 ::selection { background: hsl(var(--accent) / .35); color: hsl(var(--foreground)); }
 
 /* ─── Typography ─── */
-.font-display { font-family: var(--app-font-serif); }
-.font-mono { font-family: var(--app-font-mono); }
+.font-display { font-family: var(--app-font-serif) !important; }
+.font-mono    { font-family: var(--app-font-mono)  !important; }
+/* Explicit named aliases — use these in hero to avoid Tailwind conflicts */
+.font-poppins { font-family: var(--app-font-sans)  !important; }
+.font-times   { font-family: var(--app-font-serif)  !important; }
+.font-soligant{ font-family: var(--app-font-mono)   !important; }
 .eyebrow {
   font-family: var(--app-font-mono);
   color: hsl(var(--accent));

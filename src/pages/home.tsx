@@ -78,30 +78,30 @@ export default function Home() {
               <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
                 Homes worth coming home to
               </p>
-              <h1 className="text-[clamp(3rem,9vw,6.5rem)] leading-[1.05] tracking-[-0.01em] text-[#f5f2e9]">
-                {/* Invest With — Poppins Sans, bold, crisp */}
+              <h1 className="text-[clamp(3rem,9vw,6.5rem)] leading-[1.05] text-[#f5f2e9]">
+                {/* Invest With — Poppins (sans-serif), bold */}
                 {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
-                  <span className="block font-sans font-bold tracking-[-0.03em]">
+                  <span className="block font-poppins font-bold tracking-[-0.03em]">
                     {content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}
                   </span>
                 )}
-                {/* Trust — Times Serif italic, elegant contrast */}
+                {/* Trust — Times New Roman, italic */}
                 {(content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust') && (
-                  <span className="block font-display italic font-normal tracking-[0em]">
+                  <span className="block font-times italic font-normal tracking-[0em]">
                     {content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}
                   </span>
                 )}
-                {/* Grow With — Soligant decorative, muted opacity */}
+                {/* Grow With — Soligant decorative, muted */}
                 {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') ||
                   (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && (
-                  <span className="block font-mono font-normal text-[#f5f2e9]/50 tracking-[0.01em]">
+                  <span className="block font-soligant font-normal text-[#f5f2e9]/50 tracking-[0.02em]">
                     {content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}{' '}
                     {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}
                   </span>
                 )}
-                {/* Community — Poppins Sans, bold, white, strong close */}
+                {/* Community — Poppins bold, strong close */}
                 {(content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community') && (
-                  <span className="block font-sans font-bold tracking-[-0.03em]">
+                  <span className="block font-poppins font-bold tracking-[-0.03em]">
                     {content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}
                   </span>
                 )}
