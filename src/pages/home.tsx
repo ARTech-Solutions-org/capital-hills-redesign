@@ -168,7 +168,7 @@ export default function Home() {
                     { n: '04', title: 'People at the Heart', copy: 'A collaborative team committed to making a meaningful impact.' }
                   ];
                   return items;
-                })().map(({ n, title, copy }, index) => (
+                })().map(({ n, title, copy }: { n: string; title: string; copy: string }, index: number) => (
                   <StaggerItem key={n || index} className="flex items-start gap-5 py-5">
                     <span className="shrink-0 font-mono text-[10px] tracking-[.2em] text-[#421319]/50 pt-1">{n || String(index + 1).padStart(2, '0')}</span>
                     <div>
@@ -210,7 +210,7 @@ export default function Home() {
               </div>
               {/* Dots */}
               <div className="mt-8 flex items-center justify-center gap-2">
-                {activeReviews.map((_, i) => (
+                {activeReviews.map((_: unknown, i: number) => (
                   <button
                     key={i}
                     onClick={() => { setReview(i); setAutoPlay(false); }}
@@ -382,7 +382,7 @@ export default function Home() {
                         { num: '100B+', label: 'EGP investments' }
                       ];
                       return items;
-                    })().map(({ num, label }) => (
+                    })().map(({ num, label }: { num: string; label: string }) => (
                       <div key={label}>
                         <p className="font-display text-3xl text-[#947e82]">{num}</p>
                         <p className="mt-1 font-mono text-[9px] uppercase tracking-widest text-[#f5f2e9]/40">{label}</p>
