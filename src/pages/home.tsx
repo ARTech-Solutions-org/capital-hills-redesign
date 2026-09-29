@@ -78,8 +78,8 @@ export default function Home() {
               <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
                 Homes worth coming home to
               </p>
-              <h1 className="text-[clamp(3rem,9vw,6.5rem)] leading-[1.05] text-[#f5f2e9]">
-                {/* Invest With — Poppins bold */}
+              <h1 className="text-[clamp(3.2rem,8.5vw,6.5rem)] leading-[1.05] text-[#f5f2e9]">
+                {/* Line 1: Invest With — Poppins bold */}
                 {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
                   <span
                     className="block font-bold tracking-[-0.03em]"
@@ -88,27 +88,35 @@ export default function Home() {
                     {content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}
                   </span>
                 )}
-                {/* Trust — Times New Roman italic */}
+                {/* Line 2: Trust — Poppins bold */}
                 {(content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust') && (
                   <span
-                    className="block font-normal italic tracking-[0]"
-                    style={{ fontFamily: "'Times New Roman Custom', 'Times New Roman', serif" }}
+                    className="block font-bold tracking-[-0.03em]"
+                    style={{ fontFamily: "'Poppins', sans-serif" }}
                   >
                     {content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}
                   </span>
                 )}
-                {/* Grow With — Soligant decorative, muted */}
+                {/* Line 3: Grow With — Luxury Serif, Italic, Transparent */}
                 {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') ||
                   (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && (
                   <span
-                    className="block font-normal text-[#f5f2e9]/50 tracking-[0.02em]"
-                    style={{ fontFamily: "'Soligant', cursive" }}
+                    className="block tracking-[0.01em]"
+                    style={{
+                      opacity: 0.55,
+                      color: '#f5f2e9',
+                      fontFamily: "'Times New Roman Custom', 'Times New Roman', serif",
+                      fontStyle: 'italic',
+                      fontWeight: 400,
+                    }}
                   >
-                    {content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}{' '}
+                    {content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}
+                    {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') &&
+                      (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) ? ' ' : ''}
                     {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}
                   </span>
                 )}
-                {/* Community — Poppins bold */}
+                {/* Line 4: Community — Poppins bold */}
                 {(content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community') && (
                   <span
                     className="block font-bold tracking-[-0.03em]"
