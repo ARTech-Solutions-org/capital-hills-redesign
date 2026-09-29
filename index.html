@@ -20,9 +20,14 @@
     <meta name="twitter:image" content="/capital-hills-logo-full-maroon.png" />
     <link rel="icon" type="image/png" href="/capital-hills-icon-light.png" />
     <link rel="apple-touch-icon" href="/capital-hills-icon-light.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Preload custom fonts to prevent FOUT (flash of unstyled text) -->
+    <link rel="preload" href="/fonts/Poppins-Regular.ttf"  as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Poppins-Medium.ttf"   as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Poppins-SemiBold.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Poppins-Bold.ttf"     as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/times.ttf"            as="font" type="font/ttf" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/Soligant.otf"         as="font" type="font/opentype" crossorigin="anonymous" />
   </head>
   <body>
     <div id="root"></div>
