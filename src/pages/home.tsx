@@ -80,20 +80,20 @@ export default function Home() {
               </p>
               <h1 className="text-[clamp(3.2rem,8vw,7rem)] leading-[0.85] tracking-tight text-[#f5f2e9]">
                 {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
-                  <><span className="font-sans font-medium">{content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}</span><br /></>
+                  <><span className="font-display font-semibold">{content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}</span><br /></>
                 )}
                 {(content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust') && (
-                  <><span className="font-sans font-medium">{content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}</span><br /></>
+                  <><span className="font-display italic">{content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}</span><br /></>
                 )}
                 {(content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') && (
-                  <span className="font-display italic text-[#947e82]">{content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}</span>
+                  <span className="font-display text-[#947e82]">{content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}</span>
                 )}
                 {(content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With') && (
-                  <span className="font-display text-[#947e82]">{content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}</span>
+                  <span className="font-display text-[#947e82]"> {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}</span>
                 )}
                 {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') || (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && <br />}
                 {(content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community') && (
-                  <span className="font-display">{content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}</span>
+                  <span className="font-display font-semibold">{content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}</span>
                 )}
               </h1>
               {(content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.') && (
