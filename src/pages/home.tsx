@@ -78,36 +78,22 @@ export default function Home() {
               <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
                 Homes worth coming home to
               </p>
-              <h1 className="font-display text-[clamp(3rem,9vw,6.5rem)] leading-[0.92] tracking-[-0.01em] text-[#f5f2e9]">
-                {/* Line 1: Invest With — bold serif, white */}
+              <h1 className="font-display font-semibold text-[clamp(3rem,9vw,6.5rem)] leading-[1.05] tracking-[-0.02em] text-[#f5f2e9]">
                 {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
-                  <span className="block font-semibold">
-                    {content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}
-                  </span>
+                  <span className="block">{content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}</span>
                 )}
-                {/* Line 2: Trust — bold serif, white, NOT italic */}
                 {(content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust') && (
-                  <span className="block font-semibold">
-                    {content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}
-                  </span>
+                  <span className="block">{content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}</span>
                 )}
-                {/* Line 3: Grow (italic) + With (non-italic) — muted colour, no gap */}
                 {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') ||
                   (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && (
-                  <span className="block text-[#c9b8bb]">
-                    {(content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') && (
-                      <span className="italic">{content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}</span>
-                    )}
-                    {(content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With') && (
-                      <span className="not-italic"> {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}</span>
-                    )}
+                  <span className="block">
+                    {content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}{' '}
+                    {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}
                   </span>
                 )}
-                {/* Line 4: Community — bold serif, white */}
                 {(content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community') && (
-                  <span className="block font-semibold">
-                    {content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}
-                  </span>
+                  <span className="block">{content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}</span>
                 )}
               </h1>
               {(content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.') && (
