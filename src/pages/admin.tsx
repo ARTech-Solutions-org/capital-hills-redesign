@@ -179,9 +179,11 @@ export default function Admin() {
 
   const KNOWN_KEYS: Record<string, { id: string, label: string, group?: string }[]> = {
     home: [
-      { id: 'hero_title', label: 'Hero Title 1', group: 'Hero' },
-      { id: 'hero_title_2', label: 'Hero Title 2 (Italic)', group: 'Hero' },
-      { id: 'hero_title_3', label: 'Hero Title 3 (Mono)', group: 'Hero' },
+      { id: 'hero_title', label: 'Hero Slogan Line 1 (Invest With)', group: 'Hero' },
+      { id: 'hero_title_2', label: 'Hero Slogan Line 2 (Trust)', group: 'Hero' },
+      { id: 'hero_title_3', label: 'Hero Slogan Line 3 - Italic Part (Grow)', group: 'Hero' },
+      { id: 'hero_title_4', label: 'Hero Slogan Line 3 - Regular Part (With)', group: 'Hero' },
+      { id: 'hero_title_5', label: 'Hero Slogan Line 4 (Community)', group: 'Hero' },
       { id: 'hero_subtitle', label: 'Hero Subtitle', group: 'Hero' },
       { id: 'home_hero_bg', label: 'Hero Background Image', group: 'Hero' },
       { id: 'home_cta_bg', label: 'CTA Section Background Image', group: 'CTA' },
