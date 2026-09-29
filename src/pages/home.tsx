@@ -78,7 +78,7 @@ export default function Home() {
               <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
                 Homes worth coming home to
               </p>
-              <h1 className="font-display font-semibold text-[clamp(3rem,9vw,6.5rem)] leading-[1.05] tracking-[-0.02em] text-[#f5f2e9]">
+              <h1 className="font-display font-medium text-[clamp(3rem,9vw,6.5rem)] leading-[1.05] tracking-[-0.02em] text-[#f5f2e9]">
                 {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
                   <span className="block">{content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}</span>
                 )}
@@ -87,7 +87,7 @@ export default function Home() {
                 )}
                 {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') ||
                   (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && (
-                  <span className="block">
+                  <span className="block text-[#f5f2e9]/50">
                     {content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}{' '}
                     {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}
                   </span>
