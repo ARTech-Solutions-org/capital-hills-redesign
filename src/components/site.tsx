@@ -11,16 +11,16 @@ import { useData } from '@/context/DataContext';
 
 export function useContactInfo() {
   const { content } = useData();
-  const phone = content['contact_phone'] || '16794';
+  const phone = (content.hasOwnProperty('contact_phone') ? content['contact_phone'] : '16794');
   return {
     phone,
     tel: `tel:${phone}`,
-    whatsapp: content['contact_whatsapp'] || 'https://wa.me/201005550190?text=Hello%20Capital%20Hills',
+    whatsapp: (content.hasOwnProperty('contact_whatsapp') ? content['contact_whatsapp'] : 'https://wa.me/201005550190?text=Hello%20Capital%20Hills'),
     email: content['contact_email'] ? `mailto:${content['contact_email']}` : 'mailto:hello@capitalhillsdevelopments.eg',
     sms: `sms:${phone}`,
-    address: content['contact_address'] || 'HQ: Galleria 40, Zayed | Downtown, New Cairo\nSales & Customer Service: Arkan Plaza, Zayed',
-    facebook: content['global_facebook_url'] || '#',
-    instagram: content['global_instagram_url'] || '#'
+    address: (content.hasOwnProperty('contact_address') ? content['contact_address'] : 'HQ: Galleria 40, Zayed | Downtown, New Cairo\nSales & Customer Service: Arkan Plaza, Zayed'),
+    facebook: (content.hasOwnProperty('global_facebook_url') ? content['global_facebook_url'] : '#'),
+    instagram: (content.hasOwnProperty('global_instagram_url') ? content['global_instagram_url'] : '#')
   };
 }
 
@@ -103,11 +103,11 @@ export function Logo({
 }) {
   const { content } = useData();
   const fullSrc = light
-    ? content['global_logo_full_light'] || '/capital-hills-logo-full-light.png'
-    : content['global_logo_full_maroon'] || '/capital-hills-logo-full-maroon.png';
+    ? (content.hasOwnProperty('global_logo_full_light') ? content['global_logo_full_light'] : '/capital-hills-logo-full-light.png')
+    : (content.hasOwnProperty('global_logo_full_maroon') ? content['global_logo_full_maroon'] : '/capital-hills-logo-full-maroon.png');
   const iconSrc = light
-    ? content['global_logo_icon_light'] || '/capital-hills-icon-light.png'
-    : content['global_logo_icon_maroon'] || '/capital-hills-icon-maroon.png';
+    ? (content.hasOwnProperty('global_logo_icon_light') ? content['global_logo_icon_light'] : '/capital-hills-icon-light.png')
+    : (content.hasOwnProperty('global_logo_icon_maroon') ? content['global_logo_icon_maroon'] : '/capital-hills-icon-maroon.png');
 
   const src = variant === 'icon' ? iconSrc : fullSrc;
   const defaultClass =
@@ -184,7 +184,7 @@ export function Header() {
             }`}
             data-testid="link-header-call"
           >
-            <Phone size={13} /> {content['global_header_talk'] || 'Talk to us'}
+            <Phone size={13} /> {(content.hasOwnProperty('global_header_talk') ? content['global_header_talk'] : 'Talk to us')}
           </a>
           <button
             onClick={() => setOpen(!open)}
@@ -231,7 +231,7 @@ export function Header() {
 export function Footer() {
   const contact = useContactInfo();
   const { content } = useData();
-  const footerText = content['global_footer_text'] || "Building communities that inspire. From prime commercial spaces to elegant residential developments, we deliver quality, trust, and lasting value.";
+  const footerText = (content.hasOwnProperty('global_footer_text') ? content['global_footer_text'] : "Building communities that inspire. From prime commercial spaces to elegant residential developments, we deliver quality, trust, and lasting value.");
   return (
     <footer className="bg-[#421319] pb-24 pt-16 text-[#f5f2e9] md:pb-12">
       <div className="container-shell grid gap-12 md:grid-cols-[1.4fr_.8fr_.8fr_1.2fr]">
@@ -250,7 +250,7 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_explore'] || 'Explore'}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_explore') ? content['global_footer_explore'] : 'Explore')}</p>
           <div className="space-y-3 text-sm text-[#947e82]">
             <Link href="/projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">Our projects</Link>
             <Link href="/about-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">About Capital Hills</Link>
@@ -258,22 +258,22 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_visit'] || 'Visit'}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_visit') ? content['global_footer_visit'] : 'Visit')}</p>
           <div className="space-y-4 text-sm leading-5 text-[#947e82]">
             <div className="whitespace-pre-line leading-relaxed">{contact.address}</div>
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_need'] || 'Need a second opinion?'}</p>
-          <p className="text-sm leading-6 text-[#947e82]">{content['global_footer_need_desc'] || 'Tell us what you are looking for. A real person will call with a clear answer.'}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_need') ? content['global_footer_need'] : 'Need a second opinion?')}</p>
+          <p className="text-sm leading-6 text-[#947e82]">{(content.hasOwnProperty('global_footer_need_desc') ? content['global_footer_need_desc'] : 'Tell us what you are looking for. A real person will call with a clear answer.')}</p>
           <a href={contact.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f5f2e9] px-5 py-3 text-sm font-bold text-[#231f20] transition-colors hover:bg-white" data-testid="link-footer-phone">
             <Phone size={14} /> <PhoneNumber />
           </a>
         </div>
       </div>
       <div className="container-shell mt-16 flex flex-col items-center justify-between border-t border-[#493337] pt-6 text-xs text-[#947e82] md:flex-row">
-        <p>{content['global_footer_copy'] || '© 2026 Capital Hills Developments'}</p>
-        <p className="mt-2 md:mt-0">{content['global_footer_slogan'] || 'Built for better decisions.'}</p>
+        <p>{(content.hasOwnProperty('global_footer_copy') ? content['global_footer_copy'] : '© 2026 Capital Hills Developments')}</p>
+        <p className="mt-2 md:mt-0">{(content.hasOwnProperty('global_footer_slogan') ? content['global_footer_slogan'] : 'Built for better decisions.')}</p>
       </div>
     </footer>
   );

@@ -57,7 +57,7 @@ export default function Home() {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <img
-              src={content['home_hero_bg'] || "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000"}
+              src={(content.hasOwnProperty('home_hero_bg') ? content['home_hero_bg'] : "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000")}
               alt="Capital Hills Building"
               className="h-full w-full object-cover opacity-60 mix-blend-luminosity"
             />
@@ -79,13 +79,28 @@ export default function Home() {
                 Homes worth coming home to
               </p>
               <h1 className="text-[clamp(3.2rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f5f2e9]">
-                <span className="font-sans font-semibold">{content['hero_title'] || 'A clearer path'}</span><br />
-                <span className="font-display italic text-[#947e82]">{content['hero_title_2'] || 'to '}</span>
-                <span className="font-mono">{content['hero_title_3'] || 'your place.'}</span>
+                {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
+                  <><span className="font-sans font-semibold">{content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}</span><br /></>
+                )}
+                {(content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust') && (
+                  <><span className="font-sans font-semibold">{content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}</span><br /></>
+                )}
+                {(content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') && (
+                  <span className="font-display italic text-[#947e82]">{content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}</span>
+                )}
+                {(content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With') && (
+                  <span className="font-display text-[#947e82]"> {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}</span>
+                )}
+                {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') || (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && <br />}
+                {(content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community') && (
+                  <span className="font-display">{content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}</span>
+                )}
               </h1>
-              <p className="mt-8 max-w-md text-base leading-7 text-[#f5f2e9]/70 font-sans">
-                {content['hero_subtitle'] || 'Thoughtfully planned communities. A better tomorrow.'}
-              </p>
+              {(content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.') && (
+                <p className="mt-8 max-w-md text-base leading-7 text-[#f5f2e9]/70 font-sans">
+                  {content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.'}
+                </p>
+              )}
 
 
             </FadeIn>
@@ -111,10 +126,10 @@ export default function Home() {
           <div className="container-shell">
             <StaggerContainer className="grid grid-cols-2 gap-8 md:grid-cols-4">
               {[
-                { value: parseInt(content['stat_1_val']) || 18, suffix: content['stat_1_suf'] || '', label: content['stat_1_lbl'] || 'Key projects delivered' },
-                { value: parseInt(content['stat_2_val'] as any) || 4, suffix: content['stat_2_suf'] || '', label: content['stat_2_lbl'] || 'Prime Egyptian cities' },
-                { value: parseInt(content['stat_3_val'] as any) || 2017, suffix: content['stat_3_suf'] || '', label: content['stat_3_lbl'] || 'Year established' },
-                { value: parseInt(content['stat_4_val'] as any) || 15, suffix: content['stat_4_suf'] || ' yrs', label: content['stat_4_lbl'] || 'Max instalment plan' },
+                { value: parseInt(content['stat_1_val']) || 18, suffix: (content.hasOwnProperty('stat_1_suf') ? content['stat_1_suf'] : ''), label: (content.hasOwnProperty('stat_1_lbl') ? content['stat_1_lbl'] : 'Key projects delivered') },
+                { value: parseInt(content['stat_2_val'] as any) || 4, suffix: (content.hasOwnProperty('stat_2_suf') ? content['stat_2_suf'] : ''), label: (content.hasOwnProperty('stat_2_lbl') ? content['stat_2_lbl'] : 'Prime Egyptian cities') },
+                { value: parseInt(content['stat_3_val'] as any) || 2017, suffix: (content.hasOwnProperty('stat_3_suf') ? content['stat_3_suf'] : ''), label: (content.hasOwnProperty('stat_3_lbl') ? content['stat_3_lbl'] : 'Year established') },
+                { value: parseInt(content['stat_4_val'] as any) || 15, suffix: (content.hasOwnProperty('stat_4_suf') ? content['stat_4_suf'] : ' yrs'), label: (content.hasOwnProperty('stat_4_lbl') ? content['stat_4_lbl'] : 'Max instalment plan') },
               ].map(({ value, suffix, label }) => (
                 <StaggerItem key={label} className="border-l border-[#f5f2e9]/15 pl-6 first:border-0 first:pl-0 md:first:border-l md:first:pl-6">
                   <CountUp target={value} suffix={suffix} className="font-display text-4xl text-[#f5f2e9] md:text-5xl" />
@@ -130,12 +145,12 @@ export default function Home() {
           <div className="container-shell mb-12">
             <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-center">
               <FadeIn>
-                <p className="eyebrow">{content['home_why_eyebrow'] || 'Why Capital Hills'}</p>
+                <p className="eyebrow">{(content.hasOwnProperty('home_why_eyebrow') ? content['home_why_eyebrow'] : 'Why Capital Hills')}</p>
                 <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
-                  {content['home_why_title_1'] || 'Invest With'}<br /><span className="italic">{content['home_why_title_2'] || 'Trust.'}</span>
+                  {(content.hasOwnProperty('home_why_title_1') ? content['home_why_title_1'] : 'Invest With')}<br /><span className="italic">{(content.hasOwnProperty('home_why_title_2') ? content['home_why_title_2'] : 'Trust.')}</span>
                 </h2>
                 <p className="mt-5 max-w-sm text-sm leading-7 text-[#493337]">
-                  {content['home_why_desc'] || 'We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.'}
+                  {(content.hasOwnProperty('home_why_desc') ? content['home_why_desc'] : 'We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.')}
                 </p>
                 <Link href="/about-us" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#421319]" data-testid="link-home-why-us">
                   Learn more about us <ArrowRight size={15} />
@@ -251,7 +266,7 @@ export default function Home() {
           {/* Left: image */}
           <div className="relative min-h-[260px] overflow-hidden">
             <img
-              src={content['home_cta_bg'] || "https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg?auto=compress&cs=tinysrgb&w=1000"}
+              src={(content.hasOwnProperty('home_cta_bg') ? content['home_cta_bg'] : "https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg?auto=compress&cs=tinysrgb&w=1000")}
               alt="Capital Hills home"
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -260,12 +275,12 @@ export default function Home() {
           {/* Right: CTA */}
           <div className="flex flex-col justify-center bg-[#947e82] px-8 py-16 md:px-16">
             <FadeIn>
-              <p className="eyebrow">{content['home_cta_eyebrow'] || 'One good conversation'}</p>
+              <p className="eyebrow">{(content.hasOwnProperty('home_cta_eyebrow') ? content['home_cta_eyebrow'] : 'One good conversation')}</p>
               <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
-                {content['home_cta_title'] || "Let's find the place that makes sense for you."}
+                {(content.hasOwnProperty('home_cta_title') ? content['home_cta_title'] : "Let's find the place that makes sense for you.")}
               </h2>
               <p className="mt-5 max-w-sm text-sm leading-6 text-[#493337]">
-                {content['home_cta_desc'] || 'Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.'}
+                {(content.hasOwnProperty('home_cta_desc') ? content['home_cta_desc'] : 'Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.')}
               </p>
               <Link
                 href="/contact"
@@ -310,7 +325,7 @@ export default function Home() {
                   {/* Photo */}
                   <div className="relative overflow-hidden rounded-xl aspect-[3/4]">
                     <img
-                      src={content['home_chairman_img'] || "/chairman.png"}
+                      src={(content.hasOwnProperty('home_chairman_img') ? content['home_chairman_img'] : "/chairman.png")}
                       alt="Eng. Mohamed Salah Abdel Qader â€” Chairman"
                       className="absolute inset-0 h-full w-full object-cover object-top"
                     />
@@ -318,8 +333,8 @@ export default function Home() {
                     <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#421319]/60 to-transparent" />
                     {/* Name badge pinned bottom */}
                     <div className="absolute bottom-0 inset-x-0 p-6">
-                      <p className="font-display text-2xl text-[#f5f2e9] leading-tight">{content['chairman_name_1'] || 'Eng. Mohamed Salah'}<br />{content['chairman_name_2'] || 'Abdel Qader'}</p>
-                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">{content['chairman_title'] || 'Chairman â€” Capital Hills Developments'}</p>
+                      <p className="font-display text-2xl text-[#f5f2e9] leading-tight">{(content.hasOwnProperty('chairman_name_1') ? content['chairman_name_1'] : 'Eng. Mohamed Salah')}<br />{(content.hasOwnProperty('chairman_name_2') ? content['chairman_name_2'] : 'Abdel Qader')}</p>
+                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">{(content.hasOwnProperty('chairman_title') ? content['chairman_title'] : 'Chairman â€” Capital Hills Developments')}</p>
                     </div>
                   </div>
                 </div>
@@ -332,7 +347,7 @@ export default function Home() {
                   <div className="relative">
                     <span aria-hidden="true" className="absolute -top-6 -left-2 font-display text-[120px] leading-none text-[#947e82]/20 select-none">"</span>
                     <p className="relative font-display text-3xl md:text-4xl leading-[1.2] text-[#f5f2e9] tracking-tight pt-4">
-                      {content['chairman_quote'] || 'Trust is more than a promise. It is the foundation of everything we build.'}
+                      {(content.hasOwnProperty('chairman_quote') ? content['chairman_quote'] : 'Trust is more than a promise. It is the foundation of everything we build.')}
                     </p>
                   </div>
                 </FadeIn>
@@ -348,10 +363,10 @@ export default function Home() {
                 {/* Body paragraphs */}
                 <FadeIn delay={0.3}>
                   <div className="space-y-5 text-[15px] leading-8 text-[#f5f2e9]/65 font-sans">
-                    <p>{content['chairman_p1'] || 'At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.'}</p>
-                    <p>{content['chairman_p2'] || "For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs â€” combining thoughtful planning, quality, and strategic locations with a long-term perspective."}</p>
-                    <p>{content['chairman_p3'] || 'We recognize that every project represents an important decision for our customers â€” whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.'}</p>
-                    <p>{content['chairman_p4'] || 'As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.'}</p>
+                    <p>{(content.hasOwnProperty('chairman_p1') ? content['chairman_p1'] : 'At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.')}</p>
+                    <p>{(content.hasOwnProperty('chairman_p2') ? content['chairman_p2'] : "For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs â€” combining thoughtful planning, quality, and strategic locations with a long-term perspective.")}</p>
+                    <p>{(content.hasOwnProperty('chairman_p3') ? content['chairman_p3'] : 'We recognize that every project represents an important decision for our customers â€” whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.')}</p>
+                    <p>{(content.hasOwnProperty('chairman_p4') ? content['chairman_p4'] : 'As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.')}</p>
                   </div>
                 </FadeIn>
 
