@@ -21,7 +21,7 @@ async function seedContent() {
           set: { value: block.value }
         });
       console.log(`Upserted ${block.id}`);
-    } catch (e) {
+    } catch (e: any) {
       console.log(`Failed to upsert ${block.id}: ${e.message}`);
     }
   }

@@ -22,7 +22,7 @@ async function run() {
         extraDetails: project.extraDetails || null
       });
       console.log(`Inserted ${project.name}`);
-    } catch (e) {
+    } catch (e: any) {
       console.log(`Skipped ${project.name} or error occurred: ${e.message}`);
     }
   }
