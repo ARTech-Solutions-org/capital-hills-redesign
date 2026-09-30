@@ -160,6 +160,25 @@ button, a { -webkit-tap-highlight-color: transparent; cursor: pointer; }
 .fade-up { animation: fadeUp .55s cubic-bezier(.22,.7,.25,1) both; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
+/* ─── Hero Orbit Animations ─── */
+@keyframes spinClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCounterClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
 /* ─── Motion ─── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

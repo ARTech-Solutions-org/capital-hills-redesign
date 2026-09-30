@@ -1,4 +1,5 @@
 export type Project = {
+  id?: number;
   slug: string;
   name: string;
   location: string;
@@ -9,9 +10,19 @@ export type Project = {
   product: string;
   finishing?: string;
   delivery?: string;
-  extraDetails?: Record<string, string>;
+  extraDetails?: Record<string, any>;
   gallery: string[];
   description?: string;
+  featured?: boolean;
+  logo?: string;
+  showInHero?: boolean;
+  orbitRing?: number;
+  orbitPosition?: number;
+  orbitSpeed?: string;
+  orbitDirection?: string;
+  orbitOpacity?: string | number;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export const projects: Project[] = [
@@ -26,6 +37,13 @@ export const projects: Project[] = [
     product: 'Mixed Use (Commercial – Administrative – Medical)',
     finishing: 'COMMERCIAL: Core & Shell, ADMINISTRATIVE: Fully Finished, MEDICAL: Fully Finished',
     delivery: 'Handover started June 2025',
+    logo: '/project-logos/park-yard-1.png',
+    showInHero: true,
+    orbitRing: 2,
+    orbitPosition: 90,
+    orbitSpeed: 'normal',
+    orbitDirection: 'clockwise',
+    orbitOpacity: '0.85',
     extraDetails: {
       'Facility Management': 'Proudly managed by Amazon Buildings, renowned for their excellence in property management, high standards, responsive service and state-of-the-art operational efficiency.'
     },
@@ -40,6 +58,13 @@ export const projects: Project[] = [
     construction: '30% COMPLETE – G+9, 4 LEVELS BASEMENT',
     product: 'MIXED USE (COMMERCIAL – ADMIN – MEDICAL)',
     finishing: 'COMMERCIAL (CORE & SHELL), ADMIN & CLINICS (FULLY FINISHED + ACS)',
+    logo: '/project-logos/point-9.png',
+    showInHero: true,
+    orbitRing: 3,
+    orbitPosition: 45,
+    orbitSpeed: 'slow',
+    orbitDirection: 'counter-clockwise',
+    orbitOpacity: '0.85',
     gallery: ['/projects/point-9.jpg'],
   },
   {
@@ -52,6 +77,13 @@ export const projects: Project[] = [
     product: 'Mixed Use (Commercial – Admin – Medical)',
     finishing: 'Commercial (Core & Shell), Admin & Clinics (Fully Finished + ACs)',
     delivery: '4 YEARS',
+    logo: '/project-logos/point-11.png',
+    showInHero: true,
+    orbitRing: 3,
+    orbitPosition: 135,
+    orbitSpeed: 'slow',
+    orbitDirection: 'counter-clockwise',
+    orbitOpacity: '0.80',
     gallery: ['/projects/point-11.jpg'],
   },
   {
@@ -64,6 +96,13 @@ export const projects: Project[] = [
     product: 'Mixed Use (Commercial – Admin SOLD OUT – Clinics)',
     finishing: 'Commercial (Core & Shell), Admin (Fully Finished + ACs)',
     delivery: '3 YEARS',
+    logo: '/project-logos/win-plaza.png',
+    showInHero: true,
+    orbitRing: 2,
+    orbitPosition: 180,
+    orbitSpeed: 'normal',
+    orbitDirection: 'clockwise',
+    orbitOpacity: '0.90',
     gallery: ['/projects/win-plaza.jpg'],
   },
   {
@@ -75,6 +114,13 @@ export const projects: Project[] = [
     builtUpArea: '18% Of total land (to maximize green spaces and community facilities)',
     construction: '18 Residential Buildings',
     product: 'Residential',
+    logo: '/project-logos/la-colina-west.png',
+    showInHero: true,
+    orbitRing: 1,
+    orbitPosition: 210,
+    orbitSpeed: 'slow',
+    orbitDirection: 'counter-clockwise',
+    orbitOpacity: '0.90',
     extraDetails: {
       'Ground': 'Banks + car showroom + 2 pharmacies + food and beverage + retail shops + plaza 14,400m',
       'Apartments': '1, 2 & 3 Bedrooms (100 SQM – 242 SQM)',
@@ -92,6 +138,13 @@ export const projects: Project[] = [
     product: 'MIXED USE (HOTEL – COMMERCIAL – ADMIN – MEDICAL)',
     finishing: 'COMMERCIAL (CORE & SHELL), ADMIN & CLINICS (FULLY FINISHED + ACS)',
     delivery: '4 YEARS',
+    logo: '/project-logos/park-point.png',
+    showInHero: true,
+    orbitRing: 3,
+    orbitPosition: 225,
+    orbitSpeed: 'slow',
+    orbitDirection: 'counter-clockwise',
+    orbitOpacity: '0.85',
     gallery: ['/projects/parkpoint.png'],
   },
   {
@@ -101,12 +154,19 @@ export const projects: Project[] = [
     city: '6th of October',
     projectSpace: '24,000 SQM',
     product: 'Mixed Use',
+    logo: '/project-logos/park-yard-2.png',
+    showInHero: true,
+    orbitRing: 2,
+    orbitPosition: 270,
+    orbitSpeed: 'normal',
+    orbitDirection: 'clockwise',
+    orbitOpacity: '0.80',
     extraDetails: {
       'Basement': 'Underground parking',
       'Ground': 'Banks + car showroom + 2 pharmacies + food and beverage + retail shops + plaza 14,400m',
       'First': 'Food court + cinema + gaming zone + retail shops',
       'Second': 'Admin',
-      'Third': 'Medical',
+      'Third': 'Medical'
     },
     gallery: ['/projects/parkyard-2.jpg'],
   },
@@ -120,6 +180,13 @@ export const projects: Project[] = [
     product: 'Town Houses – Twin Houses – Standalones – Elite Apartments',
     finishing: 'Core & Shell',
     delivery: '4 Years',
+    logo: '/project-logos/capital-green.png',
+    showInHero: false,
+    orbitRing: 3,
+    orbitPosition: 180,
+    orbitSpeed: 'slow',
+    orbitDirection: 'counter-clockwise',
+    orbitOpacity: '0.70',
     gallery: ['/projects/capitalgreen.jpg'],
   },
   {
@@ -132,6 +199,13 @@ export const projects: Project[] = [
     product: 'Mixed Use (Commercial – Admin)',
     finishing: 'Commercial (Core & Shell), Admin (Fully Finished + ACs)',
     delivery: '3 Years',
+    logo: '/project-logos/east-point.png',
+    showInHero: true,
+    orbitRing: 3,
+    orbitPosition: 315,
+    orbitSpeed: 'slow',
+    orbitDirection: 'counter-clockwise',
+    orbitOpacity: '0.75',
     gallery: ['/projects/eastpoint.jpg'],
   },
   {
@@ -141,6 +215,13 @@ export const projects: Project[] = [
     city: 'New Cairo',
     projectSpace: '~34 ACRES',
     product: 'A mixed residential community offering villas, duplexes, apartments, and studios',
+    logo: '/project-logos/la-colina-east.png',
+    showInHero: true,
+    orbitRing: 1,
+    orbitPosition: 30,
+    orbitSpeed: 'slow',
+    orbitDirection: 'counter-clockwise',
+    orbitOpacity: '0.95',
     extraDetails: {
       'Finishing': 'Most units delivered in semi-finished condition',
       'Design': "Crafted by Hafez Consultants, focusing on modern architecture and a dynamic lifestyle.",
@@ -157,6 +238,13 @@ export const projects: Project[] = [
     builtUpArea: '21,000 SQM',
     construction: '5 Towers — 3 towers (G+6) & 2 towers (G+8)',
     product: 'Mixed-use: Commercial – Administrative – Medical Clinics – Food Court – Gym & Wellness – Cinema – Kids Area – Hypermarket',
+    logo: '/project-logos/capital-towers.png',
+    showInHero: true,
+    orbitRing: 2,
+    orbitPosition: 0,
+    orbitSpeed: 'normal',
+    orbitDirection: 'clockwise',
+    orbitOpacity: '0.95',
     extraDetails: {
       'Facility Management': 'HVAC & Air Conditioning – Firefighting systems – Security & CCTV – Generators',
     },

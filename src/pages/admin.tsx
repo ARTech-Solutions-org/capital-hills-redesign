@@ -3,9 +3,25 @@ import { FadeIn } from '@/components/animations';
 import { PartnersEditor } from '@/components/PartnersEditor';
 import { GenericListEditor } from '@/components/GenericListEditor';
 import { SingleImageEditor } from '@/components/SingleImageEditor';
+import { HeroOrbit } from '@/components/HeroOrbit';
+import { Eye, EyeOff, Sparkles, Image as ImageIcon, Upload, Orbit, Layers, Sliders } from 'lucide-react';
 
 const isDev = typeof window !== 'undefined' && window.location.port === '5173';
 const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
+
+const PRESET_LOGOS = [
+  { label: 'La Colina East', value: '/project-logos/la-colina-east.png' },
+  { label: 'La Colina West', value: '/project-logos/la-colina-west.png' },
+  { label: 'Capital Towers', value: '/project-logos/capital-towers.png' },
+  { label: 'Park Yard 1', value: '/project-logos/park-yard-1.png' },
+  { label: 'Park Yard 2', value: '/project-logos/park-yard-2.png' },
+  { label: 'Win Plaza', value: '/project-logos/win-plaza.png' },
+  { label: 'Point 11', value: '/project-logos/point-11.png' },
+  { label: 'Point 9', value: '/project-logos/point-9.png' },
+  { label: 'Park Point', value: '/project-logos/park-point.png' },
+  { label: 'East Point', value: '/project-logos/east-point.png' },
+  { label: 'Capital Green', value: '/project-logos/capital-green.png' },
+];
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState<'home' | 'aboutus' | 'contact' | 'global' | 'projects' | 'messages'>('home');
@@ -30,6 +46,8 @@ export default function Admin() {
   // For projects
   const [editingProject, setEditingProject] = useState<any | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [showOrbitPreview, setShowOrbitPreview] = useState(true);
   const [uploadedUrl, setUploadedUrl] = useState('');
   const [messages, setMessages] = useState<any[]>([]);
   const unreadCount = messages.filter((m: any) => !m.isRead).length;
@@ -136,6 +154,45 @@ export default function Admin() {
     });
   };
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingLogo(true);
+    try {
+      const file = files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_URL}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      const { publicUrl } = await res.json();
+      setEditingProject((prev: any) => ({ ...prev, logo: publicUrl }));
+    } catch (err) {
+      alert('Logo upload failed');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleQuickToggleHero = async (p: any) => {
+    const nextVal = p.showInHero === false ? true : false;
+    const updated = { ...p, showInHero: nextVal };
+    setProjects(projects.map(proj => proj.id === p.id ? updated : proj));
+    try {
+      const res = await fetch(`${API_URL}/projects/${p.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      if (!res.ok) throw new Error('Failed to update');
+    } catch (e) {
+      alert('Failed to update project status');
+      fetchData();
+    }
+  };
+
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -185,7 +242,7 @@ export default function Admin() {
       { id: 'hero_title_4', label: 'Hero Slogan Line 3 - Regular Part (With)', group: 'Hero' },
       { id: 'hero_title_5', label: 'Hero Slogan Line 4 (Community)', group: 'Hero' },
       { id: 'hero_subtitle', label: 'Hero Subtitle', group: 'Hero' },
-      { id: 'home_hero_bg', label: 'Hero Background Image', group: 'Hero' },
+      { id: 'home_hero_bg', label: 'Hero Background Image (Legacy/Optional - Hero uses architectural burgundy Orbit theme)', group: 'Hero' },
       { id: 'home_cta_bg', label: 'CTA Section Background Image', group: 'CTA' },
       { id: 'home_cta_title', label: 'CTA Title', group: 'CTA' },
       { id: 'home_cta_desc', label: 'CTA Description', group: 'CTA' },
@@ -424,89 +481,468 @@ export default function Admin() {
                 {activeTab === 'global' && renderContentTab(globalBlocks, 'Global Content', 'Edit footer text, header text, and overall site elements.', 'global_', 'global')}
 
                 {activeTab === 'projects' && (
-                  <div>
+                  <div className="space-y-8">
                     {!editingProject ? (
                       <>
-                        <div className="flex items-center justify-between mb-8">
-                          <h2 className="text-2xl font-display text-[#421319]">Manage Projects</h2>
-                          <button 
-                            onClick={() => setEditingProject({ gallery: [], name: '', slug: '', city: '', location: '', product: '' })}
-                            className="bg-[#421319] text-[#f5f2e9] px-6 py-2 rounded-lg text-sm font-bold hover:bg-[#250f12] transition"
-                          >
-                            + New Project
-                          </button>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div>
+                            <h2 className="text-2xl font-display text-[#421319]">Manage Projects & Orbit Hero</h2>
+                            <p className="text-sm text-[#493337] mt-1">Configure project details and control their circular orbital paths on the homepage Hero.</p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => setShowOrbitPreview(!showOrbitPreview)}
+                              className="border border-[#421319]/20 text-[#421319] px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#421319]/5 transition flex items-center gap-2"
+                            >
+                              <Orbit className="w-4 h-4" />
+                              {showOrbitPreview ? 'Hide Orbit Preview' : 'Show Orbit Preview'}
+                            </button>
+                            <button 
+                              onClick={() => setEditingProject({
+                                gallery: [],
+                                name: '',
+                                slug: '',
+                                city: '',
+                                location: '',
+                                product: '',
+                                logo: '',
+                                showInHero: true,
+                                orbitRing: 2,
+                                orbitPosition: 0,
+                                orbitSpeed: 'normal',
+                                orbitDirection: 'clockwise',
+                                orbitOpacity: '0.85',
+                              })}
+                              className="bg-[#421319] text-[#f5f2e9] px-6 py-2 rounded-lg text-sm font-bold hover:bg-[#250f12] transition flex items-center gap-2"
+                            >
+                              + New Project
+                            </button>
+                          </div>
                         </div>
-                        <div className="grid gap-4 mt-6">
-                          {projects.map((p) => (
-                            <div key={p.id} className="bg-white p-4 rounded-xl flex items-center justify-between border border-[#947e82]/10">
-                              <div>
-                                <p className="font-bold text-[#421319]">{p.name}</p>
-                                <p className="text-sm text-[#947e82]">{p.city}</p>
+
+                        {/* ─── LIVE ORBIT HERO PREVIEW CARD ─── */}
+                        {showOrbitPreview && (
+                          <div className="bg-[#1e0b0e] text-[#f5f2e9] rounded-2xl p-6 sm:p-8 shadow-xl border border-[#f5f2e9]/10 relative overflow-hidden">
+                            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                              {/* Left: Interactive Orbit Sculpture */}
+                              <div className="w-full lg:w-1/2 flex flex-col items-center">
+                                <div className="flex items-center justify-between w-full mb-3 px-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span className="text-xs uppercase tracking-widest text-[#f5f2e9]/70 font-mono">Live Orbit Preview</span>
+                                  </div>
+                                  <span className="text-[11px] text-[#f5f2e9]/50 font-mono">
+                                    {projects.filter(p => p.showInHero !== false).length} Active in Hero
+                                  </span>
+                                </div>
+                                <div className="relative w-full max-w-[460px] h-[440px] bg-[#170709] rounded-xl border border-[#f5f2e9]/10 flex items-center justify-center overflow-hidden">
+                                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(66,19,25,0.4)_0%,transparent_75%)] pointer-events-none" />
+                                  <div className="transform scale-[0.88] origin-center">
+                                    <HeroOrbit projects={projects} isPreview={true} />
+                                  </div>
+                                </div>
+                                <p className="text-[11px] text-[#f5f2e9]/50 mt-3 text-center">
+                                  Ring 1 (Inner, 135px) &bull; Ring 2 (Middle, 235px) &bull; Ring 3 (Outer, 335px)
+                                </p>
                               </div>
-                              <div className="flex gap-4">
-                                <button onClick={() => setEditingProject(p)} className="text-sm font-bold text-[#421319] underline">Edit</button>
-                                <button onClick={() => handleDeleteProject(p.id)} className="text-sm font-bold text-red-600 underline">Delete</button>
+
+                              {/* Right: Quick Orbit Control Board */}
+                              <div className="w-full lg:w-1/2 flex flex-col justify-between h-full space-y-4">
+                                <div>
+                                  <h3 className="text-lg font-display text-[#f5f2e9] mb-1">Orbit Hero Roster</h3>
+                                  <p className="text-xs text-[#f5f2e9]/60 leading-relaxed mb-4">
+                                    Toggle which projects appear in the Hero orbit. The public homepage updates immediately.
+                                  </p>
+                                </div>
+
+                                <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1">
+                                  {projects.map((p) => {
+                                    const isActive = p.showInHero !== false;
+                                    const ringNum = Number(p.orbitRing) || 2;
+                                    const angle = Number(p.orbitPosition) || 0;
+                                    return (
+                                      <div
+                                        key={p.id}
+                                        className={`flex items-center justify-between p-3 rounded-lg border transition ${
+                                          isActive
+                                            ? 'bg-[#291014] border-[#f5f2e9]/15 text-[#f5f2e9]'
+                                            : 'bg-[#170709]/60 border-[#f5f2e9]/5 text-[#f5f2e9]/40'
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-3">
+                                          <div className="w-12 h-7 bg-black/40 rounded flex items-center justify-center p-1 border border-[#f5f2e9]/10 overflow-hidden">
+                                            {p.logo ? (
+                                              <img
+                                                src={p.logo}
+                                                alt={p.name}
+                                                className="max-h-full max-w-full object-contain filter invert opacity-90"
+                                              />
+                                            ) : (
+                                              <span className="text-[9px] font-mono opacity-50">NO LOGO</span>
+                                            )}
+                                          </div>
+                                          <div>
+                                            <p className="text-xs font-bold font-sans tracking-wide leading-tight">{p.name}</p>
+                                            <p className="text-[10px] text-[#f5f2e9]/50">
+                                              Ring {ringNum} &bull; {angle}&deg; &bull; {p.orbitSpeed || 'normal'}
+                                            </p>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                          <button
+                                            type="button"
+                                            onClick={() => handleQuickToggleHero(p)}
+                                            className={`px-3 py-1.5 rounded text-[11px] font-bold tracking-wider uppercase transition flex items-center gap-1.5 ${
+                                              isActive
+                                                ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-600/40'
+                                                : 'bg-white/5 text-[#f5f2e9]/40 border border-white/10 hover:bg-white/10'
+                                            }`}
+                                          >
+                                            {isActive ? (
+                                              <>
+                                                <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                                                <span>Active</span>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <EyeOff className="w-3.5 h-3.5 opacity-60" />
+                                                <span>Hidden</span>
+                                              </>
+                                            )}
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => setEditingProject(p)}
+                                            className="px-2.5 py-1.5 text-[11px] font-bold text-[#f5f2e9]/70 hover:text-white hover:bg-white/10 rounded transition"
+                                          >
+                                            Edit
+                                          </button>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             </div>
-                          ))}
+                          </div>
+                        )}
+
+                        {/* ─── ALL PROJECTS LIST ─── */}
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-display text-[#421319]">All Projects ({projects.length})</h3>
+                          <div className="grid gap-3">
+                            {projects.map((p) => {
+                              const isActive = p.showInHero !== false;
+                              return (
+                                <div key={p.id} className="bg-white p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#947e82]/10 shadow-sm hover:border-[#421319]/30 transition">
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-16 h-10 bg-[#200c0f] rounded-lg flex items-center justify-center p-1.5 border border-[#421319]/10 flex-shrink-0">
+                                      {p.logo ? (
+                                        <img src={p.logo} alt={p.name} className="max-h-full max-w-full object-contain filter invert opacity-95" />
+                                      ) : (
+                                        <span className="text-[9px] text-[#f5f2e9]/60 font-mono">NO LOGO</span>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <p className="font-bold text-[#421319] leading-tight flex items-center gap-2">
+                                        <span>{p.name}</span>
+                                        {isActive ? (
+                                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+                                            Hero: Ring {p.orbitRing || 2} ({p.orbitPosition || 0}&deg;)
+                                          </span>
+                                        ) : (
+                                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">
+                                            Hero: Hidden
+                                          </span>
+                                        )}
+                                      </p>
+                                      <p className="text-xs text-[#947e82] mt-0.5">{p.city} &bull; {p.product}</p>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleQuickToggleHero(p)}
+                                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                                        isActive
+                                          ? 'bg-[#421319]/10 text-[#421319] hover:bg-[#421319]/20'
+                                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                      }`}
+                                    >
+                                      {isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                                      <span>{isActive ? 'Hide from Hero' : 'Show in Hero'}</span>
+                                    </button>
+                                    <button onClick={() => setEditingProject(p)} className="text-sm font-bold text-[#421319] px-3 py-1.5 rounded-lg hover:bg-[#421319]/10 transition">
+                                      Edit
+                                    </button>
+                                    <button onClick={() => handleDeleteProject(p.id)} className="text-sm font-bold text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 transition">
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       </>
                     ) : (
+                      /* ─── PROJECT EDIT / CREATE FORM ─── */
                       <div className="bg-white p-8 rounded-xl shadow-sm border border-[#947e82]/10">
                         <div className="flex justify-between items-center mb-6 border-b pb-4">
-                          <h2 className="text-2xl font-display text-[#421319]">{editingProject.id ? 'Edit Project' : 'New Project'}</h2>
+                          <div>
+                            <h2 className="text-2xl font-display text-[#421319]">{editingProject.id ? 'Edit Project' : 'New Project'}</h2>
+                            <p className="text-xs text-[#947e82] mt-0.5">Manage project information, hero orbit behavior, and media.</p>
+                          </div>
                           <button onClick={() => setEditingProject(null)} className="text-sm font-bold text-[#947e82] hover:text-[#421319]">Cancel</button>
                         </div>
 
-                        <form onSubmit={handleSaveProject} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Project Name *</label>
-                            <input required type="text" value={editingProject.name} onChange={e => setEditingProject({...editingProject, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                        <form onSubmit={handleSaveProject} className="space-y-8">
+                          {/* ─── BASIC INFO ─── */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Project Name *</label>
+                              <input required type="text" value={editingProject.name} onChange={e => setEditingProject({...editingProject, name: e.target.value, slug: editingProject.id ? editingProject.slug : e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Slug (URL friendly) *</label>
+                              <input required type="text" value={editingProject.slug} onChange={e => setEditingProject({...editingProject, slug: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">City *</label>
+                              <input required type="text" value={editingProject.city} onChange={e => setEditingProject({...editingProject, city: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Location *</label>
+                              <input required type="text" value={editingProject.location} onChange={e => setEditingProject({...editingProject, location: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Product Type *</label>
+                              <input required type="text" value={editingProject.product} onChange={e => setEditingProject({...editingProject, product: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Project Space</label>
+                              <input type="text" value={editingProject.projectSpace || ''} onChange={e => setEditingProject({...editingProject, projectSpace: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Built Up Area</label>
+                              <input type="text" value={editingProject.builtUpArea || ''} onChange={e => setEditingProject({...editingProject, builtUpArea: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Construction</label>
+                              <input type="text" value={editingProject.construction || ''} onChange={e => setEditingProject({...editingProject, construction: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Finishing</label>
+                              <input type="text" value={editingProject.finishing || ''} onChange={e => setEditingProject({...editingProject, finishing: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Delivery</label>
+                              <input type="text" value={editingProject.delivery || ''} onChange={e => setEditingProject({...editingProject, delivery: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
+                            <div className="col-span-1 md:col-span-2">
+                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Description</label>
+                              <textarea value={editingProject.description || ''} onChange={e => setEditingProject({...editingProject, description: e.target.value})} className="w-full min-h-[100px] bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Slug (URL friendly) *</label>
-                            <input required type="text" value={editingProject.slug} onChange={e => setEditingProject({...editingProject, slug: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                          {/* ─── DEDICATED ORBIT HERO & LOGO SETTINGS ─── */}
+                          <div className="border border-[#421319]/15 rounded-2xl p-6 bg-[#fbf9f4] space-y-6">
+                            <div className="flex items-center justify-between border-b border-[#421319]/10 pb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-[#421319] text-[#f5f2e9] flex items-center justify-center">
+                                  <Orbit className="w-5 h-5" />
+                                </div>
+                                <div>
+                                  <h3 className="text-lg font-display text-[#421319]">Hero Orbit & Logo Settings</h3>
+                                  <p className="text-xs text-[#947e82]">Configure how this project appears in the homepage circular orbit animation.</p>
+                                </div>
+                              </div>
+
+                              <label className="flex items-center gap-3 cursor-pointer bg-white px-4 py-2 rounded-xl border border-[#421319]/20 shadow-sm hover:border-[#421319] transition">
+                                <input
+                                  type="checkbox"
+                                  checked={editingProject.showInHero !== false}
+                                  onChange={e => setEditingProject({ ...editingProject, showInHero: e.target.checked })}
+                                  className="w-4 h-4 text-[#421319] rounded cursor-pointer accent-[#421319]"
+                                />
+                                <span className="text-xs font-bold uppercase tracking-wider text-[#421319]">Show in Hero</span>
+                              </label>
+                            </div>
+
+                            {/* LOGO SELECTION / UPLOAD */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                              <div className="lg:col-span-1">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Logo Preview</label>
+                                <div className="w-full h-32 bg-[#1e0b0e] rounded-xl flex items-center justify-center p-4 border border-[#f5f2e9]/10 relative overflow-hidden group">
+                                  {editingProject.logo ? (
+                                    <img
+                                      src={editingProject.logo}
+                                      alt="Logo Preview"
+                                      className="max-h-full max-w-full object-contain filter invert opacity-95 transition group-hover:scale-105"
+                                    />
+                                  ) : (
+                                    <div className="text-center">
+                                      <ImageIcon className="w-6 h-6 text-[#f5f2e9]/40 mx-auto mb-1" />
+                                      <span className="text-[11px] text-[#f5f2e9]/50 font-mono">No logo assigned</span>
+                                    </div>
+                                  )}
+                                  <div className="absolute top-2 left-2 text-[9px] font-mono uppercase bg-black/60 text-[#f5f2e9]/70 px-2 py-0.5 rounded">
+                                    Hero Dark Canvas
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="lg:col-span-2 space-y-4">
+                                <div>
+                                  <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Select From Preloaded Logos</label>
+                                  <select
+                                    value={editingProject.logo || ''}
+                                    onChange={e => setEditingProject({ ...editingProject, logo: e.target.value })}
+                                    className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-sm outline-none focus:border-[#421319]"
+                                  >
+                                    <option value="">-- Choose pre-bundled logo --</option>
+                                    {PRESET_LOGOS.map((l) => (
+                                      <option key={l.value} value={l.value}>
+                                        {l.label} ({l.value})
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                                  <div className="w-full">
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Or Upload Custom Logo</label>
+                                    <label className="flex items-center justify-center gap-2 w-full bg-white border border-[#421319]/25 hover:border-[#421319] text-[#421319] p-3 rounded-lg cursor-pointer text-xs font-bold uppercase tracking-wider transition">
+                                      <Upload className="w-4 h-4" />
+                                      <span>{uploadingLogo ? 'Uploading to R2...' : 'Upload Image File'}</span>
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleLogoUpload}
+                                        className="hidden"
+                                      />
+                                    </label>
+                                  </div>
+
+                                  <div className="w-full">
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Or Custom URL / Path</label>
+                                    <input
+                                      type="text"
+                                      placeholder="/project-logos/example.png"
+                                      value={editingProject.logo || ''}
+                                      onChange={e => setEditingProject({ ...editingProject, logo: e.target.value })}
+                                      className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-xs outline-none focus:border-[#421319]"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* ORBIT POSITIONING CONTROLS */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-[#421319]/10">
+                              {/* Orbit Ring */}
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Orbit Ring</label>
+                                <select
+                                  value={Number(editingProject.orbitRing) || 2}
+                                  onChange={e => setEditingProject({ ...editingProject, orbitRing: parseInt(e.target.value) })}
+                                  className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-sm font-semibold outline-none focus:border-[#421319]"
+                                >
+                                  <option value={1}>Ring 1 &mdash; Inner Track (135px radius)</option>
+                                  <option value={2}>Ring 2 &mdash; Middle Track (235px radius)</option>
+                                  <option value={3}>Ring 3 &mdash; Outer Track (335px radius)</option>
+                                </select>
+                              </div>
+
+                              {/* Orbit Position (Angle) */}
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82]">
+                                    Position Angle
+                                  </label>
+                                  <span className="font-mono text-xs font-bold text-[#421319]">
+                                    {Number(editingProject.orbitPosition) || 0}&deg;
+                                  </span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="359"
+                                  step="5"
+                                  value={Number(editingProject.orbitPosition) || 0}
+                                  onChange={e => setEditingProject({ ...editingProject, orbitPosition: parseInt(e.target.value) })}
+                                  className="w-full h-2 bg-[#947e82]/20 rounded-lg appearance-none cursor-pointer accent-[#421319]"
+                                />
+                                <div className="flex justify-between text-[10px] text-[#947e82] font-mono mt-1">
+                                  <span>0&deg;</span>
+                                  <span>90&deg;</span>
+                                  <span>180&deg;</span>
+                                  <span>270&deg;</span>
+                                  <span>359&deg;</span>
+                                </div>
+                              </div>
+
+                              {/* Orbit Opacity */}
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82]">
+                                    Logo Opacity
+                                  </label>
+                                  <span className="font-mono text-xs font-bold text-[#421319]">
+                                    {Math.round((Number(editingProject.orbitOpacity) || 0.85) * 100)}%
+                                  </span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min="0.3"
+                                  max="1"
+                                  step="0.05"
+                                  value={Number(editingProject.orbitOpacity) || 0.85}
+                                  onChange={e => setEditingProject({ ...editingProject, orbitOpacity: e.target.value })}
+                                  className="w-full h-2 bg-[#947e82]/20 rounded-lg appearance-none cursor-pointer accent-[#421319]"
+                                />
+                                <div className="flex justify-between text-[10px] text-[#947e82] font-mono mt-1">
+                                  <span>30%</span>
+                                  <span>Soft (60%)</span>
+                                  <span>Clear (85%)</span>
+                                  <span>100%</span>
+                                </div>
+                              </div>
+
+                              {/* Speed */}
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Animation Speed</label>
+                                <select
+                                  value={editingProject.orbitSpeed || 'normal'}
+                                  onChange={e => setEditingProject({ ...editingProject, orbitSpeed: e.target.value })}
+                                  className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-sm outline-none focus:border-[#421319]"
+                                >
+                                  <option value="slow">Slow & Calm (~180s)</option>
+                                  <option value="normal">Normal Architectural (~140s)</option>
+                                  <option value="fast">Faster Motion (~90s)</option>
+                                </select>
+                              </div>
+
+                              {/* Direction */}
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Orbit Direction</label>
+                                <select
+                                  value={editingProject.orbitDirection || 'clockwise'}
+                                  onChange={e => setEditingProject({ ...editingProject, orbitDirection: e.target.value })}
+                                  className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-sm outline-none focus:border-[#421319]"
+                                >
+                                  <option value="clockwise">Clockwise</option>
+                                  <option value="counter-clockwise">Counter-Clockwise</option>
+                                </select>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">City *</label>
-                            <input required type="text" value={editingProject.city} onChange={e => setEditingProject({...editingProject, city: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Location *</label>
-                            <input required type="text" value={editingProject.location} onChange={e => setEditingProject({...editingProject, location: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Product Type *</label>
-                            <input required type="text" value={editingProject.product} onChange={e => setEditingProject({...editingProject, product: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Project Space</label>
-                            <input type="text" value={editingProject.projectSpace || ''} onChange={e => setEditingProject({...editingProject, projectSpace: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Built Up Area</label>
-                            <input type="text" value={editingProject.builtUpArea || ''} onChange={e => setEditingProject({...editingProject, builtUpArea: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Construction</label>
-                            <input type="text" value={editingProject.construction || ''} onChange={e => setEditingProject({...editingProject, construction: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Finishing</label>
-                            <input type="text" value={editingProject.finishing || ''} onChange={e => setEditingProject({...editingProject, finishing: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Delivery</label>
-                            <input type="text" value={editingProject.delivery || ''} onChange={e => setEditingProject({...editingProject, delivery: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          <div className="col-span-1 md:col-span-2">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Description</label>
-                            <textarea value={editingProject.description || ''} onChange={e => setEditingProject({...editingProject, description: e.target.value})} className="w-full min-h-[100px] bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
-                          </div>
-                          
-                          {/* GALLERY UPLOAD DIRECTLY IN PROJECT */}
-                          <div className="col-span-1 md:col-span-2 border-t pt-6 mt-4">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-4">Gallery Images</label>
+
+                          {/* ─── GALLERY UPLOAD DIRECTLY IN PROJECT ─── */}
+                          <div className="border-t pt-6 mt-4">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-4">Project Gallery Images</label>
                             
                             {/* Display current images */}
                             {editingProject.gallery && editingProject.gallery.length > 0 && (
@@ -541,9 +977,9 @@ export default function Admin() {
                             </div>
                           </div>
 
-                          <div className="col-span-1 md:col-span-2">
-                            <button type="submit" className="w-full bg-[#421319] text-[#f5f2e9] px-6 py-4 rounded-lg text-lg font-bold hover:bg-[#250f12] transition mt-6">
-                              Save Project
+                          <div>
+                            <button type="submit" className="w-full bg-[#421319] text-[#f5f2e9] px-6 py-4 rounded-lg text-lg font-bold hover:bg-[#250f12] transition">
+                              Save Project & Orbit Settings
                             </button>
                           </div>
                         </form>

@@ -1,4 +1,4 @@
-import { pgTable, serial, text, json, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, json, timestamp, boolean, integer } from 'drizzle-orm/pg-core';
 
 // For generic website content (e.g., hero text, chairman message, etc)
 export const contentBlocks = pgTable('content_blocks', {
@@ -24,6 +24,13 @@ export const projects = pgTable('projects', {
   gallery: json('gallery').notNull(), // Store array of image URLs
   description: text('description'),
   featured: boolean('featured').default(false).notNull(),
+  logo: text('logo'),
+  showInHero: boolean('show_in_hero').default(true).notNull(),
+  orbitRing: integer('orbit_ring').default(2).notNull(),
+  orbitPosition: integer('orbit_position').default(0).notNull(),
+  orbitSpeed: text('orbit_speed').default('normal'),
+  orbitDirection: text('orbit_direction').default('clockwise'),
+  orbitOpacity: text('orbit_opacity').default('0.85'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

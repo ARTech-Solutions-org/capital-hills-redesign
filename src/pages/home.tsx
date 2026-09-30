@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '@/context/DataContext';
 import { useContactInfo, ProjectCard, Shell, downloadBrochure } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem, CountUp } from '@/components/animations';
+import { HeroOrbit } from '@/components/HeroOrbit';
 
 const reviews = [
   { quote: 'The team answered every question without making us feel rushed. We visited on Saturday and knew exactly what our next step was.', name: 'Mona & Karim', detail: 'Homeowners, Capital Hills New Cairo' },
@@ -53,87 +54,91 @@ export default function Home() {
     <Shell>
       <main>
         {/* â”€â”€ HERO: Dark Immersive â”€â”€ */}
-        <section className="relative min-h-[100dvh] overflow-hidden bg-[#250f12] text-[#f5f2e9] flex flex-col justify-center px-6 py-28 md:py-32 md:pl-[max(40px,calc((100vw-1220px)/2+40px))]">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0">
-            <img
-              src={(content.hasOwnProperty('home_hero_bg') ? content['home_hero_bg'] : "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000")}
-              alt="Capital Hills Building"
-              className="h-full w-full object-cover opacity-60 mix-blend-luminosity"
-            />
-            {/* Dark Maroon overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#250f12]/95 via-[#421319]/80 to-[#250f12]/40" />
+        <section className="relative min-h-[100dvh] overflow-hidden bg-[#1e0b0e] text-[#f5f2e9] flex flex-col justify-center px-6 py-28 md:py-32 md:px-[max(40px,calc((100vw-1220px)/2+40px))]">
+          {/* Architectural Background */}
+          <div className="absolute inset-0 z-0 bg-[#1e0b0e] pointer-events-none">
+            {/* Subtle radial atmosphere */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_75%_50%,rgba(66,19,25,0.45)_0%,rgba(30,11,14,0.95)_70%,#160709_100%)]" />
             
             {/* Watermark Logo (Emblem without wordmark) */}
-            <div className="absolute right-[-10%] top-[20%] w-[800px] opacity-[0.035] pointer-events-none">
+            <div className="absolute right-[-6%] top-[15%] w-[750px] opacity-[0.025] pointer-events-none select-none">
               <img src="/capital-hills-icon-light.png" alt="" className="w-full h-auto" />
             </div>
-            {/* Thin circle lines */}
-            <div className="absolute right-[10%] top-[-10%] w-[600px] h-[600px] rounded-full border border-[#f5f2e9]/5 pointer-events-none" />
-            <div className="absolute left-[5%] bottom-[-20%] w-[400px] h-[400px] rounded-full border border-[#f5f2e9]/5 pointer-events-none" />
+            {/* Thin subtle circle line in backdrop */}
+            <div className="absolute right-[5%] top-[10%] w-[800px] h-[800px] rounded-full border border-[#f5f2e9]/[0.03] pointer-events-none" />
           </div>
 
-          <div className="relative z-10 w-full max-w-2xl">
-            <FadeIn>
-              <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
-                Homes worth coming home to
-              </p>
-              <h1 className="text-[clamp(3.2rem,8.5vw,6.5rem)] leading-[1.05] text-[#f5f2e9]">
-                {/* Line 1: Invest With — Poppins bold */}
-                {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
-                  <span
-                    className="block font-bold tracking-[-0.03em]"
-                    style={{ fontFamily: "'Poppins', sans-serif" }}
-                  >
-                    {content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}
-                  </span>
-                )}
-                {/* Line 2: Trust — Poppins bold */}
-                {(content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust') && (
-                  <span
-                    className="block font-bold tracking-[-0.03em]"
-                    style={{ fontFamily: "'Poppins', sans-serif" }}
-                  >
-                    {content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}
-                  </span>
-                )}
-                {/* Line 3: Grow With — Luxury Serif, Italic, Transparent */}
-                {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') ||
-                  (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && (
-                  <span
-                    className="block tracking-[0.01em]"
-                    style={{
-                      opacity: 0.55,
-                      color: '#f5f2e9',
-                      fontFamily: "'Times New Roman Custom', 'Times New Roman', serif",
-                      fontStyle: 'italic',
-                      fontWeight: 400,
-                    }}
-                  >
-                    {content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}
-                    {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') &&
-                      (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) ? ' ' : ''}
-                    {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}
-                  </span>
-                )}
-                {/* Line 4: Community — Poppins bold */}
-                {(content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community') && (
-                  <span
-                    className="block font-bold tracking-[-0.03em]"
-                    style={{ fontFamily: "'Poppins', sans-serif" }}
-                  >
-                    {content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}
-                  </span>
-                )}
-              </h1>
-              {(content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.') && (
-                <p className="mt-8 max-w-md text-base leading-7 text-[#f5f2e9]/70 font-sans">
-                  {content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.'}
+          <div className="relative z-10 w-full flex flex-col lg:flex-row lg:items-center justify-between gap-12 lg:gap-8 my-auto">
+            {/* Left Column: Headline and Thesis */}
+            <div className="w-full lg:max-w-[48%] flex-shrink-0">
+              <FadeIn>
+                <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
+                  Homes worth coming home to
                 </p>
-              )}
+                <h1 className="text-[clamp(3.2rem,8.5vw,6.5rem)] leading-[1.05] text-[#f5f2e9]">
+                  {/* Line 1: Invest With — Poppins bold */}
+                  {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
+                    <span
+                      className="block font-bold tracking-[-0.03em]"
+                      style={{ fontFamily: "'Poppins', sans-serif" }}
+                    >
+                      {content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With'}
+                    </span>
+                  )}
+                  {/* Line 2: Trust — Poppins bold */}
+                  {(content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust') && (
+                    <span
+                      className="block font-bold tracking-[-0.03em]"
+                      style={{ fontFamily: "'Poppins', sans-serif" }}
+                    >
+                      {content.hasOwnProperty('hero_title_2') ? content['hero_title_2'] : 'Trust'}
+                    </span>
+                  )}
+                  {/* Line 3: Grow With — Luxury Serif, Italic, Transparent */}
+                  {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') ||
+                    (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) && (
+                    <span
+                      className="block tracking-[0.01em]"
+                      style={{
+                        opacity: 0.55,
+                        color: '#f5f2e9',
+                        fontFamily: "'Times New Roman Custom', 'Times New Roman', serif",
+                        fontStyle: 'italic',
+                        fontWeight: 400,
+                      }}
+                    >
+                      {content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow'}
+                      {((content.hasOwnProperty('hero_title_3') ? content['hero_title_3'] : 'Grow') &&
+                        (content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With')) ? ' ' : ''}
+                      {content.hasOwnProperty('hero_title_4') ? content['hero_title_4'] : 'With'}
+                    </span>
+                  )}
+                  {/* Line 4: Community — Poppins bold */}
+                  {(content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community') && (
+                    <span
+                      className="block font-bold tracking-[-0.03em]"
+                      style={{ fontFamily: "'Poppins', sans-serif" }}
+                    >
+                      {content.hasOwnProperty('hero_title_5') ? content['hero_title_5'] : 'Community'}
+                    </span>
+                  )}
+                </h1>
+                {(content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.') && (
+                  <p className="mt-8 max-w-md text-base leading-7 text-[#f5f2e9]/70 font-sans">
+                    {content.hasOwnProperty('hero_subtitle') ? content['hero_subtitle'] : 'Thoughtfully planned communities. A better tomorrow.'}
+                  </p>
+                )}
+              </FadeIn>
+            </div>
 
-
-            </FadeIn>
+            {/* Right Column: Architectural Orbit Logo Sculpture */}
+            <div className="w-full lg:w-[52%] flex items-center justify-center lg:justify-end overflow-visible">
+              <FadeIn delay={0.2} className="w-full flex items-center justify-center lg:justify-end">
+                <div className="transform scale-[0.72] sm:scale-[0.85] md:scale-95 lg:scale-100 xl:scale-105 origin-center lg:origin-right">
+                  <HeroOrbit projects={projects} />
+                </div>
+              </FadeIn>
+            </div>
           </div>
           
           {/* Bottom left corner text */}
