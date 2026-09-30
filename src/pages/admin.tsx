@@ -542,7 +542,7 @@ export default function Admin() {
                                   </div>
                                 </div>
                                 <p className="text-[11px] text-[#f5f2e9]/50 mt-3 text-center">
-                                  Ring 1 (Inner, 135px) &bull; Ring 2 (Middle, 235px) &bull; Ring 3 (Outer, 335px)
+                                  Ring 1 (Inner, 220px) &bull; Ring 2 (Outer, 370px)
                                 </p>
                               </div>
 
@@ -850,9 +850,8 @@ export default function Admin() {
                                   onChange={e => setEditingProject({ ...editingProject, orbitRing: parseInt(e.target.value) })}
                                   className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-sm font-semibold outline-none focus:border-[#421319]"
                                 >
-                                  <option value={1}>Ring 1 &mdash; Inner Track (135px radius)</option>
-                                  <option value={2}>Ring 2 &mdash; Middle Track (235px radius)</option>
-                                  <option value={3}>Ring 3 &mdash; Outer Track (335px radius)</option>
+                                  <option value={1}>Ring 1 &mdash; Inner Track (220px radius)</option>
+                                  <option value={2}>Ring 2 &mdash; Outer Track (370px radius)</option>
                                 </select>
                               </div>
 
