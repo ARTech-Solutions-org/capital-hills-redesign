@@ -133,7 +133,7 @@ export default function Home() {
 
             {/* Right Column: Architectural Orbit Logo Sculpture */}
             <div className="w-full lg:w-[52%] flex items-center justify-center lg:justify-end overflow-visible">
-              <FadeIn delay={0.2} className="w-full flex items-center justify-center lg:justify-end -mt-8 lg:-mt-12">
+              <FadeIn delay={0.2} className="w-full flex items-center justify-center lg:justify-end -mt-16 lg:-mt-28 xl:-mt-40">
                 <div className="transform scale-[0.72] sm:scale-[0.85] md:scale-90 lg:scale-95 xl:scale-100 origin-center lg:origin-right">
                   <HeroOrbit projects={projects} />
                 </div>
