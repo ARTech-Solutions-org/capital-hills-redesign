@@ -113,13 +113,13 @@ export function HeroOrbit({
   };
 
   // Dimensions
-  const size = isPreview ? 460 : 900;
+  const size = isPreview ? 460 : 700;
   const center = size / 2;
 
   // Orbit radii
-  const r1 = isPreview ? 80 : 180;
-  const r2 = isPreview ? 140 : 300;
-  const r3 = isPreview ? 200 : 420;
+  const r1 = isPreview ? 80 : 130;
+  const r2 = isPreview ? 140 : 230;
+  const r3 = isPreview ? 200 : 330;
 
   return (
     <div
@@ -129,8 +129,8 @@ export function HeroOrbit({
       className={`relative select-none flex items-center justify-center overflow-visible ${className}`}
       style={{
         width: '100%',
-        maxWidth: isPreview ? '480px' : '900px',
-        height: isPreview ? '460px' : '900px',
+        maxWidth: isPreview ? '480px' : '700px',
+        height: isPreview ? '460px' : '700px',
       }}
     >
       <motion.div
