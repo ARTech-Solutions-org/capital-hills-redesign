@@ -65,13 +65,7 @@ export function HeroOrbit({
     [activeProjects]
   );
 
-  const ring3Projects = useMemo(
-    () =>
-      activeProjects.filter(
-        (p) => (Number(p.orbitRing) || 2) === 3
-      ),
-    [activeProjects]
-  );
+
 
   // Subtle mouse parallax
   const mouseX = useMotionValue(0);
@@ -117,9 +111,8 @@ export function HeroOrbit({
   const center = size / 2;
 
   // Orbit radii
-  const r1 = isPreview ? 80 : 130;
-  const r2 = isPreview ? 140 : 230;
-  const r3 = isPreview ? 200 : 330;
+  const r1 = isPreview ? 80 : 180;
+  const r2 = isPreview ? 140 : 320;
 
   return (
     <div
@@ -323,18 +316,7 @@ export function HeroOrbit({
           onHover={setHoveredProject}
         />
 
-        {/* =====================================================
-            OUTER ORBIT
-        ====================================================== */}
 
-        <OrbitRing
-          radius={r3}
-          projects={ring3Projects}
-          duration={isPreview ? 130 : 200}
-          direction="counter-clockwise"
-          isPreview={isPreview}
-          onHover={setHoveredProject}
-        />
 
       </motion.div>
     </div>
