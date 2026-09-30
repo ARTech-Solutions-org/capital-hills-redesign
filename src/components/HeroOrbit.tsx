@@ -107,12 +107,12 @@ export function HeroOrbit({
   };
 
   // Dimensions
-  const size = isPreview ? 460 : 700;
+  const size = isPreview ? 460 : 800;
   const center = size / 2;
 
   // Orbit radii
-  const r1 = isPreview ? 80 : 180;
-  const r2 = isPreview ? 140 : 320;
+  const r1 = isPreview ? 80 : 220;
+  const r2 = isPreview ? 140 : 370;
 
   return (
     <div
@@ -122,8 +122,8 @@ export function HeroOrbit({
       className={`relative select-none flex items-center justify-center overflow-visible ${className}`}
       style={{
         width: '100%',
-        maxWidth: isPreview ? '480px' : '700px',
-        height: isPreview ? '460px' : '700px',
+        maxWidth: isPreview ? '480px' : '800px',
+        height: isPreview ? '460px' : '800px',
       }}
     >
       <motion.div
