@@ -64,13 +64,13 @@ export function HeroOrbit({ projects, interactive = true, className = '', isPrev
   };
 
   // Dimensions based on mode
-  const size = isPreview ? 460 : 720;
+  const size = isPreview ? 460 : 900;
   const center = size / 2;
 
   // Radii for the 3 orbital rings
-  const r1 = isPreview ? 80 : 135;
-  const r2 = isPreview ? 140 : 235;
-  const r3 = isPreview ? 200 : 335;
+  const r1 = isPreview ? 80 : 180;
+  const r2 = isPreview ? 140 : 300;
+  const r3 = isPreview ? 200 : 420;
 
   return (
     <div
@@ -80,24 +80,23 @@ export function HeroOrbit({ projects, interactive = true, className = '', isPrev
       className={`relative select-none flex items-center justify-center overflow-visible ${className}`}
       style={{
         width: isPreview ? '100%' : '100%',
-        maxWidth: isPreview ? '480px' : '720px',
-        height: isPreview ? '460px' : '720px',
+        maxWidth: isPreview ? '480px' : '900px',
+        height: isPreview ? '460px' : '900px',
       }}
     >
       <motion.div
         style={{ x: smoothX, y: smoothY }}
         className="relative w-full h-full flex items-center justify-center pointer-events-auto"
       >
-        {/* Subtle Architectural Compass Axis Ticks */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-          <div className="w-[85%] h-[1px] bg-gradient-to-r from-transparent via-[#f5f2e9]/40 to-transparent" />
-          <div className="absolute h-[85%] w-[1px] bg-gradient-to-b from-transparent via-[#f5f2e9]/40 to-transparent" />
-        </div>
 
-        {/* Minimal Central Architectural Origin Point */}
+
+        {/* Minimal Central Architectural Origin Point (Monogram) */}
         <div className="absolute z-20 flex items-center justify-center pointer-events-none">
-          <div className="w-2.5 h-2.5 rounded-full border border-[#f5f2e9]/35 bg-[#f5f2e9]/20" />
-          <div className="absolute w-6 h-6 rounded-full border border-[#f5f2e9]/10" />
+          <img 
+            src="/capital-hills-icon-light.png" 
+            alt="Monogram" 
+            className={`${isPreview ? 'w-16' : 'w-48'} opacity-20 object-contain`}
+          />
         </div>
 
         {/* ─── RING 1: INNER ORBIT ─── */}
