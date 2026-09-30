@@ -124,8 +124,6 @@ export function HeroOrbit({
         width: '100%',
         maxWidth: isPreview ? '480px' : '800px',
         height: isPreview ? '460px' : '800px',
-        WebkitMaskImage: isPreview ? undefined : 'linear-gradient(to bottom, transparent 0%, transparent 12%, black 28%, black 100%)',
-        maskImage: isPreview ? undefined : 'linear-gradient(to bottom, transparent 0%, transparent 12%, black 28%, black 100%)',
       }}
     >
       <motion.div

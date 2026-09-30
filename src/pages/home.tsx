@@ -133,8 +133,6 @@ export default function Home() {
 
             {/* Right Column: Architectural Orbit Logo Sculpture */}
             <div className="w-full lg:w-[52%] flex items-center justify-center lg:justify-end overflow-visible relative">
-              {/* Fade out top of the orbit so it doesn't cross the navbar */}
-              <div className="absolute top-[-10%] left-0 right-[-10%] h-[150px] lg:h-[220px] bg-gradient-to-b from-[#1e0b0e] via-[#1e0b0e]/80 to-transparent pointer-events-none z-20" />
               
               <FadeIn delay={0.2} className="w-full flex items-center justify-center lg:justify-end -mt-16 lg:-mt-28 xl:-mt-40">
                 <div className="transform scale-[0.72] sm:scale-[0.85] md:scale-90 lg:scale-95 xl:scale-100 origin-center lg:origin-right">
