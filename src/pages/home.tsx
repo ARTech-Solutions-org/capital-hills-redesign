@@ -298,24 +298,14 @@ export default function Home() {
         </section>
 
         {/* â”€â”€ CTA SPLIT â”€â”€ */}
-        <section className="md:grid md:grid-cols-2 md:min-h-[480px]">
-          {/* Left: image */}
-          <div className="relative min-h-[260px] overflow-hidden">
-            <img
-              src={(content.hasOwnProperty('home_cta_bg') ? content['home_cta_bg'] : "https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg?auto=compress&cs=tinysrgb&w=1000")}
-              alt="Capital Hills home"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-[#421319]/30" />
-          </div>
-          {/* Right: CTA */}
-          <div className="flex flex-col justify-center bg-[#947e82] px-8 py-16 md:px-16">
-            <FadeIn>
+        <section className="bg-[#947e82] px-8 py-24 md:py-32 md:px-16 flex flex-col items-center text-center min-h-[480px] justify-center">
+          <FadeIn>
+            <div className="flex flex-col items-center">
               <p className="eyebrow">{(content.hasOwnProperty('home_cta_eyebrow') ? content['home_cta_eyebrow'] : 'One good conversation')}</p>
-              <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
+              <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl max-w-2xl">
                 {(content.hasOwnProperty('home_cta_title') ? content['home_cta_title'] : "Let's find the place that makes sense for you.")}
               </h2>
-              <p className="mt-5 max-w-sm text-sm leading-6 text-[#493337]">
+              <p className="mt-5 max-w-md text-sm leading-6 text-[#493337]">
                 {(content.hasOwnProperty('home_cta_desc') ? content['home_cta_desc'] : 'Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.')}
               </p>
               <Link
@@ -325,8 +315,8 @@ export default function Home() {
               >
                 Start a conversation <ArrowRight size={15} />
               </Link>
-            </FadeIn>
-          </div>
+            </div>
+          </FadeIn>
         </section>
       {/* â”€â”€ CHAIRMAN'S MESSAGE â”€â”€ */}
         <section className="relative bg-[#231f20] overflow-hidden">
