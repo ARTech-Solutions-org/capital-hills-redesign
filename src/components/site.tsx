@@ -273,6 +273,10 @@ export function Footer() {
       </div>
       <div className="container-shell mt-16 flex flex-col items-center justify-between border-t border-[#493337] pt-6 text-xs text-[#947e82] md:flex-row">
         <p>{(content.hasOwnProperty('global_footer_copy') ? content['global_footer_copy'] : '© 2026 Capital Hills Developments')}</p>
+        <div className="flex flex-col items-center gap-1 md:flex-row md:gap-2">
+          <span>Powered by</span>
+          <img src="/powered-by.png" alt="Powered by" className="h-6 w-auto object-contain" />
+        </div>
         <p className="mt-2 md:mt-0">{(content.hasOwnProperty('global_footer_slogan') ? content['global_footer_slogan'] : 'Built for better decisions.')}</p>
       </div>
     </footer>
