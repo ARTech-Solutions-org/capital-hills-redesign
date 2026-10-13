@@ -6,6 +6,13 @@ PassengerStartupFile server.js
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # 301 Permanent Redirects from Old Website URLs to New URLs
+  RewriteRule ^about(\.html)?$ /about-us [R=301,L,NC]
+  RewriteRule ^contact(\.html)?$ /contact [R=301,L,NC]
+  RewriteRule ^projects(\.html)?$ /projects [R=301,L,NC]
+  RewriteRule ^careers(\.html)?$ /contact [R=301,L,NC]
+  RewriteRule ^index\.php$ / [R=301,L,NC]
 </IfModule>
 
 <IfModule mod_headers.c>
