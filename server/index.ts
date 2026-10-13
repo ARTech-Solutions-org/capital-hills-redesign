@@ -21,6 +21,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 301 Permanent Redirects for Old Website URLs (SEO Link Equity)
+const oldUrlRedirects: Record<string, string> = {
+  '/about': '/about-us',
+  '/about.html': '/about-us',
+  '/contact.html': '/contact',
+  '/projects.html': '/projects',
+  '/careers.html': '/contact',
+  '/careers': '/contact',
+  '/index.php': '/',
+};
+
+app.use((req, res, next) => {
+  const target = oldUrlRedirects[req.path.toLowerCase()];
+  if (target) {
+    return res.redirect(301, target);
+  }
+  next();
+});
+
 // Ensure uploads directory exists on GoDaddy
 const uploadsDir = path.resolve(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
