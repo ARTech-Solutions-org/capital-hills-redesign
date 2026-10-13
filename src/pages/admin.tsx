@@ -76,15 +76,15 @@ export default function Admin() {
   const fetchData = async () => {
     try {
       const [contentRes, projectsRes, msgsRes] = await Promise.all([
-        fetch(`${API_URL}/content`),
-        fetch(`${API_URL}/projects`),
-        fetch(`${API_URL}/messages`)
+        fetch(`${API_URL}/content?_t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`${API_URL}/projects?_t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`${API_URL}/messages?_t=${Date.now()}`, { cache: 'no-store' })
       ]);
-      setContentBlocks(await contentRes.json());
-      setProjects(await projectsRes.json());
+      if (contentRes.ok) setContentBlocks(await contentRes.json());
+      if (projectsRes.ok) setProjects(await projectsRes.json());
       if (msgsRes.ok) setMessages(await msgsRes.json());
     } catch (e) {
-      console.error(e);
+      console.error('Fetch admin data error:', e);
     } finally {
       setLoading(false);
     }
@@ -92,15 +92,24 @@ export default function Admin() {
 
   const handleSaveContent = async (id: string, value: string) => {
     try {
-      await fetch(`${API_URL}/content`, {
+      const res = await fetch(`${API_URL}/content`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, value })
       });
+      if (!res.ok) throw new Error('Save failed');
       alert('Saved!');
+      // Update local state immediately so UI refreshes without relying on network cache
+      setContentBlocks(prev => {
+        const exists = prev.find(b => b.id === id);
+        if (exists) {
+          return prev.map(b => b.id === id ? { ...b, value } : b);
+        }
+        return [...prev, { id, value }];
+      });
       fetchData();
     } catch (e) {
-      alert('Error saving');
+      alert('Error saving: ' + (e instanceof Error ? e.message : 'Network error'));
     }
   };
 
@@ -389,15 +398,15 @@ export default function Admin() {
           const value = dbBlock ? dbBlock.value : '';
 
           if (blockDef.id.startsWith('global_logo_') || blockDef.id.endsWith('_bg') || blockDef.id.endsWith('_img')) {
-            return <SingleImageEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
+            return <SingleImageEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
           }
 
           if (blockDef.id === 'home_partners_list') {
-            return <PartnersEditor key={blockDef.id} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
+            return <PartnersEditor key={`${blockDef.id}-${value}`} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
           }
 
           if (blockDef.id === 'home_why_list') {
-            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'n', label: 'Number (e.g. 01)', type: 'text' },
               { name: 'title', label: 'Title', type: 'text' },
               { name: 'copy', label: 'Description', type: 'textarea' },
@@ -405,14 +414,14 @@ export default function Admin() {
           }
 
           if (blockDef.id === 'aboutus_core_list') {
-            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'title', label: 'Title', type: 'text' },
               { name: 'copy', label: 'Description', type: 'textarea' },
             ]} />;
           }
 
           if (blockDef.id === 'aboutus_categories_list') {
-            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'title', label: 'Category Name', type: 'text' },
               { name: 'subtitle', label: 'Subtitle', type: 'text' },
               { name: 'desc', label: 'Description', type: 'textarea' },
@@ -420,7 +429,7 @@ export default function Admin() {
           }
 
           if (blockDef.id === 'home_reviews_list') {
-            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'quote', label: 'Quote', type: 'textarea' },
               { name: 'name', label: 'Name', type: 'text' },
               { name: 'detail', label: 'Detail (e.g. Investor)', type: 'text' },
@@ -429,14 +438,14 @@ export default function Admin() {
           }
 
           if (blockDef.id === 'chairman_stats_list') {
-            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'num', label: 'Number Value (e.g. 10+)', type: 'text' },
               { name: 'label', label: 'Label', type: 'text' },
             ]} />;
           }
 
           if (blockDef.id === 'home_ticker_list') {
-            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
               { name: 'text', label: 'Ticker Text', type: 'text' },
             ]} />;
           }
@@ -446,6 +455,7 @@ export default function Admin() {
               <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1">{blockDef.label}</label>
               <span className="block text-[10px] font-mono text-[#947e82]/60 mb-3">{blockDef.id}</span>
               <textarea 
+                key={`${blockDef.id}-${value}`}
                 className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-4 min-h-[60px] outline-none focus:border-[#421319]"
                 defaultValue={value}
                 id={`content_${blockDef.id}`}

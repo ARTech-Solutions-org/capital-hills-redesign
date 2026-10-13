@@ -351,8 +351,10 @@ export default function Home() {
                   {/* Photo */}
                   <div className="relative overflow-hidden rounded-xl aspect-[3/4]">
                     <img
-                      src={(content.hasOwnProperty('home_chairman_img') ? content['home_chairman_img'] : "/chairman.png")}
-                      alt="Eng. Mohamed Salah Abdel Qader â€” Chairman"
+                      src={(content.hasOwnProperty('home_chairman_img') ? content['home_chairman_img'] : "/chairman.webp")}
+                      alt="Eng. Mohamed Salah Abdel Qader — Chairman"
+                      loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 h-full w-full object-cover object-top"
                     />
                     {/* Subtle brand tint at bottom */}

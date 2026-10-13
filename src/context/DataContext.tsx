@@ -31,8 +31,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
       
       const [contentRes, projectsRes] = await Promise.all([
-        fetch(`${API_URL}/content`),
-        fetch(`${API_URL}/projects`)
+        fetch(`${API_URL}/content?_t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`${API_URL}/projects?_t=${Date.now()}`, { cache: 'no-store' })
       ]);
 
       if (contentRes.ok) {

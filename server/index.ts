@@ -75,6 +75,15 @@ app.use('/uploads', express.static(bundledUploads, {
 
 // --- API ROUTES ---
 
+// Prevent all CDN / Browser caching for API endpoints
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
+
 // 1. Upload images locally to GoDaddy server
 app.post('/api/upload', (req, res) => {
   upload.single('file')(req, res, (err) => {
@@ -186,7 +195,16 @@ app.patch('/api/messages/read', async (req, res) => {
 });
 
 // Serve static frontend files from dist (Vite build) relative to this file
-app.use(express.static(distPath, { redirect: false }));
+app.use(express.static(distPath, { 
+  redirect: false,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // API 404 handler (only for unhandled /api requests)
 app.use('/api', (req, res) => {
@@ -202,6 +220,9 @@ app.use('/api', (req, res) => {
 // SPA fallback for all other routes
 app.use((req, res) => {
   const indexPath = path.join(distPath, 'index.html');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(indexPath, (err) => {
     if (err) {
       res.status(404).send('Application running, but frontend build (dist/index.html) was not found. Please run "npm run build".');
