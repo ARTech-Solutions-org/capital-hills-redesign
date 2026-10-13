@@ -8,6 +8,13 @@ import { db } from './db/index.js';
 import { contentBlocks, projects, directMessages } from './db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from server directory first, then fallback
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const app = express();
@@ -154,8 +161,8 @@ app.patch('/api/messages/read', async (req, res) => {
   }
 });
 
-// Serve static frontend files from dist (Vite build)
-const distPath = path.resolve(process.cwd(), 'dist');
+// Serve static frontend files from dist (Vite build) relative to this file
+const distPath = path.resolve(__dirname, 'dist');
 app.use(express.static(distPath, { redirect: false }));
 
 // API 404 handler (only for unhandled /api requests)
@@ -179,8 +186,10 @@ app.use((req, res) => {
   });
 });
 
-const PORT = Number(process.env.PORT) || 3001;
-app.listen(PORT, '0.0.0.0', () => {
+// In Phusion Passenger / cPanel, process.env.PORT can be a socket path string
+// Do NOT parse with Number(), and do NOT pass host '0.0.0.0'
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
