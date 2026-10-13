@@ -844,7 +844,7 @@ export default function Admin() {
                                     <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Or Upload Custom Logo</label>
                                     <label className="flex items-center justify-center gap-2 w-full bg-white border border-[#421319]/25 hover:border-[#421319] text-[#421319] p-3 rounded-lg cursor-pointer text-xs font-bold uppercase tracking-wider transition">
                                       <Upload className="w-4 h-4" />
-                                      <span>{uploadingLogo ? 'Uploading to R2...' : 'Upload Image File'}</span>
+                                      <span>{uploadingLogo ? 'Uploading to Server...' : 'Upload Image File'}</span>
                                       <input
                                         type="file"
                                         accept="image/*"
@@ -999,7 +999,7 @@ export default function Admin() {
                                 accept="image/*"
                               />
                               <span className="font-bold text-[#421319]">
-                                {uploadingImage ? 'Uploading to Cloudflare R2...' : '+ Select Images to Upload'}
+                                {uploadingImage ? 'Uploading to Server...' : '+ Select Images to Upload'}
                               </span>
                             </div>
                           </div>

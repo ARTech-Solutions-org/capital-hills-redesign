@@ -27,6 +27,7 @@ jobs:
         env:
           VITE_ADMIN_PASSKEY: ${{ secrets.VITE_ADMIN_PASSKEY || 'capital2026' }}
 
+
       - name: 🔄 Trigger Passenger Restart
         run: |
           mkdir -p tmp
@@ -48,6 +49,7 @@ jobs:
             src/**
             server/**
             scripts/**
+            uploads/**
             *.ts
             *.tsx
             tsconfig*.json

@@ -33,30 +33,39 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: (_req, file, cb) => {
-    const safeFilename = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+    const basename = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '') || 'image';
+    const safeFilename = `${Date.now()}-${basename}${ext}`;
     cb(null, safeFilename);
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB max file size
+});
 
-// Serve uploaded images directly
-app.use('/uploads', express.static(uploadsDir));
+// Serve uploaded images directly with cache headers
+app.use('/uploads', express.static(uploadsDir, {
+  maxAge: '7d',
+  immutable: true,
+}));
 
 // --- API ROUTES ---
 
 // 1. Upload images locally to GoDaddy server
-app.post('/api/upload', upload.single('file'), (req, res) => {
-  try {
-    const file = req.file;
-    if (!file) return res.status(400).json({ error: 'No file uploaded' });
-
-    const publicUrl = `/uploads/${file.filename}`;
+app.post('/api/upload', (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      console.error('Multer Upload Error:', err);
+      return res.status(400).json({ error: err.message || 'Failed to upload file' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    const publicUrl = `/uploads/${req.file.filename}`;
     res.json({ publicUrl });
-  } catch (error) {
-    console.error('Upload Error:', error);
-    res.status(500).json({ error: 'Failed to upload file' });
-  }
+  });
 });
 
 // 2. Content Blocks (Generic text)
@@ -180,10 +189,16 @@ app.use((req, res) => {
 });
 
 // In Phusion Passenger / cPanel, process.env.PORT can be a socket path string
-// Do NOT parse with Number(), and do NOT pass host '0.0.0.0'
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Phusion Passenger also exposes global PhusionPassenger
+if (typeof (globalThis as any).PhusionPassenger !== 'undefined') {
+  (app as any).listen('passenger', () => {
+    console.log('Server running with Phusion Passenger');
+  });
+} else {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 export default app;

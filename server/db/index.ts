@@ -18,5 +18,6 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 if (!process.env.DATABASE_URL) {
   console.error("DATABASE_URL is missing in environment variables!");
 }
-const sql = neon(process.env.DATABASE_URL || 'postgres://dummy:dummy@dummy/dummy');
+
+const sql = neon(process.env.DATABASE_URL || '');
 export const db = drizzle(sql, { schema });
