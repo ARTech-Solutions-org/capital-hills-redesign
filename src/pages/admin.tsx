@@ -326,17 +326,27 @@ export default function Admin() {
       { id: 'aboutus_categories_list', label: 'Categories List', group: 'Categories' }
     ],
     contact: [
-      { id: 'contact_eyebrow', label: 'Hero Eyebrow', group: 'Hero' },
-      { id: 'contact_title_1', label: 'Hero Title 1', group: 'Hero' },
-      { id: 'contact_title_2', label: 'Hero Title 2 (Italic)', group: 'Hero' },
-      { id: 'contact_desc', label: 'Hero Description', group: 'Hero' },
-      { id: 'contact_phone', label: 'Phone Number', group: 'Info' },
-      { id: 'contact_email', label: 'Email', group: 'Info' },
-      { id: 'contact_address', label: 'Address', group: 'Info' },
-      { id: 'contact_map_url', label: 'Google Maps Embed URL', group: 'Info' },
-      { id: 'contact_form_eyebrow', label: 'Form Eyebrow', group: 'Form' },
-      { id: 'contact_form_title', label: 'Form Title', group: 'Form' },
-      { id: 'contact_form_desc', label: 'Form Description', group: 'Form' }
+      { id: 'contact_eyebrow', label: 'Eyebrow (A REAL PERSON IS CLOSE BY)', group: 'Left Panel (Hero & Message)' },
+      { id: 'contact_title_1', label: 'Header Title Line 1 (Let\'s make the)', group: 'Left Panel (Hero & Message)' },
+      { id: 'contact_title_2', label: 'Header Title Line 2 - Italic (next step feel simple.)', group: 'Left Panel (Hero & Message)' },
+      { id: 'contact_desc', label: 'Description Paragraph (Whether you\'re looking for your next home or a strategic investment...)', group: 'Left Panel (Hero & Message)' },
+      
+      { id: 'contact_call_label', label: 'Call Card Title (Call us)', group: 'Contact Cards' },
+      { id: 'contact_phone', label: 'Hotline / Phone Number (16794)', group: 'Contact Cards' },
+      
+      { id: 'contact_whatsapp_label', label: 'WhatsApp Card Title (WhatsApp)', group: 'Contact Cards' },
+      { id: 'contact_whatsapp_desc', label: 'WhatsApp Card Subtitle (Chat with our team)', group: 'Contact Cards' },
+      { id: 'contact_whatsapp', label: 'WhatsApp URL (https://wa.me/...)', group: 'Contact Cards' },
+      
+      { id: 'contact_email_label', label: 'Email Card Title (Email)', group: 'Contact Cards' },
+      { id: 'contact_email', label: 'Email Address (hello@capitalhillsdevelopments.eg)', group: 'Contact Cards' },
+      
+      { id: 'contact_address', label: 'Address (Galleria 40 / Arkan Plaza)', group: 'Info & Map' },
+      { id: 'contact_map_url', label: 'Google Maps Embed URL', group: 'Info & Map' },
+      
+      { id: 'contact_form_eyebrow', label: 'Form Eyebrow (Have a quick question?)', group: 'Right Panel (Form)' },
+      { id: 'contact_form_title', label: 'Form Title (We can start there.)', group: 'Right Panel (Form)' },
+      { id: 'contact_form_desc', label: 'Form Description (No forms that go into a black hole...)', group: 'Right Panel (Form)' }
     ],
     global: [
       { id: 'global_footer_desc', label: 'Footer Description', group: 'Footer' },
@@ -361,11 +371,14 @@ export default function Admin() {
       }
     });
 
-    // Determine groups
-    const groups = Array.from(new Set(allBlocks.map(b => b.group || 'Other')));
-    const currentSubTab = activeSubTabs[tabKey] || groups[0] || 'Other';
+    // Determine groups with 'All Sections' option
+    const rawGroups = Array.from(new Set(allBlocks.map(b => b.group || 'Other')));
+    const groups = ['All Sections', ...rawGroups];
+    const currentSubTab = activeSubTabs[tabKey] || 'All Sections';
 
-    const blocksToRender = allBlocks.filter(b => (b.group || 'Other') === currentSubTab);
+    const blocksToRender = currentSubTab === 'All Sections'
+      ? allBlocks
+      : allBlocks.filter(b => (b.group || 'Other') === currentSubTab);
 
     return (
     <div className="space-y-8">

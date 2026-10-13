@@ -59,21 +59,21 @@ export default function Contact() {
               <StaggerContainer className="mt-10 space-y-3">
                 <StaggerItem>
                   <a
-                    href={contactInfo.tel}
+                    href={content['contact_phone'] ? `tel:${content['contact_phone']}` : contactInfo.tel}
                     className="flex items-center gap-4 rounded-xl bg-[#947e82] px-5 py-4 text-[#421319] transition hover:bg-[#947e82]"
                     data-testid="contact-call-card"
                   >
                     <Phone size={18} strokeWidth={1.8} className="shrink-0" />
                     <div>
-                      <strong className="block text-sm font-bold">Call us</strong>
-                      <span className="text-xs opacity-75"><PhoneNumber /></span>
+                      <strong className="block text-sm font-bold">{content['contact_call_label'] || 'Call us'}</strong>
+                      <span className="text-xs opacity-75">{content['contact_phone'] || <PhoneNumber />}</span>
                     </div>
                     <ArrowRight size={15} className="ml-auto opacity-60" />
                   </a>
                 </StaggerItem>
                 <StaggerItem>
                   <a
-                    href={contactInfo.whatsapp}
+                    href={content['contact_whatsapp'] || contactInfo.whatsapp}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-4 rounded-xl border border-[#f5f2e9]/15 px-5 py-4 transition hover:bg-white/08"
@@ -81,22 +81,22 @@ export default function Contact() {
                   >
                     <MessageCircle size={18} strokeWidth={1.8} className="shrink-0 text-[#947e82]" />
                     <div>
-                      <strong className="block text-sm font-bold">WhatsApp</strong>
-                      <span className="text-xs text-[#f5f2e9]/55">Chat with our team</span>
+                      <strong className="block text-sm font-bold">{content['contact_whatsapp_label'] || 'WhatsApp'}</strong>
+                      <span className="text-xs text-[#f5f2e9]/55">{content['contact_whatsapp_desc'] || 'Chat with our team'}</span>
                     </div>
                     <ArrowRight size={15} className="ml-auto opacity-40" />
                   </a>
                 </StaggerItem>
                 <StaggerItem>
                   <a
-                    href={contactInfo.email}
+                    href={content['contact_email'] ? `mailto:${content['contact_email']}` : contactInfo.email}
                     className="flex items-center gap-4 rounded-xl border border-[#f5f2e9]/15 px-5 py-4 transition hover:bg-white/08"
                     data-testid="contact-email-card"
                   >
                     <Mail size={18} strokeWidth={1.8} className="shrink-0 text-[#947e82]" />
                     <div>
-                      <strong className="block text-sm font-bold">Email</strong>
-                      <span className="text-xs text-[#f5f2e9]/55">hello@capitalhillsdevelopments.eg</span>
+                      <strong className="block text-sm font-bold">{content['contact_email_label'] || 'Email'}</strong>
+                      <span className="text-xs text-[#f5f2e9]/55">{content['contact_email'] || 'hello@capitalhillsdevelopments.eg'}</span>
                     </div>
                     <ArrowRight size={15} className="ml-auto opacity-40" />
                   </a>
