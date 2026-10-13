@@ -3,11 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import multer from 'multer';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { db } from './db/index.js';
 import { contentBlocks, projects, directMessages } from './db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,44 +21,37 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Ensure uploads directory exists on GoDaddy
+const uploadsDir = path.resolve(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-// S3 Client for Cloudflare R2
-const S3 = new S3Client({
-  region: 'auto',
-  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID || 'dummy'}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID || 'dummy',
-    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY || 'dummy',
+// Multer disk storage for local image uploads on GoDaddy
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (_req, file, cb) => {
+    const safeFilename = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    cb(null, safeFilename);
   },
 });
 
-const BUCKET_NAME = process.env.CLOUDFLARE_BUCKET_NAME!;
-const PUBLIC_URL = process.env.CLOUDFLARE_R2_PUBLIC_URL!;
+const upload = multer({ storage });
+
+// Serve uploaded images directly
+app.use('/uploads', express.static(uploadsDir));
 
 // --- API ROUTES ---
 
-// 1. Upload images securely via backend to bypass R2 CORS
-const upload = multer({ storage: multer.memoryStorage() });
-
-app.post('/api/upload', upload.single('file'), async (req, res) => {
-  console.log('Hitting /api/upload', req.file ? 'File present' : 'No file');
+// 1. Upload images locally to GoDaddy server
+app.post('/api/upload', upload.single('file'), (req, res) => {
   try {
     const file = req.file;
     if (!file) return res.status(400).json({ error: 'No file uploaded' });
 
-    // Sanitize filename and add timestamp to avoid collisions
-    const safeFilename = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    
-    const command = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: safeFilename,
-      ContentType: file.mimetype,
-      Body: file.buffer,
-    });
-
-    await S3.send(command);
-    const publicUrl = `${PUBLIC_URL}/${safeFilename}`;
-
+    const publicUrl = `/uploads/${file.filename}`;
     res.json({ publicUrl });
   } catch (error) {
     console.error('Upload Error:', error);

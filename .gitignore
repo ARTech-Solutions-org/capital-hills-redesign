@@ -7,3 +7,4 @@ dist-ssr
 !.env.example
 .vite
 server.js
+uploads/

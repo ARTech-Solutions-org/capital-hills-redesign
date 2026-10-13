@@ -4,7 +4,15 @@ import * as schema from './schema.js';
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Load .env from project root
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env relative to file and cwd
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 if (!process.env.DATABASE_URL) {
