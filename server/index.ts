@@ -14,13 +14,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Normalization for Vercel
-app.use((req, res, next) => {
-  if (req.url.startsWith('/projects') || req.url.startsWith('/content') || req.url.startsWith('/messages') || req.url.startsWith('/upload')) {
-    req.url = '/api' + req.url;
-  }
-  next();
-});
 
 // S3 Client for Cloudflare R2
 const S3 = new S3Client({
@@ -161,8 +154,12 @@ app.patch('/api/messages/read', async (req, res) => {
   }
 });
 
-// Fallback for debugging
-app.use((req, res) => {
+// Serve static frontend files from dist (Vite build)
+const distPath = path.resolve(process.cwd(), 'dist');
+app.use(express.static(distPath, { redirect: false }));
+
+// API 404 handler (only for unhandled /api requests)
+app.use('/api', (req, res) => {
   res.status(404).json({
     error: 'Not Found in API',
     url: req.url,
@@ -172,11 +169,19 @@ app.use((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`API Server running on port ${PORT}`);
+// SPA fallback for all other routes
+app.use((req, res) => {
+  const indexPath = path.join(distPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      res.status(404).send('Application running, but frontend build (dist/index.html) was not found. Please run "npm run build".');
+    }
   });
-}
+});
+
+const PORT = Number(process.env.PORT) || 3001;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 export default app;

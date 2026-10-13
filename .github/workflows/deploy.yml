@@ -1,0 +1,57 @@
+name: Deploy to GoDaddy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  web-deploy:
+    name: 🎉 Build & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🔨 Build Project (Client & Server)
+        run: npm run build
+        env:
+          VITE_ADMIN_PASSKEY: ${{ secrets.VITE_ADMIN_PASSKEY || 'capital2026' }}
+
+      - name: 🔄 Trigger Passenger Restart
+        run: |
+          mkdir -p tmp
+          touch tmp/restart.txt
+
+      - name: 🚀 Sync files to GoDaddy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_DIR || './' }}
+          protocol: ${{ secrets.FTP_PROTOCOL || 'ftp' }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            src/**
+            server/**
+            scripts/**
+            *.ts
+            *.tsx
+            tsconfig*.json
+            vite.config.ts
+            components.json
+            .gitignore
+            README.md

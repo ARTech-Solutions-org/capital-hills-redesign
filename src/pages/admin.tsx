@@ -5,9 +5,11 @@ import { GenericListEditor } from '@/components/GenericListEditor';
 import { SingleImageEditor } from '@/components/SingleImageEditor';
 import { HeroOrbit } from '@/components/HeroOrbit';
 import { Eye, EyeOff, Sparkles, Image as ImageIcon, Upload, Orbit, Layers, Sliders } from 'lucide-react';
+import NotFound from '@/pages/not-found';
 
 const isDev = typeof window !== 'undefined' && window.location.port === '5173';
 const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
+const ADMIN_PASSKEY = import.meta.env.VITE_ADMIN_PASSKEY || 'capital2026';
 
 const PRESET_LOGOS = [
   { label: 'La Colina East', value: '/project-logos/la-colina-east.png' },
@@ -24,6 +26,21 @@ const PRESET_LOGOS = [
 ];
 
 export default function Admin() {
+  const [isAuthorized] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    const passkey = params.get('passkey');
+    if (passkey && passkey === ADMIN_PASSKEY) {
+      sessionStorage.setItem('admin_passkey', passkey);
+      return true;
+    }
+    return sessionStorage.getItem('admin_passkey') === ADMIN_PASSKEY;
+  });
+
+  if (!isAuthorized) {
+    return <NotFound />;
+  }
+
   const [activeTab, setActiveTab] = useState<'home' | 'aboutus' | 'contact' | 'global' | 'projects' | 'messages'>('home');
   useEffect(() => {
     if (activeTab === 'messages' && unreadCount > 0) {
@@ -452,8 +469,19 @@ export default function Admin() {
   return (
     <main className="min-h-screen bg-[#f5f2e9] pt-12 pb-20 px-6">
       <div className="mx-auto max-w-6xl">
-          <FadeIn>
-            <h1 className="font-display text-4xl text-[#421319] mb-8">Admin Dashboard</h1>
+        <FadeIn>
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="font-display text-4xl text-[#421319]">Admin Dashboard</h1>
+              <button 
+                onClick={() => {
+                  sessionStorage.removeItem('admin_passkey');
+                  window.location.href = '/';
+                }}
+                className="text-xs font-bold text-[#421319] hover:bg-[#421319]/10 border border-[#421319]/30 px-3 py-1.5 rounded-lg transition"
+              >
+                Log Out
+              </button>
+            </div>
             
             <div className="flex gap-4 mb-8 border-b border-[#947e82]/20 pb-4 overflow-x-auto">
               <button onClick={() => setActiveTab('home')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'home' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Home Page</button>
