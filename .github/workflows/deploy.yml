@@ -50,6 +50,7 @@ jobs:
             server/**
             scripts/**
             uploads/**
+            api/**
             *.ts
             *.tsx
             tsconfig*.json
