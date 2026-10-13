@@ -210,10 +210,21 @@ app.use((req, res) => {
 });
 
 // In Phusion Passenger / cPanel, process.env.PORT can be a socket path string
-// Phusion Passenger also exposes global PhusionPassenger
+// Phusion Passenger also sets PASSENGER_APP_ENV or exposes global PhusionPassenger
+const isPassenger = typeof (globalThis as any).PhusionPassenger !== 'undefined' || !!process.env.PASSENGER_APP_ENV;
+const portEnv = process.env.PORT;
+
 if (typeof (globalThis as any).PhusionPassenger !== 'undefined') {
   (app as any).listen('passenger', () => {
-    console.log('Server running with Phusion Passenger');
+    console.log('Server running with Phusion Passenger (hook)');
+  });
+} else if (portEnv && (portEnv.startsWith('/') || portEnv.includes('passenger') || portEnv.includes('.sock'))) {
+  app.listen(portEnv, () => {
+    console.log(`Server running on Passenger socket: ${portEnv}`);
+  });
+} else if (isPassenger) {
+  (app as any).listen('passenger', () => {
+    console.log('Server running on Passenger environment');
   });
 } else {
   const PORT = process.env.PORT || 3001;
