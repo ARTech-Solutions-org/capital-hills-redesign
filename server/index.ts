@@ -27,6 +27,24 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+// Copy any bundled seed images from dist/uploads into uploadsDir
+const distPath = path.resolve(__dirname, 'dist');
+const bundledUploads = path.resolve(distPath, 'uploads');
+try {
+  if (fs.existsSync(bundledUploads)) {
+    const files = fs.readdirSync(bundledUploads);
+    for (const f of files) {
+      const srcFile = path.join(bundledUploads, f);
+      const destFile = path.join(uploadsDir, f);
+      if (!fs.existsSync(destFile)) {
+        fs.copyFileSync(srcFile, destFile);
+      }
+    }
+  }
+} catch (e) {
+  console.warn('Could not sync bundled uploads:', e);
+}
+
 // Multer disk storage for local image uploads on GoDaddy
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
@@ -47,6 +65,10 @@ const upload = multer({
 
 // Serve uploaded images directly with cache headers
 app.use('/uploads', express.static(uploadsDir, {
+  maxAge: '7d',
+  immutable: true,
+}));
+app.use('/uploads', express.static(bundledUploads, {
   maxAge: '7d',
   immutable: true,
 }));
@@ -164,7 +186,6 @@ app.patch('/api/messages/read', async (req, res) => {
 });
 
 // Serve static frontend files from dist (Vite build) relative to this file
-const distPath = path.resolve(__dirname, 'dist');
 app.use(express.static(distPath, { redirect: false }));
 
 // API 404 handler (only for unhandled /api requests)
