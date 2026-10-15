@@ -86,7 +86,7 @@ export default function Home() {
                 <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
                   {t('Homes worth coming home to', 'منازل تستحق أن تعود إليها')}
                 </p>
-                <h1 className="text-[clamp(2.5rem,6.5vw,5rem)] leading-[1.08] text-[#f5f2e9]">
+                <h1 className="text-[clamp(2.25rem,5.5vw,4.4rem)] leading-[1.1] text-[#f5f2e9]">
                   {/* Line 1: Invest With — Poppins bold */}
                   {(content.hasOwnProperty('hero_title') ? content['hero_title'] : 'Invest With') && (
                     <span
