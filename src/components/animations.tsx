@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 export function PageTransition({ children, keyProp }: { children: ReactNode; keyProp: string }) {
   return (
@@ -98,32 +98,56 @@ export function CountUp({
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const motionVal = useMotionValue(0);
-  const spring = useSpring(motionVal, { stiffness: 60, damping: 20 });
+  const [displayValue, setDisplayValue] = useState<number>(() => (typeof target === 'number' && !isNaN(target) ? target : 0));
+  const hasAnimatedRef = useRef(false);
 
   useEffect(() => {
+    if (typeof target === 'number' && !isNaN(target)) {
+      setDisplayValue(target);
+    }
+  }, [target]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof target !== 'number' || isNaN(target)) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          motionVal.set(target);
+        if (entry.isIntersecting && !hasAnimatedRef.current) {
+          hasAnimatedRef.current = true;
+          const start = 0;
+          const end = target;
+          const duration = 1200;
+          const startTime = performance.now();
+
+          const update = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - (1 - progress) * (1 - progress);
+            const current = Math.round(start + (end - start) * easeOut);
+            setDisplayValue(current);
+
+            if (progress < 1) {
+              requestAnimationFrame(update);
+            } else {
+              setDisplayValue(end);
+            }
+          };
+
+          requestAnimationFrame(update);
           observer.disconnect();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.1 }
     );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target, motionVal]);
 
-  useEffect(() => {
-    return spring.on('change', (v) => {
-      if (ref.current) ref.current.textContent = Math.round(v).toString() + suffix;
-    });
-  }, [spring, suffix]);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [target]);
 
   return (
     <span ref={ref} className={className}>
-      0{suffix}
+      {displayValue.toLocaleString('en-US')}{suffix}
     </span>
   );
 }

@@ -28,14 +28,26 @@ export function PhoneNumber() {
   const { phone } = useContactInfo();
   if (phone === '16794') {
     return (
-      <span className="whitespace-nowrap inline-flex items-baseline font-display tracking-tight">
+      <span
+        dir="ltr"
+        style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
+        className="whitespace-nowrap inline-flex flex-row items-baseline font-display tracking-tight select-all"
+      >
         <span>16</span>
         <span className="text-[1.3em] font-medium leading-[0] mx-[1px] -translate-y-[2px]">7</span>
         <span>94</span>
       </span>
     );
   }
-  return <span className="whitespace-nowrap inline-flex items-baseline font-display tracking-tight">{phone}</span>;
+  return (
+    <span
+      dir="ltr"
+      style={{ direction: 'ltr', unicodeBidi: 'isolate' }}
+      className="whitespace-nowrap inline-flex flex-row items-baseline font-display tracking-tight select-all"
+    >
+      {phone}
+    </span>
+  );
 }
 
 /**
@@ -126,13 +138,56 @@ export function Logo({
   );
 }
 
+export function LanguageSwitcher({ light = false, className = '' }: { light?: boolean; className?: string }) {
+  const { lang, setLang } = useData();
+  return (
+    <div
+      className={`inline-flex items-center rounded-full p-0.5 border transition ${
+        light
+          ? 'border-[#f5f2e9]/25 bg-black/20 text-[#f5f2e9]'
+          : 'border-[#421319]/20 bg-[#421319]/08 text-[#421319]'
+      } ${className}`}
+    >
+      <button
+        type="button"
+        onClick={() => setLang('en')}
+        className={`px-2.5 py-1 text-[11px] font-bold rounded-full transition ${
+          lang === 'en'
+            ? (light ? 'bg-[#f5f2e9] text-[#421319] shadow-sm' : 'bg-[#421319] text-[#f5f2e9] shadow-sm')
+            : 'opacity-70 hover:opacity-100'
+        }`}
+        aria-label="Switch to English"
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        onClick={() => setLang('ar')}
+        className={`px-2.5 py-1 text-[11px] font-bold rounded-full transition font-sans ${
+          lang === 'ar'
+            ? (light ? 'bg-[#f5f2e9] text-[#421319] shadow-sm' : 'bg-[#421319] text-[#f5f2e9] shadow-sm')
+            : 'opacity-70 hover:opacity-100'
+        }`}
+        aria-label="التبديل إلى العربية"
+      >
+        عربي
+      </button>
+    </div>
+  );
+}
+
 export function Header() {
-  const { content } = useData();
+  const { content, lang } = useData();
   const contact = useContactInfo();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
-  const nav = [['Home', '/'], ['Projects', '/projects'], ['About us', '/about-us'], ['Contact', '/contact']];
+  const nav = [
+    [lang === 'ar' ? 'الرئيسية' : 'Home', '/'],
+    [lang === 'ar' ? 'المشروعات' : 'Projects', '/projects'],
+    [lang === 'ar' ? 'من نحن' : 'About us', '/about-us'],
+    [lang === 'ar' ? 'اتصل بنا' : 'Contact', '/contact']
+  ];
   const lightPage = location === '/' || location === '/contact' || location === '/about-us' || location === '/projects';
 
   useEffect(() => {
@@ -175,6 +230,9 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Language Switcher */}
+          <LanguageSwitcher light={scrolled || lightPage} />
+
           <a
             href={contact.tel}
             className={`focus-ring hidden items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition md:flex ${
@@ -184,7 +242,7 @@ export function Header() {
             }`}
             data-testid="link-header-call"
           >
-            <Phone size={13} /> {(content.hasOwnProperty('global_header_talk') ? content['global_header_talk'] : 'Talk to us')}
+            <Phone size={13} /> {(content.hasOwnProperty('global_header_talk') ? content['global_header_talk'] : (lang === 'ar' ? 'تحدث معنا' : 'Talk to us'))}
           </a>
           <button
             onClick={() => setOpen(!open)}
@@ -204,6 +262,12 @@ export function Header() {
       {/* Mobile menu */}
       {open && (
         <div className="mx-auto mt-2 max-w-5xl overflow-hidden rounded-2xl border border-[#947e82]/30 bg-[#421319] shadow-xl md:hidden">
+          <div className="p-4 border-b border-white/10 flex justify-between items-center">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#f5f2e9]/70">
+              {lang === 'ar' ? 'اللغة / Language' : 'Language'}
+            </span>
+            <LanguageSwitcher light />
+          </div>
           {nav.map(([label, href]) => (
             <Link
               key={href}
@@ -230,8 +294,8 @@ export function Header() {
 
 export function Footer() {
   const contact = useContactInfo();
-  const { content } = useData();
-  const footerText = (content.hasOwnProperty('global_footer_text') ? content['global_footer_text'] : "Building communities that inspire. From prime commercial spaces to elegant residential developments, we deliver quality, trust, and lasting value.");
+  const { content, lang } = useData();
+  const footerText = (content.hasOwnProperty('global_footer_text') ? content['global_footer_text'] : (lang === 'ar' ? 'نبني مجتمعات تلهم الحياة. من المساحات التجارية الرائدة إلى المشاريع السكنية الراقية، نقدم الجودة والثقة والقيمة الدائمة.' : "Building communities that inspire. From prime commercial spaces to elegant residential developments, we deliver quality, trust, and lasting value."));
   return (
     <footer className="bg-[#421319] pb-24 pt-16 text-[#f5f2e9] md:pb-12">
       <div className="container-shell grid gap-12 md:grid-cols-[1.4fr_.8fr_.8fr_1.2fr]">
@@ -250,34 +314,34 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_explore') ? content['global_footer_explore'] : 'Explore')}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_explore') ? content['global_footer_explore'] : (lang === 'ar' ? 'استكشف' : 'Explore'))}</p>
           <div className="space-y-3 text-sm text-[#947e82]">
-            <Link href="/projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">Our projects</Link>
-            <Link href="/about-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">About Capital Hills</Link>
-            <Link href="/contact" className="block transition-colors hover:text-white" data-testid="link-footer-contact">Contact us</Link>
+            <Link href="/projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">{lang === 'ar' ? 'مشروعاتنا' : 'Our projects'}</Link>
+            <Link href="/about-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">{lang === 'ar' ? 'عن كابيتال هيلز' : 'About Capital Hills'}</Link>
+            <Link href="/contact" className="block transition-colors hover:text-white" data-testid="link-footer-contact">{lang === 'ar' ? 'تواصل معنا' : 'Contact us'}</Link>
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_visit') ? content['global_footer_visit'] : 'Visit')}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_visit') ? content['global_footer_visit'] : (lang === 'ar' ? 'تفضل بزيارتنا' : 'Visit'))}</p>
           <div className="space-y-4 text-sm leading-5 text-[#947e82]">
             <div className="whitespace-pre-line leading-relaxed">{contact.address}</div>
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_need') ? content['global_footer_need'] : 'Need a second opinion?')}</p>
-          <p className="text-sm leading-6 text-[#947e82]">{(content.hasOwnProperty('global_footer_need_desc') ? content['global_footer_need_desc'] : 'Tell us what you are looking for. A real person will call with a clear answer.')}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{(content.hasOwnProperty('global_footer_need') ? content['global_footer_need'] : (lang === 'ar' ? 'هل تبحث عن استشارة ثانية؟' : 'Need a second opinion?'))}</p>
+          <p className="text-sm leading-6 text-[#947e82]">{(content.hasOwnProperty('global_footer_need_desc') ? content['global_footer_need_desc'] : (lang === 'ar' ? 'أخبرنا بما تبحث عنه، وسيقوم مستشار متخصص بالاتصال بك لتقديم إجابة واضحة ومباشرة.' : 'Tell us what you are looking for. A real person will call with a clear answer.'))}</p>
           <a href={contact.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f5f2e9] px-5 py-3 text-sm font-bold text-[#231f20] transition-colors hover:bg-white" data-testid="link-footer-phone">
             <Phone size={14} /> <PhoneNumber />
           </a>
         </div>
       </div>
       <div className="container-shell mt-16 flex flex-col items-center justify-between border-t border-[#493337] pt-6 text-xs text-[#947e82] md:flex-row">
-        <p>{(content.hasOwnProperty('global_footer_copy') ? content['global_footer_copy'] : '© 2026 Capital Hills Developments')}</p>
+        <p>{(content.hasOwnProperty('global_footer_copy') ? content['global_footer_copy'] : (lang === 'ar' ? '© 2026 كابيتال هيلز للتطوير العقاري' : '© 2026 Capital Hills Developments'))}</p>
         <div className="flex flex-col items-center gap-1 md:flex-row md:gap-2">
-          <span>Powered by</span>
+          <span>{lang === 'ar' ? 'تطوير وتشغيل' : 'Powered by'}</span>
           <img src="/powered-by.png" alt="Powered by" className="h-6 w-auto object-contain" />
         </div>
-        <p className="mt-2 md:mt-0">{(content.hasOwnProperty('global_footer_slogan') ? content['global_footer_slogan'] : 'Built for better decisions.')}</p>
+        <p className="mt-2 md:mt-0">{(content.hasOwnProperty('global_footer_slogan') ? content['global_footer_slogan'] : (lang === 'ar' ? 'استثمر بثقة وانمو مع المجتمع' : 'Built for better decisions.'))}</p>
       </div>
     </footer>
   );
@@ -285,6 +349,7 @@ export function Footer() {
 
 export function ProjectCard({ project, featured = false }: { project: Project; featured?: boolean }) {
   const contact = useContactInfo();
+  const { lang } = useData();
   const [saved, setSaved] = useState(() => localStorage.getItem('capital-hills-favourites')?.includes(project.slug) ?? false);
 
   // Analyse image brightness — pick text colour that guarantees contrast
@@ -320,14 +385,14 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
             className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.06]"
           />
           {/* City badge — colour auto-set by top-region luminance */}
-          <span className={`absolute left-3 top-3 md:left-4 md:top-4 ${topBg} backdrop-blur-md rounded-full px-3 py-1 md:px-4 md:py-1.5 font-mono text-[9px] md:text-[11px] font-bold uppercase tracking-widest ${topText}`}>
+          <span className={`absolute left-3 top-3 md:left-4 md:top-4 rtl:left-auto rtl:right-3 md:rtl:right-4 ${topBg} backdrop-blur-md rounded-full px-3 py-1 md:px-4 md:py-1.5 font-mono text-[9px] md:text-[11px] font-bold uppercase tracking-widest ${topText}`}>
             {project.city}
           </span>
           {/* Save */}
           <button
             onClick={toggleSave}
             aria-label={saved ? 'Remove from saved' : 'Save project'}
-            className="absolute right-3 top-3 md:right-4 md:top-4 z-10 grid h-8 w-8 md:h-10 md:w-10 place-items-center rounded-full bg-[#f5f2e9]/20 text-white backdrop-blur-sm transition hover:bg-[#f5f2e9]/40"
+            className="absolute right-3 top-3 md:right-4 md:top-4 rtl:right-auto rtl:left-3 md:rtl:left-4 z-10 grid h-8 w-8 md:h-10 md:w-10 place-items-center rounded-full bg-[#f5f2e9]/20 text-white backdrop-blur-sm transition hover:bg-[#f5f2e9]/40"
             data-testid={`button-save-${project.slug}`}
           >
             <Heart size={16} fill={saved ? '#947e82' : 'none'} className={`w-3.5 h-3.5 md:w-4 md:h-4 ${saved ? 'text-[#947e82]' : ''}`} />
@@ -348,19 +413,21 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
             <div className="flex items-center justify-between">
               {project.projectSpace && (
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-[.18em] text-accent">Space</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[.18em] text-accent">{lang === 'ar' ? 'المساحة' : 'Space'}</p>
                   <p className="mt-1 font-display text-xl text-[#f5f2e9]">{project.projectSpace}</p>
                 </div>
               )}
               {project.delivery && (
-                <div className="text-right">
-                  <p className="font-mono text-[9px] uppercase tracking-[.18em] text-accent">Delivery</p>
+                <div className="text-right rtl:text-left">
+                  <p className="font-mono text-[9px] uppercase tracking-[.18em] text-accent">{lang === 'ar' ? 'التسليم' : 'Delivery'}</p>
                   <p className="mt-1 text-sm font-bold text-[#f5f2e9]">{project.delivery}</p>
                 </div>
               )}
             </div>
             <div className="mt-3 flex items-center gap-2">
-              <span className="flex-1 text-center rounded-sm bg-[#947e82] py-2 text-xs font-bold text-[#421319]">View project →</span>
+              <span className="flex-1 text-center rounded-sm bg-[#947e82] py-2 text-xs font-bold text-[#421319]">
+                {lang === 'ar' ? 'استعرض المشروع ←' : 'View project →'}
+              </span>
             </div>
           </div>
         </div>
@@ -390,14 +457,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
 export function FloatingActions() {
   const contact = useContactInfo();
+  const { lang } = useData();
   const [open, setOpen] = useState(false);
   const [activeIconIndex, setActiveIconIndex] = useState(0);
   const [notice, setNotice] = useState('');
   const actions = [
-    { label: 'Call', icon: Phone, href: contact.tel },
-    { label: 'WhatsApp', icon: MessageCircle, href: contact.whatsapp },
-    { label: 'Email', icon: Mail, href: contact.email },
-    { label: 'Direct Message', icon: Send, href: '/contact' },
+    { label: lang === 'ar' ? 'اتصال' : 'Call', icon: Phone, href: contact.tel },
+    { label: lang === 'ar' ? 'واتساب' : 'WhatsApp', icon: MessageCircle, href: contact.whatsapp },
+    { label: lang === 'ar' ? 'إيميل' : 'Email', icon: Mail, href: contact.email },
+    { label: lang === 'ar' ? 'رسالة مباشرة' : 'Direct Message', icon: Send, href: '/contact' },
   ];
   const isHandset = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -515,52 +583,103 @@ export function ChatWidget() {
 }
 
 export function BookVisitModal({ isOpen, onClose, projectName }: { isOpen: boolean; onClose: () => void; projectName: string }) {
+  const { t } = useData();
   const [visitSent, setVisitSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setVisitSent(false);
+      setErrorMsg(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setVisitSent(true);
+    setLoading(true);
+    setErrorMsg(null);
+
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      projectName: projectName || 'General Project Visit',
+      name: formData.get('name') as string,
+      phone: formData.get('phone') as string,
+      date: formData.get('date') as string,
+    };
+
+    try {
+      const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const API_URL = isDev && window.location.port !== '3001' ? 'http://localhost:3001/api' : '/api';
+      const res = await fetch(`${API_URL}/visits`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        setVisitSent(true);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setErrorMsg(data.error || t('Failed to submit booking. Please try again.', 'تعذر إرسال الحجز، يرجى المحاولة مرة أخرى.'));
+      }
+    } catch (e) {
+      setErrorMsg(t('Network error. Please try again.', 'حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-[#421319]/90 p-5 overflow-y-auto" role="dialog" aria-modal="true">
       <div className="relative w-full max-w-lg rounded-2xl bg-[#947e82] p-7 md:p-9 shadow-2xl my-8">
-        <button onClick={onClose} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-lg bg-[#f5f2e9] text-[#421319] transition-colors hover:bg-[#421319] hover:text-[#f5f2e9]" aria-label="Close modal">
+        <button onClick={onClose} className="absolute right-5 top-5 rtl:right-auto rtl:left-5 grid h-10 w-10 place-items-center rounded-lg bg-[#f5f2e9] text-[#421319] transition-colors hover:bg-[#421319] hover:text-[#f5f2e9]" aria-label="Close modal">
           <X size={18} />
         </button>
         <div className="flex items-center gap-2.5 mb-2">
           <img src="/capital-hills-icon-maroon.png" alt="" className="h-7 w-auto object-contain" />
-          <span className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82]">Capital Hills</span>
+          <span className="font-mono text-[9px] uppercase tracking-[.25em] text-[#421319] font-bold">Capital Hills</span>
         </div>
-        <h2 className="font-display text-3xl text-[#421319]">Book a private visit</h2>
-        <p className="mt-2 text-sm leading-6 text-[#493337]">See {projectName} in your own time.</p>
+        <h2 className="font-display text-3xl text-[#421319]">{t('Book a private visit', 'حجز زيارة خاصة')}</h2>
+        <p className="mt-2 text-sm leading-6 text-[#493337]">{t('See', 'تعرّف على')} {projectName} {t('in your own time.', 'في الوقت الذي يناسبك.')}</p>
+        
+        {errorMsg && (
+          <div className="mt-4 p-3 rounded-lg bg-red-100 text-red-800 text-xs font-semibold">
+            {errorMsg}
+          </div>
+        )}
+
         {visitSent ? (
           <div className="mt-8 rounded-xl bg-[#f5f2e9] p-7" data-testid="status-visit-success">
-            <Check className="text-[#947e82]" size={26} />
-            <h3 className="mt-4 font-display text-2xl text-[#421319]">Your visit request is with us.</h3>
-            <p className="mt-2 text-sm leading-6 text-[#493337]">A Capital Hills representative will call shortly to confirm the details.</p>
-            <button onClick={onClose} className="mt-6 w-full rounded-lg bg-[#421319] py-3 text-sm font-bold text-[#f5f2e9]">Close</button>
+            <Check className="text-[#421319]" size={26} />
+            <h3 className="mt-4 font-display text-2xl text-[#421319]">{t('Your visit request is with us.', 'تم استلام طلب الزيارة بنجاح.')}</h3>
+            <p className="mt-2 text-sm leading-6 text-[#493337]">{t('A Capital Hills representative will call shortly to confirm the details.', 'سيتواصل معك ممثل كابيتال هيلز لتأكيد الموعد والتفاصيل.')}</p>
+            <button onClick={onClose} className="mt-6 w-full rounded-lg bg-[#421319] py-3 text-sm font-bold text-[#f5f2e9] hover:bg-[#250f12] transition">{t('Close', 'إغلاق')}</button>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-8 space-y-4">
             <label className="block">
-              <span className="mb-2 block text-xs font-bold text-[#421319]">Your name</span>
-              <input required name="name" autoComplete="name" className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#947e82]" placeholder="e.g. Mariam Hassan" data-testid="input-visit-name" />
+              <span className="mb-2 block text-xs font-bold text-[#421319]">{t('Your name', 'الاسم بالكامل')}</span>
+              <input required name="name" autoComplete="name" className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#421319]" placeholder={t('e.g. Mariam Hassan', 'مثال: أحمد محمد')} data-testid="input-visit-name" />
             </label>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className="mb-2 block text-xs font-bold text-[#421319]">Phone number</span>
-                <input required type="tel" name="phone" autoComplete="tel" className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#947e82]" placeholder="+20..." data-testid="input-visit-phone" />
+                <span className="mb-2 block text-xs font-bold text-[#421319]">{t('Phone number', 'رقم الهاتف')}</span>
+                <input required type="tel" name="phone" autoComplete="tel" className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#421319]" placeholder="+20..." data-testid="input-visit-phone" />
               </label>
               <label className="block">
-                <span className="mb-2 block text-xs font-bold text-[#421319]">Preferred date</span>
-                <input required type="date" name="date" min={new Date().toISOString().slice(0, 10)} className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#947e82]" data-testid="input-visit-date" />
+                <span className="mb-2 block text-xs font-bold text-[#421319]">{t('Preferred date', 'التاريخ المفضل')}</span>
+                <input required type="date" name="date" min={new Date().toISOString().slice(0, 10)} className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#421319]" data-testid="input-visit-date" />
               </label>
             </div>
-            <button type="submit" className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#421319] px-5 py-3 text-sm font-bold text-[#f5f2e9]" data-testid="button-submit-visit">
-              <CalendarDays size={15} /> Request a visit
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#421319] px-5 py-3 text-sm font-bold text-[#f5f2e9] hover:bg-[#250f12] transition disabled:opacity-50" 
+              data-testid="button-submit-visit"
+            >
+              <CalendarDays size={15} /> {loading ? t('Sending...', 'جاري الإرسال...') : t('Request a visit', 'طلب حجز الزيارة')}
             </button>
           </form>
         )}
@@ -574,6 +693,17 @@ function pdfEscape(value: string) {
 }
 
 export function downloadBrochure(project: Project, phone: string = '16794') {
+  if (project.brochureUrl) {
+    const anchor = document.createElement('a');
+    anchor.href = project.brochureUrl;
+    anchor.target = '_blank';
+    anchor.download = `${project.slug}-brochure.pdf`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    return;
+  }
+
   const lines = [
     'Capital Hills Developments',
     project.name,

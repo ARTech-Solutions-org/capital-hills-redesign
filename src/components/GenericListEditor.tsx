@@ -11,22 +11,46 @@ interface GenericListEditorProps {
   title: string;
   fields: FieldDef[];
   value: string;
-  onSave: (val: string) => void;
+  valueAr?: string;
+  onSave: (valEn: string, valAr: string) => void;
 }
 const isDev = typeof window !== 'undefined' && window.location.port === '5173';
 const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
 
-export function GenericListEditor({ blockId, title, fields, value, onSave }: GenericListEditorProps) {
+export function GenericListEditor({ blockId, title, fields, value, valueAr, onSave }: GenericListEditorProps) {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     try {
-      setItems(value ? JSON.parse(value) : []);
+      const enList = value ? JSON.parse(value) : [];
+      const arList = valueAr ? JSON.parse(valueAr) : [];
+      
+      const maxLen = Math.max(enList.length, arList.length);
+      const merged = [];
+
+      for (let i = 0; i < maxLen; i++) {
+        const en = enList[i] || {};
+        const ar = arList[i] || {};
+        const obj: any = { ...en };
+
+        fields.forEach(f => {
+          if (f.type === 'text' || f.type === 'textarea') {
+            obj[f.name] = en[f.name] || '';
+            obj[`${f.name}Ar`] = ar[f.name] || en[`${f.name}Ar`] || '';
+          } else {
+            obj[f.name] = en[f.name] !== undefined ? en[f.name] : ar[f.name];
+          }
+        });
+
+        merged.push(obj);
+      }
+
+      setItems(merged);
     } catch (e) {
       setItems([]);
     }
-  }, [value]);
+  }, [value, valueAr]);
 
   const handleUploadImage = async (file: File, index: number, fieldName: string) => {
     try {
@@ -54,6 +78,9 @@ export function GenericListEditor({ blockId, title, fields, value, onSave }: Gen
     const newItem: any = {};
     fields.forEach(f => {
       newItem[f.name] = '';
+      if (f.type === 'text' || f.type === 'textarea') {
+        newItem[`${f.name}Ar`] = '';
+      }
     });
     setItems([...items, newItem]);
   };
@@ -64,10 +91,34 @@ export function GenericListEditor({ blockId, title, fields, value, onSave }: Gen
     setItems(newItems);
   };
 
-  const handleChange = (index: number, field: string, val: string) => {
+  const handleChange = (index: number, field: string, val: any) => {
     const newItems = [...items];
     newItems[index][field] = val;
     setItems(newItems);
+  };
+
+  const handleSave = () => {
+    const enList = items.map(item => {
+      const enItem: any = {};
+      fields.forEach(f => {
+        enItem[f.name] = item[f.name];
+      });
+      return enItem;
+    });
+
+    const arList = items.map(item => {
+      const arItem: any = {};
+      fields.forEach(f => {
+        if (f.type === 'text' || f.type === 'textarea') {
+          arItem[f.name] = item[`${f.name}Ar`] || item[f.name] || '';
+        } else {
+          arItem[f.name] = item[f.name];
+        }
+      });
+      return arItem;
+    });
+
+    onSave(JSON.stringify(enList), JSON.stringify(arList));
   };
 
   return (
@@ -81,17 +132,19 @@ export function GenericListEditor({ blockId, title, fields, value, onSave }: Gen
           onClick={handleAdd}
           className="bg-[#421319] text-[#f5f2e9] px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#250f12] transition"
         >
-          + Add Item
+          + Add Item / إضافة عنصر
         </button>
       </div>
 
       <div className="space-y-6">
         {items.map((item, i) => (
-          <div key={i} className="flex flex-col gap-4 p-4 border border-[#947e82]/20 rounded-lg">
-            {fields.map(f => (
-              <div key={f.name} className="w-full">
-                {f.type === 'image' ? (
-                  <div className="w-full md:w-1/4">
+          <div key={i} className="flex flex-col gap-4 p-5 border border-[#947e82]/20 rounded-xl bg-[#fdfbf7]">
+            {fields.map(f => {
+              const isNumberOrCode = f.name === 'n' || f.name === 'num';
+              
+              if (f.type === 'image') {
+                return (
+                  <div key={f.name} className="w-full md:w-1/3">
                     <label className="block text-xs font-bold text-[#947e82] mb-2">{f.label}</label>
                     {item[f.name] ? (
                       <div className="relative aspect-video bg-[#f5f2e9] rounded border flex items-center justify-center p-2">
@@ -103,7 +156,7 @@ export function GenericListEditor({ blockId, title, fields, value, onSave }: Gen
                       </div>
                     )}
                     <label className="mt-2 block text-xs font-bold text-[#421319] cursor-pointer underline">
-                      Upload
+                      Upload Image / رفع صورة
                       <input 
                         type="file" 
                         accept="image/*" 
@@ -116,58 +169,111 @@ export function GenericListEditor({ blockId, title, fields, value, onSave }: Gen
                       />
                     </label>
                   </div>
-                ) : f.type === 'textarea' ? (
-                  <>
-                    <label className="block text-xs font-bold text-[#947e82] mb-2">{f.label}</label>
-                    <textarea 
-                      value={item[f.name] || ''} 
-                      onChange={e => handleChange(i, f.name, e.target.value)} 
-                      placeholder={f.label}
-                      className="w-full min-h-[80px] bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2 outline-none focus:border-[#421319]"
-                    />
-                  </>
-                ) : f.type === 'checkbox' ? (
-                  <div className="flex items-center gap-2">
+                );
+              }
+
+              if (f.type === 'checkbox') {
+                return (
+                  <div key={f.name} className="flex items-center gap-2 pt-2">
                     <input 
                       type="checkbox" 
                       checked={!!item[f.name]} 
-                      onChange={e => handleChange(i, f.name, e.target.checked as any)} 
+                      onChange={e => handleChange(i, f.name, e.target.checked)} 
                       id={`checkbox-${i}-${f.name}`}
                       className="w-4 h-4 text-[#421319] bg-[#f5f2e9] border-[#947e82]/30 rounded focus:ring-[#421319]"
                     />
                     <label htmlFor={`checkbox-${i}-${f.name}`} className="text-sm font-bold text-[#947e82]">{f.label}</label>
                   </div>
-                ) : (
-                  <>
-                    <label className="block text-xs font-bold text-[#947e82] mb-2">{f.label}</label>
+                );
+              }
+
+              if (isNumberOrCode) {
+                return (
+                  <div key={f.name} className="w-full">
+                    <label className="block text-xs font-bold text-[#947e82] mb-1">{f.label}</label>
                     <input 
                       type="text" 
                       value={item[f.name] || ''} 
                       onChange={e => handleChange(i, f.name, e.target.value)} 
-                      placeholder={f.label}
-                      className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2 outline-none focus:border-[#421319]"
+                      className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2.5 text-sm outline-none focus:border-[#421319]"
                     />
-                  </>
-                )}
-              </div>
-            ))}
+                  </div>
+                );
+              }
+
+              // Text or Textarea: Render English on top, Arabic directly below it
+              return (
+                <div key={f.name} className="w-full space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-[#947e82] mb-1">
+                      {f.label} (English)
+                    </label>
+                    {f.type === 'textarea' ? (
+                      <textarea 
+                        value={item[f.name] || ''} 
+                        onChange={e => handleChange(i, f.name, e.target.value)} 
+                        placeholder={`${f.label} (English)`}
+                        className="w-full min-h-[70px] bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2.5 text-sm outline-none focus:border-[#421319]"
+                      />
+                    ) : (
+                      <input 
+                        type="text" 
+                        value={item[f.name] || ''} 
+                        onChange={e => handleChange(i, f.name, e.target.value)} 
+                        placeholder={`${f.label} (English)`}
+                        className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2.5 text-sm outline-none focus:border-[#421319]"
+                      />
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#421319] mb-1 font-sans">
+                      {f.label} (بالعربية)
+                    </label>
+                    {f.type === 'textarea' ? (
+                      <textarea 
+                        dir="rtl"
+                        value={item[`${f.name}Ar`] || ''} 
+                        onChange={e => handleChange(i, `${f.name}Ar`, e.target.value)} 
+                        placeholder={`${f.label} (بالعربية)`}
+                        className="w-full min-h-[70px] bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:border-[#421319]"
+                      />
+                    ) : (
+                      <input 
+                        type="text" 
+                        dir="rtl"
+                        value={item[`${f.name}Ar`] || ''} 
+                        onChange={e => handleChange(i, `${f.name}Ar`, e.target.value)} 
+                        placeholder={`${f.label} (بالعربية)`}
+                        className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:border-[#421319]"
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
             
-            <div className="flex justify-end pt-2 border-t border-[#947e82]/10 mt-2">
-              <button onClick={() => handleRemove(i)} className="text-red-500 text-xs font-bold underline">Remove Item</button>
+            <div className="flex justify-end pt-2 border-t border-[#947e82]/10 mt-1">
+              <button 
+                onClick={() => handleRemove(i)} 
+                className="text-red-500 text-xs font-bold hover:underline"
+              >
+                Remove Item / حذف العنصر
+              </button>
             </div>
           </div>
         ))}
         {items.length === 0 && (
-          <p className="text-sm text-[#947e82]">No items added yet.</p>
+          <p className="text-sm text-[#947e82]">No items added yet / لا توجد عناصر حالياً.</p>
         )}
       </div>
 
       <button 
-        onClick={() => onSave(JSON.stringify(items))}
+        onClick={handleSave}
         disabled={loading}
-        className="mt-6 bg-[#421319] text-[#f5f2e9] px-6 py-2 rounded-lg text-sm font-bold hover:bg-[#250f12] transition"
+        className="mt-6 bg-[#421319] text-[#f5f2e9] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-[#250f12] transition"
       >
-        {loading ? 'Uploading...' : 'Save Changes'}
+        {loading ? 'Uploading...' : 'Save Changes / حفظ التعديلات'}
       </button>
     </div>
   );

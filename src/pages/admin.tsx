@@ -3,12 +3,13 @@ import { FadeIn } from '@/components/animations';
 import { PartnersEditor } from '@/components/PartnersEditor';
 import { GenericListEditor } from '@/components/GenericListEditor';
 import { SingleImageEditor } from '@/components/SingleImageEditor';
+import { ProjectSpecsEditor } from '@/components/ProjectSpecsEditor';
 import { HeroOrbit } from '@/components/HeroOrbit';
-import { Eye, EyeOff, Sparkles, Image as ImageIcon, Upload, Orbit, Layers, Sliders } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, Image as ImageIcon, Upload, Orbit, Layers, Sliders, AlertTriangle, RefreshCw, FileText, Trash2, ExternalLink, Calendar, Phone, CheckCircle2, Clock, Copy, Check, Mail, MessageSquare, X } from 'lucide-react';
 import NotFound from '@/pages/not-found';
 
-const isDev = typeof window !== 'undefined' && window.location.port === '5173';
-const API_URL = isDev ? 'http://localhost:3001/api' : '/api';
+const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_URL = isDev && window.location.port !== '3001' ? 'http://localhost:3001/api' : '/api';
 const ADMIN_PASSKEY = import.meta.env.VITE_ADMIN_PASSKEY || 'capital2026';
 
 const PRESET_LOGOS = [
@@ -24,6 +25,52 @@ const PRESET_LOGOS = [
   { label: 'East Point', value: '/project-logos/east-point.png' },
   { label: 'Capital Green', value: '/project-logos/capital-green.png' },
 ];
+
+const formatArabicDateTime = (dateVal: any) => {
+  if (!dateVal) return '';
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return String(dateVal);
+    return d.toLocaleString('ar-EG', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return String(dateVal);
+  }
+};
+
+const formatArabicDate = (dateVal: any) => {
+  if (!dateVal) return '';
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return String(dateVal);
+    return d.toLocaleDateString('ar-EG', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } catch {
+    return String(dateVal);
+  }
+};
+
+const formatArabicTime = (dateVal: any) => {
+  if (!dateVal) return '';
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return String(dateVal);
+    return d.toLocaleTimeString('ar-EG', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return String(dateVal);
+  }
+};
 
 export default function Admin() {
   const [isAuthorized] = useState<boolean>(() => {
@@ -41,11 +88,17 @@ export default function Admin() {
     return <NotFound />;
   }
 
-  const [activeTab, setActiveTab] = useState<'home' | 'aboutus' | 'contact' | 'global' | 'projects' | 'messages'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'aboutus' | 'contact' | 'global' | 'projects' | 'messages' | 'visits'>('home');
   useEffect(() => {
     if (activeTab === 'messages' && unreadCount > 0) {
       fetch(`${API_URL}/messages/read`, { method: 'PATCH' }).then(() => {
         setMessages(messages.map(m => ({...m, isRead: true})));
+      });
+    } else if (activeTab === 'visits' && visits.some((v: any) => !v.isRead)) {
+      fetch(`${API_URL}/visits/read-all`, { method: 'PATCH' }).then(() => {
+        setVisits(visits.map(v => ({ ...v, isRead: true })));
+      }).catch(err => {
+        console.error('Failed to mark visits as read:', err);
       });
     }
   }, [activeTab]);
@@ -64,48 +117,113 @@ export default function Admin() {
   const [editingProject, setEditingProject] = useState<any | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingBrochure, setUploadingBrochure] = useState(false);
+  const [uploadingBrochureAr, setUploadingBrochureAr] = useState(false);
   const [showOrbitPreview, setShowOrbitPreview] = useState(true);
   const [uploadedUrl, setUploadedUrl] = useState('');
   const [messages, setMessages] = useState<any[]>([]);
   const unreadCount = messages.filter((m: any) => !m.isRead).length;
+
+  const [visits, setVisits] = useState<any[]>([]);
+  const unreadVisitsCount = visits.filter((v: any) => !v.isRead).length;
+
+  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopy = (text: string, fieldName: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleDeleteMessage = async (id: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!window.confirm('هل أنت متأكد من حذف هذه الرسالة؟ / Are you sure you want to delete this message?')) return;
+    try {
+      const res = await fetch(`${API_URL}/messages/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      setMessages(prev => prev.filter(m => m.id !== id));
+      if (selectedMessage?.id === id) setSelectedMessage(null);
+    } catch (err) {
+      alert('Failed to delete message / تعذر حذف الرسالة');
+    }
+  };
+
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
+    setFetchError(null);
     try {
-      const [contentRes, projectsRes, msgsRes] = await Promise.all([
+      const [contentRes, projectsRes, msgsRes, visitsRes] = await Promise.all([
         fetch(`${API_URL}/content?_t=${Date.now()}`, { cache: 'no-store' }),
         fetch(`${API_URL}/projects?_t=${Date.now()}`, { cache: 'no-store' }),
-        fetch(`${API_URL}/messages?_t=${Date.now()}`, { cache: 'no-store' })
+        fetch(`${API_URL}/messages?_t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`${API_URL}/visits?_t=${Date.now()}`, { cache: 'no-store' })
       ]);
-      if (contentRes.ok) setContentBlocks(await contentRes.json());
-      if (projectsRes.ok) setProjects(await projectsRes.json());
+      if (!contentRes.ok) throw new Error(`HTTP ${contentRes.status}: تعذر جلب نصوص الموقع`);
+      if (!projectsRes.ok) throw new Error(`HTTP ${projectsRes.status}: تعذر جلب المشاريع`);
+      setContentBlocks(await contentRes.json());
+      setProjects(await projectsRes.json());
       if (msgsRes.ok) setMessages(await msgsRes.json());
-    } catch (e) {
+      if (visitsRes.ok) setVisits(await visitsRes.json());
+      setFetchError(null);
+    } catch (e: any) {
       console.error('Fetch admin data error:', e);
+      setFetchError(e?.message || 'Failed to connect to API server');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSaveContent = async (id: string, value: string) => {
+  const handleUpdateVisitStatus = async (id: number, status: string) => {
+    try {
+      const res = await fetch(`${API_URL}/visits/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      if (!res.ok) throw new Error('Update failed');
+      setVisits(prev => prev.map(v => v.id === id ? { ...v, status } : v));
+    } catch (e) {
+      alert('Failed to update visit status / تعذر تحديث حالة الزيارة');
+    }
+  };
+
+  const handleDeleteVisit = async (id: number) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا الحجز؟ / Are you sure you want to delete this booking?')) return;
+    try {
+      const res = await fetch(`${API_URL}/visits/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Delete failed');
+      setVisits(prev => prev.filter(v => v.id !== id));
+    } catch (e) {
+      alert('Failed to delete visit / تعذر حذف الحجز');
+    }
+  };
+
+  const handleSaveContent = async (id: string, value: string, valueAr?: string) => {
     try {
       const res = await fetch(`${API_URL}/content`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, value })
+        body: JSON.stringify({ id, value, valueAr })
       });
       if (!res.ok) throw new Error('Save failed');
-      alert('Saved!');
+      alert('Saved successfully! / تم الحفظ بنجاح');
       // Update local state immediately so UI refreshes without relying on network cache
       setContentBlocks(prev => {
         const exists = prev.find(b => b.id === id);
         if (exists) {
-          return prev.map(b => b.id === id ? { ...b, value } : b);
+          return prev.map(b => b.id === id ? { ...b, value, valueAr } : b);
         }
-        return [...prev, { id, value }];
+        return [...prev, { id, value, valueAr }];
       });
       fetchData();
     } catch (e) {
@@ -199,6 +317,33 @@ export default function Admin() {
       alert('Logo upload failed');
     } finally {
       setUploadingLogo(false);
+    }
+  };
+
+  const handleBrochureUpload = async (e: React.ChangeEvent<HTMLInputElement>, isAr: boolean = false) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    if (isAr) setUploadingBrochureAr(true);
+    else setUploadingBrochure(true);
+    try {
+      const file = files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_URL}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      const { publicUrl } = await res.json();
+      setEditingProject((prev: any) => ({
+        ...prev,
+        [isAr ? 'brochureUrlAr' : 'brochureUrl']: publicUrl,
+      }));
+    } catch (err) {
+      alert('Brochure upload failed / فشل رفع ملف البروشور');
+    } finally {
+      if (isAr) setUploadingBrochureAr(false);
+      else setUploadingBrochure(false);
     }
   };
 
@@ -314,6 +459,7 @@ export default function Admin() {
       { id: 'aboutus_story_title_1', label: 'Story Title Line 1', group: 'Story' },
       { id: 'aboutus_story_title_2', label: 'Story Title Line 2', group: 'Story' },
       { id: 'aboutus_story_title_3', label: 'Story Title Line 3', group: 'Story' },
+      { id: 'aboutus_story_highlight', label: 'Story Highlight Banner (Investments exceeding...)', group: 'Story' },
       { id: 'aboutus_story_p1', label: 'Story Paragraph 1', group: 'Story' },
       { id: 'aboutus_story_p2', label: 'Story Paragraph 2', group: 'Story' },
       { id: 'aboutus_story_p3', label: 'Story Paragraph 3', group: 'Story' },
@@ -321,6 +467,7 @@ export default function Admin() {
       { id: 'aboutus_mission_desc', label: 'Mission Description', group: 'Mission & Vision' },
       { id: 'aboutus_vision_title', label: 'Vision Title', group: 'Mission & Vision' },
       { id: 'aboutus_vision_desc', label: 'Vision Description', group: 'Mission & Vision' },
+      { id: 'aboutus_slogan', label: 'Mission/Vision Slogan (Invest With Trust...)', group: 'Mission & Vision' },
       { id: 'aboutus_cta_eyebrow', label: 'CTA Eyebrow', group: 'CTA' },
       { id: 'aboutus_cta_title', label: 'CTA Title', group: 'CTA' },
       { id: 'aboutus_categories_list', label: 'Categories List', group: 'Categories' }
@@ -406,20 +553,21 @@ export default function Admin() {
 
       <div className="grid gap-6">
         {blocksToRender.map((blockDef) => {
-          // Find value in DB blocks
+          // Find value and valueAr in DB blocks
           const dbBlock = blocks.find(b => b.id === blockDef.id);
-          const value = dbBlock ? dbBlock.value : '';
+          const value = dbBlock ? (dbBlock.value || '') : '';
+          const valueAr = dbBlock ? (dbBlock.valueAr || '') : '';
 
           if (blockDef.id.startsWith('global_logo_') || blockDef.id.endsWith('_bg') || blockDef.id.endsWith('_img')) {
-            return <SingleImageEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
+            return <SingleImageEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val, valueAr)} />;
           }
 
           if (blockDef.id === 'home_partners_list') {
-            return <PartnersEditor key={`${blockDef.id}-${value}`} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
+            return <PartnersEditor key={`${blockDef.id}-${value}-${valueAr}`} value={value} valueAr={valueAr} onSave={(valEn, valAr) => handleSaveContent(blockDef.id, valEn, valAr)} />;
           }
 
           if (blockDef.id === 'home_why_list') {
-            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}-${valueAr}`} blockId={blockDef.id} title={blockDef.label} value={value} valueAr={valueAr} onSave={(valEn, valAr) => handleSaveContent(blockDef.id, valEn, valAr)} fields={[
               { name: 'n', label: 'Number (e.g. 01)', type: 'text' },
               { name: 'title', label: 'Title', type: 'text' },
               { name: 'copy', label: 'Description', type: 'textarea' },
@@ -427,14 +575,14 @@ export default function Admin() {
           }
 
           if (blockDef.id === 'aboutus_core_list') {
-            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}-${valueAr}`} blockId={blockDef.id} title={blockDef.label} value={value} valueAr={valueAr} onSave={(valEn, valAr) => handleSaveContent(blockDef.id, valEn, valAr)} fields={[
               { name: 'title', label: 'Title', type: 'text' },
               { name: 'copy', label: 'Description', type: 'textarea' },
             ]} />;
           }
 
           if (blockDef.id === 'aboutus_categories_list') {
-            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}-${valueAr}`} blockId={blockDef.id} title={blockDef.label} value={value} valueAr={valueAr} onSave={(valEn, valAr) => handleSaveContent(blockDef.id, valEn, valAr)} fields={[
               { name: 'title', label: 'Category Name', type: 'text' },
               { name: 'subtitle', label: 'Subtitle', type: 'text' },
               { name: 'desc', label: 'Description', type: 'textarea' },
@@ -442,7 +590,7 @@ export default function Admin() {
           }
 
           if (blockDef.id === 'home_reviews_list') {
-            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}-${valueAr}`} blockId={blockDef.id} title={blockDef.label} value={value} valueAr={valueAr} onSave={(valEn, valAr) => handleSaveContent(blockDef.id, valEn, valAr)} fields={[
               { name: 'quote', label: 'Quote', type: 'textarea' },
               { name: 'name', label: 'Name', type: 'text' },
               { name: 'detail', label: 'Detail (e.g. Investor)', type: 'text' },
@@ -451,37 +599,68 @@ export default function Admin() {
           }
 
           if (blockDef.id === 'chairman_stats_list') {
-            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}-${valueAr}`} blockId={blockDef.id} title={blockDef.label} value={value} valueAr={valueAr} onSave={(valEn, valAr) => handleSaveContent(blockDef.id, valEn, valAr)} fields={[
               { name: 'num', label: 'Number Value (e.g. 10+)', type: 'text' },
               { name: 'label', label: 'Label', type: 'text' },
             ]} />;
           }
 
           if (blockDef.id === 'home_ticker_list') {
-            return <GenericListEditor key={`${blockDef.id}-${value}`} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+            return <GenericListEditor key={`${blockDef.id}-${value}-${valueAr}`} blockId={blockDef.id} title={blockDef.label} value={value} valueAr={valueAr} onSave={(valEn, valAr) => handleSaveContent(blockDef.id, valEn, valAr)} fields={[
               { name: 'text', label: 'Ticker Text', type: 'text' },
             ]} />;
           }
 
           return (
-            <div key={blockDef.id} className="bg-white p-6 rounded-xl shadow-sm border border-[#947e82]/10 relative">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1">{blockDef.label}</label>
-              <span className="block text-[10px] font-mono text-[#947e82]/60 mb-3">{blockDef.id}</span>
-              <textarea 
-                key={`${blockDef.id}-${value}`}
-                className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-4 min-h-[60px] outline-none focus:border-[#421319]"
-                defaultValue={value}
-                id={`content_${blockDef.id}`}
-              />
-              <button 
-                onClick={() => {
-                  const val = (document.getElementById(`content_${blockDef.id}`) as HTMLTextAreaElement).value;
-                  handleSaveContent(blockDef.id, val);
-                }}
-                className="mt-4 bg-[#421319] text-[#f5f2e9] px-6 py-2 rounded-lg text-sm font-bold hover:bg-[#250f12] transition"
-              >
-                Save Changes
-              </button>
+            <div key={blockDef.id} className="bg-white p-6 rounded-xl shadow-sm border border-[#947e82]/10 relative space-y-4">
+              <div className="flex justify-between items-center border-b border-[#947e82]/10 pb-2">
+                <span className="text-sm font-bold text-[#421319]">{blockDef.label}</span>
+                <span className="text-[10px] font-mono text-[#947e82]/60 bg-[#f5f2e9] px-2 py-0.5 rounded">{blockDef.id}</span>
+              </div>
+
+              {/* English Input */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                  English Field (EN)
+                </label>
+                <textarea 
+                  key={`en-${blockDef.id}-${value}`}
+                  className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 min-h-[60px] text-sm outline-none focus:border-[#421319]"
+                  defaultValue={value}
+                  id={`content_${blockDef.id}_en`}
+                  placeholder="Enter English content..."
+                />
+              </div>
+
+              {/* Arabic Input - DIRECTLY UNDERNEATH */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                  الخانة بالعربية (AR)
+                </label>
+                <textarea 
+                  key={`ar-${blockDef.id}-${valueAr}`}
+                  dir="rtl"
+                  className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 min-h-[60px] text-sm text-right font-sans outline-none focus:border-[#421319]"
+                  defaultValue={valueAr}
+                  id={`content_${blockDef.id}_ar`}
+                  placeholder="اكتب المحتوى بالعربية..."
+                />
+              </div>
+
+              <div className="pt-2">
+                <button 
+                  onClick={() => {
+                    const valEn = (document.getElementById(`content_${blockDef.id}_en`) as HTMLTextAreaElement).value;
+                    const valAr = (document.getElementById(`content_${blockDef.id}_ar`) as HTMLTextAreaElement).value;
+                    handleSaveContent(blockDef.id, valEn, valAr);
+                  }}
+                  className="bg-[#421319] text-[#f5f2e9] px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-[#250f12] transition flex items-center gap-2"
+                >
+                  Save Changes / حفظ التعديلات
+                </button>
+              </div>
             </div>
           );
         })}
@@ -495,16 +674,33 @@ export default function Admin() {
         <FadeIn>
           <div className="flex items-center justify-between mb-8">
             <h1 className="font-display text-4xl text-[#421319]">Admin Dashboard</h1>
-              <button 
-                onClick={() => {
-                  sessionStorage.removeItem('admin_passkey');
-                  window.location.href = '/';
-                }}
-                className="text-xs font-bold text-[#421319] hover:bg-[#421319]/10 border border-[#421319]/30 px-3 py-1.5 rounded-lg transition"
-              >
-                Log Out
+            <button 
+              onClick={() => {
+                sessionStorage.removeItem('admin_passkey');
+                window.location.href = '/';
+              }}
+              className="text-xs font-bold text-[#421319] hover:bg-[#421319]/10 border border-[#421319]/30 px-3 py-1.5 rounded-lg transition"
+            >
+              Log Out
+            </button>
+          </div>
+
+          {fetchError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
+                <div>
+                  <p className="font-bold text-sm">تعذر الاتصال بسيرفر البيانات المحلي (Backend API Server)</p>
+                  <p className="text-xs text-red-600 mt-0.5 font-sans">
+                    يرجى التأكد من تشغيل سيرفر الـ API في نافذة تيرمينال منفصلة عبر: <code className="bg-red-100 px-1.5 py-0.5 rounded font-mono font-bold">npm run dev:server</code>
+                  </p>
+                </div>
+              </div>
+              <button onClick={fetchData} className="px-3.5 py-1.5 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition flex items-center gap-1.5 shrink-0 self-start sm:self-auto">
+                <RefreshCw className="w-3.5 h-3.5" /> إعادة المحاولة
               </button>
             </div>
+          )}
             
             <div className="flex gap-4 mb-8 border-b border-[#947e82]/20 pb-4 overflow-x-auto">
               <button onClick={() => setActiveTab('home')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'home' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Home Page</button>
@@ -512,6 +708,15 @@ export default function Admin() {
               <button onClick={() => setActiveTab('contact')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'contact' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Contact Page</button>
               <button onClick={() => setActiveTab('global')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'global' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Global (Footer/Header)</button>
               <button onClick={() => { setActiveTab('projects'); setEditingProject(null); }} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'projects' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Projects</button>
+              <button onClick={() => setActiveTab('visits')} className={`relative flex items-center gap-1.5 text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'visits' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>
+                <Calendar className="w-4 h-4" />
+                مواعيد الزيارات / Visits
+                {unreadVisitsCount > 0 && (
+                  <span className="flex h-5 min-w-[20px] px-1.5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white shadow-sm">
+                    {unreadVisitsCount}
+                  </span>
+                )}
+              </button>
               <button onClick={() => setActiveTab('messages')} className={`relative flex items-center text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'messages' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>
                   Direct Messages
                   {unreadCount > 0 && (
@@ -752,49 +957,329 @@ export default function Admin() {
                         <form onSubmit={handleSaveProject} className="space-y-8">
                           {/* ─── BASIC INFO ─── */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Project Name *</label>
-                              <input required type="text" value={editingProject.name} onChange={e => setEditingProject({...editingProject, name: e.target.value, slug: editingProject.id ? editingProject.slug : e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            {/* Project Name Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Project Name (EN) *
+                                </label>
+                                <input required type="text" value={editingProject.name || ''} onChange={e => setEditingProject({...editingProject, name: e.target.value, slug: editingProject.id ? editingProject.slug : e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. CAPITAL TOWERS" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  اسم المشروع (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.nameAr || ''} onChange={e => setEditingProject({...editingProject, nameAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: كابيتال تاورز" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Slug (URL friendly) *</label>
-                              <input required type="text" value={editingProject.slug} onChange={e => setEditingProject({...editingProject, slug: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Slug (URL friendly) */}
+                            <div className="bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20 flex flex-col justify-between">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5">Slug (URL friendly) *</label>
+                                <input required type="text" value={editingProject.slug || ''} onChange={e => setEditingProject({...editingProject, slug: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" />
+                                <span className="text-[11px] text-[#947e82] mt-1.5 block">Used in website URL (e.g. /projects/capital-towers)</span>
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">City *</label>
-                              <input required type="text" value={editingProject.city} onChange={e => setEditingProject({...editingProject, city: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* City Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  City (EN) *
+                                </label>
+                                <input required type="text" value={editingProject.city || ''} onChange={e => setEditingProject({...editingProject, city: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. 6th of October" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  المدينة (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.cityAr || ''} onChange={e => setEditingProject({...editingProject, cityAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: 6 أكتوبر" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Location *</label>
-                              <input required type="text" value={editingProject.location} onChange={e => setEditingProject({...editingProject, location: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Location Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Location (EN) *
+                                </label>
+                                <input required type="text" value={editingProject.location || ''} onChange={e => setEditingProject({...editingProject, location: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="Location details in English" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  الموقع (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.locationAr || ''} onChange={e => setEditingProject({...editingProject, locationAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="تفاصيل الموقع بالعربية" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Product Type *</label>
-                              <input required type="text" value={editingProject.product} onChange={e => setEditingProject({...editingProject, product: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Product Type Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Product Type (EN) *
+                                </label>
+                                <input required type="text" value={editingProject.product || ''} onChange={e => setEditingProject({...editingProject, product: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. Mixed Use (Commercial – Admin – Medical)" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  نوع الاستخدام (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.productAr || ''} onChange={e => setEditingProject({...editingProject, productAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: متعدد الاستخدامات (تجاري – إداري – طبي)" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Project Space</label>
-                              <input type="text" value={editingProject.projectSpace || ''} onChange={e => setEditingProject({...editingProject, projectSpace: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Project Space Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Project Space (EN)
+                                </label>
+                                <input type="text" value={editingProject.projectSpace || ''} onChange={e => setEditingProject({...editingProject, projectSpace: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. 14,000 SQM" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  مساحة المشروع (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.projectSpaceAr || ''} onChange={e => setEditingProject({...editingProject, projectSpaceAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: 14,000 متر مربع" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Built Up Area</label>
-                              <input type="text" value={editingProject.builtUpArea || ''} onChange={e => setEditingProject({...editingProject, builtUpArea: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Built Up Area Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Built Up Area (EN)
+                                </label>
+                                <input type="text" value={editingProject.builtUpArea || ''} onChange={e => setEditingProject({...editingProject, builtUpArea: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. 21,000 SQM" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  المساحة المبنية (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.builtUpAreaAr || ''} onChange={e => setEditingProject({...editingProject, builtUpAreaAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: 21,000 متر مربع" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Construction</label>
-                              <input type="text" value={editingProject.construction || ''} onChange={e => setEditingProject({...editingProject, construction: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Construction Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Construction (EN)
+                                </label>
+                                <input type="text" value={editingProject.construction || ''} onChange={e => setEditingProject({...editingProject, construction: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. 5 Towers (G+6 & G+8)" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  الموقف الإنشائي (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.constructionAr || ''} onChange={e => setEditingProject({...editingProject, constructionAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: 5 أبراج (أرضي + 6 وأرضي + 8)" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Finishing</label>
-                              <input type="text" value={editingProject.finishing || ''} onChange={e => setEditingProject({...editingProject, finishing: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Finishing Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Finishing (EN)
+                                </label>
+                                <input type="text" value={editingProject.finishing || ''} onChange={e => setEditingProject({...editingProject, finishing: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. Core & Shell / Fully Finished" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  نوع التشطيب (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.finishingAr || ''} onChange={e => setEditingProject({...editingProject, finishingAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: طوب ومحارة / تشطيب كامل بالتكييفات" />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Delivery</label>
-                              <input type="text" value={editingProject.delivery || ''} onChange={e => setEditingProject({...editingProject, delivery: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Delivery Pair */}
+                            <div className="space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Delivery (EN)
+                                </label>
+                                <input type="text" value={editingProject.delivery || ''} onChange={e => setEditingProject({...editingProject, delivery: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="e.g. 4 Years / June 2025" />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  موعد التسليم (عربي)
+                                </label>
+                                <input dir="rtl" type="text" value={editingProject.deliveryAr || ''} onChange={e => setEditingProject({...editingProject, deliveryAr: e.target.value})} className="w-full bg-[#f5f2e9] rounded-lg p-2.5 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="مثال: خلال 4 سنوات / يونيو 2025" />
+                              </div>
                             </div>
-                            <div className="col-span-1 md:col-span-2">
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Description</label>
-                              <textarea value={editingProject.description || ''} onChange={e => setEditingProject({...editingProject, description: e.target.value})} className="w-full min-h-[100px] bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+
+                            {/* Description Pair (Full Width) */}
+                            <div className="col-span-1 md:col-span-2 space-y-4 bg-[#fdfbf7] p-4 rounded-xl border border-[#947e82]/20">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1.5 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                  Description (EN)
+                                </label>
+                                <textarea value={editingProject.description || ''} onChange={e => setEditingProject({...editingProject, description: e.target.value})} className="w-full min-h-[90px] bg-[#f5f2e9] rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-[#421319]" placeholder="Detailed project overview in English..." />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#421319] mb-1.5 flex items-center gap-1.5 font-sans">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  الوصف التفصيلي للمشروع (عربي)
+                                </label>
+                                <textarea dir="rtl" value={editingProject.descriptionAr || ''} onChange={e => setEditingProject({...editingProject, descriptionAr: e.target.value})} className="w-full min-h-[90px] bg-[#f5f2e9] rounded-lg p-3 text-sm text-right font-sans outline-none focus:ring-2 focus:ring-[#421319]" placeholder="وصف تفصيلي شامل للمشروع بالعربية..." />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ─── PROJECT HIGHLIGHTS & SPECIFICATIONS (EXTRA DETAILS) ─── */}
+                          <ProjectSpecsEditor
+                            extraDetails={editingProject.extraDetails}
+                            extraDetailsAr={editingProject.extraDetailsAr}
+                            onChange={(extraDetails, extraDetailsAr) => {
+                              setEditingProject((prev: any) => ({
+                                ...prev,
+                                extraDetails,
+                                extraDetailsAr
+                              }));
+                            }}
+                          />
+
+                          {/* ─── PROJECT BROCHURE (PDF) SECTION ─── */}
+                          <div className="border border-[#421319]/15 rounded-2xl p-6 bg-[#fbf9f4] space-y-6">
+                            <div className="flex items-center gap-3 border-b border-[#421319]/10 pb-4">
+                              <div className="w-10 h-10 rounded-xl bg-[#421319] text-[#f5f2e9] flex items-center justify-center">
+                                <FileText className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-display text-[#421319]">Project Brochure (PDF) / بروشور المشروع</h3>
+                                <p className="text-xs text-[#947e82]">
+                                  ارفع ملف البروشور (PDF) ليتمكن الزوار من تحميله مباشرة عند الضغط على زر "تحميل بروشور المشروع" في صفحة تفاصيل المشروع.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-6">
+                              {/* English Brochure */}
+                              <div className="bg-white p-5 rounded-xl border border-[#947e82]/20 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-[#947e82] flex items-center gap-1.5">
+                                    <span className="w-2 h-2 rounded-full bg-blue-600 inline-block"></span>
+                                    English Brochure (PDF)
+                                  </label>
+                                  {editingProject.brochureUrl && (
+                                    <div className="flex items-center gap-3">
+                                      <a
+                                        href={editingProject.brochureUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200"
+                                      >
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                        Preview / معاينة
+                                      </a>
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditingProject({ ...editingProject, brochureUrl: '' })}
+                                        className="text-xs text-red-600 hover:underline flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md border border-red-200"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        حذف
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                  <input
+                                    type="text"
+                                    value={editingProject.brochureUrl || ''}
+                                    onChange={e => setEditingProject({ ...editingProject, brochureUrl: e.target.value })}
+                                    placeholder="Brochure URL / uploads path (e.g. /uploads/sample-brochure.pdf)"
+                                    className="flex-1 bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-xs font-mono outline-none focus:border-[#421319]"
+                                  />
+                                  <label className="flex items-center justify-center gap-2 bg-[#421319] hover:bg-[#250f12] text-[#f5f2e9] px-5 py-3 rounded-lg cursor-pointer text-xs font-bold uppercase tracking-wider transition shrink-0">
+                                    <Upload className="w-4 h-4" />
+                                    <span>{uploadingBrochure ? 'Uploading...' : 'Upload PDF File'}</span>
+                                    <input
+                                      type="file"
+                                      accept=".pdf,application/pdf"
+                                      onChange={e => handleBrochureUpload(e, false)}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                </div>
+                              </div>
+
+                              {/* Arabic Brochure */}
+                              <div className="bg-white p-5 rounded-xl border border-[#947e82]/20 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-xs font-bold uppercase tracking-wider text-[#421319] flex items-center gap-1.5 font-sans">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                    بروشور المشروع بالعربية (PDF)
+                                  </label>
+                                  {editingProject.brochureUrlAr && (
+                                    <div className="flex items-center gap-3">
+                                      <a
+                                        href={editingProject.brochureUrlAr}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200"
+                                      >
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                        معاينة البروشور العربي
+                                      </a>
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditingProject({ ...editingProject, brochureUrlAr: '' })}
+                                        className="text-xs text-red-600 hover:underline flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md border border-red-200"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        حذف
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                  <input
+                                    dir="ltr"
+                                    type="text"
+                                    value={editingProject.brochureUrlAr || ''}
+                                    onChange={e => setEditingProject({ ...editingProject, brochureUrlAr: e.target.value })}
+                                    placeholder="رابط البروشور العربي (اختياري - سيتم استخدام الإنجليزي تلقائياً إذا تُرِك فارغاً)"
+                                    className="flex-1 bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-3 text-xs font-mono outline-none focus:border-[#421319]"
+                                  />
+                                  <label className="flex items-center justify-center gap-2 bg-[#421319] hover:bg-[#250f12] text-[#f5f2e9] px-5 py-3 rounded-lg cursor-pointer text-xs font-bold uppercase tracking-wider transition shrink-0 font-sans">
+                                    <Upload className="w-4 h-4" />
+                                    <span>{uploadingBrochureAr ? 'جاري الرفع...' : 'رفع بروشور عربي PDF'}</span>
+                                    <input
+                                      type="file"
+                                      accept=".pdf,application/pdf"
+                                      onChange={e => handleBrochureUpload(e, true)}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                </div>
+                                <p className="text-[11px] text-[#947e82] font-sans">
+                                  * في حال كان البروشور باللغتين في ملف واحد، يمكنك رفعه في الخانة الإنجليزية فقط وسيعمل تلقائياً لكلا اللغتين.
+                                </p>
+                              </div>
                             </div>
                           </div>
 
@@ -1038,33 +1523,270 @@ export default function Admin() {
                   </div>
                 )}
 
+                {activeTab === 'visits' && (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <h2 className="font-display text-2xl text-[#421319]">حجوزات ومواعيد الزيارات (Visit Bookings)</h2>
+                        <p className="text-sm text-[#493337] mt-1">
+                          جميع طلبات حجز الزيارات الخاصة بالمشاريع القادمة من الموقع مع بيانات التواصل وتاريخ الزيارة المفضل.
+                        </p>
+                      </div>
+                      <button 
+                        onClick={fetchData}
+                        className="px-4 py-2 bg-white border border-[#421319]/20 text-[#421319] rounded-lg text-xs font-bold hover:bg-[#421319]/5 transition flex items-center gap-1.5 self-start sm:self-auto"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> تحديث البيانات
+                      </button>
+                    </div>
+
+                    {/* Stats counters */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="bg-white p-5 rounded-xl border border-[#421319]/10 shadow-sm flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#421319]/10 flex items-center justify-center text-[#421319]">
+                          <Calendar className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-[#947e82] font-bold uppercase tracking-wider">إجمالي الزيارات</p>
+                          <p className="text-2xl font-display text-[#421319] font-bold mt-0.5">{visits.length}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-5 rounded-xl border border-[#421319]/10 shadow-sm flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                          <Clock className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-amber-700 font-bold uppercase tracking-wider">قيد الانتظار</p>
+                          <p className="text-2xl font-display text-amber-600 font-bold mt-0.5">{visits.filter((v: any) => v.status === 'pending').length}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-5 rounded-xl border border-[#421319]/10 shadow-sm flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                          <CheckCircle2 className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-emerald-700 font-bold uppercase tracking-wider">مؤكدة / تمت</p>
+                          <p className="text-2xl font-display text-emerald-600 font-bold mt-0.5">{visits.filter((v: any) => v.status === 'confirmed' || v.status === 'completed').length}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Visits List */}
+                    {visits.length === 0 ? (
+                      <div className="rounded-2xl border border-[#421319]/10 bg-white p-12 text-center text-[#493337] space-y-3">
+                        <Calendar className="w-12 h-12 mx-auto text-[#947e82]/40" />
+                        <h3 className="font-display text-xl text-[#421319]">لا توجد طلبات زيارة حتى الآن</h3>
+                        <p className="text-sm text-[#947e82] max-w-md mx-auto">
+                          عندما يقوم أحد العملاء بالضغط على "احجز زيارة" في أي صفحة مشروع، ستظهر تفاصيل الزيارة والتاريخ المحدد هنا فوراً.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4">
+                        {visits.map((visit: any) => {
+                          const statusBg = visit.status === 'confirmed' 
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : visit.status === 'completed'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : visit.status === 'cancelled'
+                            ? 'bg-gray-100 text-gray-500 border-gray-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200';
+
+                          const statusLabel = visit.status === 'confirmed'
+                            ? 'تم تأكيد الموعد'
+                            : visit.status === 'completed'
+                            ? 'تمت الزيارة بنجاح'
+                            : visit.status === 'cancelled'
+                            ? 'ملغية'
+                            : 'قيد الانتظار / جديد';
+
+                          const cleanPhone = (visit.phone || '').replace(/[^0-9]/g, '');
+
+                          return (
+                            <div 
+                              key={visit.id} 
+                              className={`rounded-2xl border p-6 shadow-sm transition ${
+                                !visit.isRead ? 'border-amber-300 bg-amber-50/30' : 'border-[#421319]/10 bg-white'
+                              }`}
+                            >
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#421319]/10 pb-4">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2.5 flex-wrap">
+                                    <span className="font-display font-bold text-lg text-[#421319]">{visit.name}</span>
+                                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#421319]/10 text-[#421319]">
+                                      {visit.projectName || 'زيارة مشروع'}
+                                    </span>
+                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${statusBg}`}>
+                                      {statusLabel}
+                                    </span>
+                                    {!visit.isRead && (
+                                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white animate-pulse">
+                                        جديد
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <p className="text-xs text-[#947e82]">
+                                    تاريخ طلب الزيارة: {formatArabicDateTime(visit.createdAt)}
+                                  </p>
+                                </div>
+
+                                {/* Highlighted Visit Date */}
+                                <div className="flex items-center gap-3 bg-[#f5f2e9] px-4 py-2.5 rounded-xl border border-[#947e82]/20 shrink-0">
+                                  <Calendar className="w-5 h-5 text-[#421319]" />
+                                  <div>
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#947e82]">موعد الزيارة المحدد</p>
+                                    <p className="text-base font-bold text-[#421319] font-mono">{visit.visitDate}</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
+                                {/* Contact buttons */}
+                                <div className="flex items-center gap-3 flex-wrap">
+                                  <a 
+                                    href={`tel:${visit.phone}`}
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#421319] text-[#f5f2e9] text-xs font-bold hover:bg-[#250f12] transition"
+                                  >
+                                    <Phone className="w-3.5 h-3.5" /> اتصال: {visit.phone}
+                                  </a>
+                                  <a 
+                                    href={`https://wa.me/${cleanPhone.startsWith('0') ? '2' + cleanPhone : cleanPhone}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition"
+                                  >
+                                    واتساب
+                                  </a>
+                                </div>
+
+                                {/* Status actions */}
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {visit.status !== 'confirmed' && (
+                                    <button 
+                                      onClick={() => handleUpdateVisitStatus(visit.id, 'confirmed')}
+                                      className="px-3 py-1.5 rounded-lg border border-emerald-600 text-emerald-700 bg-emerald-50 text-xs font-bold hover:bg-emerald-100 transition"
+                                    >
+                                      تأكيد الموعد ✓
+                                    </button>
+                                  )}
+                                  {visit.status !== 'completed' && (
+                                    <button 
+                                      onClick={() => handleUpdateVisitStatus(visit.id, 'completed')}
+                                      className="px-3 py-1.5 rounded-lg border border-blue-600 text-blue-700 bg-blue-50 text-xs font-bold hover:bg-blue-100 transition"
+                                    >
+                                      تمت الزيارة
+                                    </button>
+                                  )}
+                                  {visit.status !== 'cancelled' && (
+                                    <button 
+                                      onClick={() => handleUpdateVisitStatus(visit.id, 'cancelled')}
+                                      className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 bg-gray-50 text-xs font-bold hover:bg-gray-100 transition"
+                                    >
+                                      إلغاء
+                                    </button>
+                                  )}
+                                  <button 
+                                    onClick={() => handleDeleteVisit(visit.id)}
+                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                    title="حذف الحجز"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {activeTab === 'messages' && (
                   <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div>
-                      <h2 className="font-display text-2xl text-[#421319]">Direct Messages</h2>
-                      <p className="text-sm text-[#493337] mt-1">Inquiries received from the contact form.</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <h2 className="font-display text-2xl text-[#421319]">رسائل واستفسارات التواصل (Direct Messages)</h2>
+                        <p className="text-sm text-[#493337] mt-1">الرسائل الواردة من نموذج صفحة Contact. اضغط على أي رسالة لفتحها في نافذة منبثقة ونسخ بيانات العميل.</p>
+                      </div>
+                      <button 
+                        onClick={fetchData}
+                        className="px-4 py-2 bg-white border border-[#421319]/20 text-[#421319] rounded-lg text-xs font-bold hover:bg-[#421319]/5 transition flex items-center gap-1.5 self-start sm:self-auto"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> تحديث الرسائل
+                      </button>
                     </div>
                     
                     {messages.length === 0 ? (
-                      <div className="rounded-2xl border border-[#421319]/10 bg-white p-8 text-center text-[#493337]">
-                        No messages yet.
+                      <div className="rounded-2xl border border-[#421319]/10 bg-white p-12 text-center text-[#493337] space-y-3">
+                        <MessageSquare className="w-12 h-12 mx-auto text-[#947e82]/40" />
+                        <h3 className="font-display text-xl text-[#421319]">لا توجد رسائل واردة حتى الآن</h3>
+                        <p className="text-sm text-[#947e82]">
+                          عند إرسال أي استفسار من صفحة التواصل، سيظهر هنا فوراً.
+                        </p>
                       </div>
                     ) : (
                       <div className="grid gap-4">
                         {messages.map((msg, i) => (
-                          <div key={i} className={`rounded-2xl border border-[#421319]/10 p-6 shadow-sm flex flex-col gap-3 ${!msg.isRead ? 'bg-red-50/50' : 'bg-white'}`}>
+                          <div 
+                            key={msg.id || i} 
+                            onClick={() => setSelectedMessage(msg)}
+                            className={`rounded-2xl border p-6 shadow-sm flex flex-col gap-3 transition cursor-pointer hover:border-[#421319]/40 hover:shadow-md group relative ${
+                              !msg.isRead ? 'bg-amber-50/40 border-amber-300' : 'bg-white border-[#421319]/10'
+                            }`}
+                          >
                             <div className="flex justify-between items-start border-b border-[#421319]/10 pb-3">
-                              <div>
-                                <h3 className="font-bold text-lg text-[#421319]">{msg.name}</h3>
-                                <p className="text-sm text-[#947e82]">{msg.phone} {msg.email && <span className="mx-2">â€¢</span>} {msg.email}</p>
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h3 className="font-bold text-lg text-[#421319] group-hover:text-[#250f12] transition flex items-center gap-2">
+                                    {msg.name}
+                                  </h3>
+                                  {!msg.isRead && (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white animate-pulse">
+                                      جديد
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2.5 text-xs text-[#947e82] flex-wrap font-sans">
+                                  <span className="font-mono font-medium text-[#421319] bg-[#f5f2e9] px-2 py-0.5 rounded flex items-center gap-1">
+                                    <Phone size={11} /> {msg.phone}
+                                  </span>
+                                  {msg.email && (
+                                    <span className="font-medium text-[#421319] bg-[#f5f2e9] px-2 py-0.5 rounded flex items-center gap-1">
+                                      <Mail size={11} /> {msg.email}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
-                              <span className="text-xs text-[#947e82] bg-[#f5f2e9] px-2 py-1 rounded">
-                                {new Date(msg.createdAt).toLocaleDateString()}
-                              </span>
+
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-xs text-[#947e82] bg-[#f5f2e9] px-2.5 py-1 rounded-full">
+                                  {formatArabicDate(msg.createdAt)}
+                                </span>
+                                <button
+                                  onClick={(e) => handleDeleteMessage(msg.id, e)}
+                                  className="p-1.5 text-[#947e82] hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                                  title="حذف الرسالة"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
                             </div>
-                            <p className="text-sm text-[#493337] whitespace-pre-line leading-relaxed">
+
+                            <p className="text-sm text-[#493337] whitespace-pre-line leading-relaxed line-clamp-2">
                               {msg.message}
                             </p>
+
+                            <div className="flex items-center justify-between pt-2 border-t border-[#421319]/05 text-xs text-[#947e82]">
+                              <span className="text-[#421319] font-bold inline-flex items-center gap-1 group-hover:underline">
+                                🔍 انقر لعرض الرسالة كاملة ونسخ الهاتف أو الإيميل
+                              </span>
+                              <span className="text-[11px] opacity-70">
+                                {formatArabicTime(msg.createdAt)}
+                              </span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1075,6 +1797,181 @@ export default function Admin() {
             )}
           </FadeIn>
         </div>
+
+        {/* ─── POPUP MODAL FOR SELECTED MESSAGE ─── */}
+        {selectedMessage && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-200"
+            onClick={() => setSelectedMessage(null)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div 
+              className="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-[#421319]/10 relative my-8 animate-in zoom-in-95 duration-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button 
+                onClick={() => setSelectedMessage(null)}
+                className="absolute right-5 top-5 rtl:right-auto rtl:left-5 grid h-9 w-9 place-items-center rounded-full bg-[#f5f2e9] text-[#421319] hover:bg-[#421319] hover:text-white transition"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+
+              {/* Header */}
+              <div className="border-b border-[#421319]/10 pb-5 mb-6">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#421319]"></span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#947e82]">تفاصيل الاستفسار / Message Details</span>
+                </div>
+                <h2 className="text-2xl font-display font-bold text-[#421319]">{selectedMessage.name}</h2>
+                <p className="text-xs text-[#947e82] mt-1 font-sans">
+                  تاريخ الاستلام: {formatArabicDateTime(selectedMessage.createdAt)}
+                </p>
+              </div>
+
+              {/* Contact Details Cards with Copy Buttons */}
+              <div className="space-y-4 mb-6">
+                {/* Phone Card */}
+                <div className="bg-[#f5f2e9] p-4 rounded-xl border border-[#947e82]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#947e82] block">رقم الهاتف / Phone Number</span>
+                    <p className="text-lg font-bold text-[#421319] font-mono select-all tracking-wide">{selectedMessage.phone}</p>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(selectedMessage.phone, 'phone')}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm ${
+                        copiedField === 'phone'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-white border border-[#421319]/20 text-[#421319] hover:bg-[#421319] hover:text-white'
+                      }`}
+                    >
+                      {copiedField === 'phone' ? (
+                        <>
+                          <Check size={14} /> تم النسخ!
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={14} /> نسخ الرقم
+                        </>
+                      )}
+                    </button>
+
+                    <a
+                      href={`tel:${selectedMessage.phone}`}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#421319] text-[#f5f2e9] text-xs font-bold hover:bg-[#250f12] transition"
+                    >
+                      <Phone size={13} /> اتصال
+                    </a>
+
+                    {selectedMessage.phone && (
+                      <a
+                        href={`https://wa.me/${selectedMessage.phone.replace(/[^0-9]/g, '').startsWith('0') ? '2' + selectedMessage.phone.replace(/[^0-9]/g, '') : selectedMessage.phone.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition"
+                      >
+                        واتساب
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Email Card (if available) */}
+                {selectedMessage.email && (
+                  <div className="bg-[#f5f2e9] p-4 rounded-xl border border-[#947e82]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1 overflow-hidden">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#947e82] block">البريد الإلكتروني / Email Address</span>
+                      <p className="text-base font-bold text-[#421319] font-mono select-all truncate">{selectedMessage.email}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(selectedMessage.email, 'email')}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm ${
+                          copiedField === 'email'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-white border border-[#421319]/20 text-[#421319] hover:bg-[#421319] hover:text-white'
+                        }`}
+                      >
+                        {copiedField === 'email' ? (
+                          <>
+                            <Check size={14} /> تم النسخ!
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={14} /> نسخ الإيميل
+                          </>
+                        )}
+                      </button>
+
+                      <a
+                        href={`mailto:${selectedMessage.email}`}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#421319] text-[#f5f2e9] text-xs font-bold hover:bg-[#250f12] transition"
+                      >
+                        <Mail size={13} /> إرسال إيميل
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Message Body */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#947e82] flex items-center gap-1.5">
+                    <MessageSquare size={14} /> نص الرسالة بالكامل:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(selectedMessage.message, 'message')}
+                    className={`text-xs font-bold inline-flex items-center gap-1 transition ${
+                      copiedField === 'message' ? 'text-emerald-600' : 'text-[#421319] hover:underline'
+                    }`}
+                  >
+                    {copiedField === 'message' ? (
+                      <>
+                        <Check size={13} /> تم نسخ النص!
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} /> نسخ نص الرسالة
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="bg-[#f5f2e9]/70 border border-[#947e82]/20 rounded-xl p-5 text-sm md:text-base leading-relaxed text-[#421319] whitespace-pre-line select-all max-h-[260px] overflow-y-auto font-sans shadow-inner">
+                  {selectedMessage.message}
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex items-center justify-between border-t border-[#421319]/10 pt-4">
+                <button
+                  type="button"
+                  onClick={(e) => handleDeleteMessage(selectedMessage.id, e)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 text-xs font-bold transition"
+                >
+                  <Trash2 size={15} /> حذف الرسالة
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedMessage(null)}
+                  className="px-6 py-2 rounded-lg bg-[#421319] text-[#f5f2e9] text-xs font-bold hover:bg-[#250f12] transition"
+                >
+                  إغلاق
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
   );
 }

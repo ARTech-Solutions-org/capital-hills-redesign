@@ -26,20 +26,31 @@ const heroImages = [
 
 export default function Home() {
   const contactInfo = useContactInfo();
-  const { content, projects } = useData();
-  const tickerItems = projects.flatMap((p) => [`${p.name} â€” ${p.city}`, 'Â·']);
+  const { content, contentEn, projects, t, lang } = useData();
+  const tickerItems = projects.flatMap((p) => [`${p.name} — ${p.city}`, '·']);
   const [review, setReview] = useState(0);
   const activeReviews = useMemo(() => {
     try {
       if (content['home_reviews_list']) {
         let parsed = JSON.parse(content['home_reviews_list']);
-        return parsed.filter((r: any) => !r.hide);
+        let enParsed: any[] = [];
+        try {
+          if (contentEn['home_reviews_list']) {
+            enParsed = JSON.parse(contentEn['home_reviews_list']);
+          }
+        } catch(e) {}
+
+        return parsed.filter((r: any, idx: number) => {
+          if (r.hide) return false;
+          if (enParsed[idx] && enParsed[idx].hide) return false;
+          return true;
+        });
       }
       return reviews;
     } catch(e) {
       return reviews;
     }
-  }, [content['home_reviews_list']]);
+  }, [content['home_reviews_list'], contentEn['home_reviews_list']]);
   const [autoPlay, setAutoPlay] = useState(true);
   const [selectedPartner, setSelectedPartner] = useState<{src: string, alt: string, desc: string} | null>(null);
 
@@ -73,7 +84,7 @@ export default function Home() {
             <div className="w-full lg:max-w-[48%] flex-shrink-0">
               <FadeIn>
                 <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
-                  Homes worth coming home to
+                  {t('Homes worth coming home to', 'منازل تستحق أن تعود إليها')}
                 </p>
                 <h1 className="text-[clamp(3.2rem,8.5vw,6.5rem)] leading-[1.05] text-[#f5f2e9]">
                   {/* Line 1: Invest With — Poppins bold */}
@@ -145,29 +156,49 @@ export default function Home() {
           {/* Bottom left corner text */}
           <div className="absolute bottom-8 left-6 md:left-[max(40px,calc((100vw-1220px)/2+40px))] z-10">
             <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#947e82]/80 leading-relaxed">
-              Planning<br/>The Future
+              {t('Planning', 'نخطط')}<br/>{t('The Future', 'للمستقبل')}
             </p>
           </div>
           
           {/* Bottom right corner text */}
           <div className="absolute bottom-8 right-6 md:right-[max(40px,calc((100vw-1220px)/2+40px))] z-10 text-right">
             <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#947e82]/80 leading-relaxed">
-              Cairo - Egypt<br/>Since 2017
+              {t('Cairo - Egypt', 'القاهرة - مصر')}<br/>{t('Since 2017', 'منذ 2017')}
             </p>
           </div>
         </section>
 
-        {/* â”€â”€ STATS BAND â”€â”€ */}
+        {/* ── STATS BAND ── */}
         <section className="bg-[#421319] py-16">
           <div className="container-shell">
             <StaggerContainer className="grid grid-cols-2 gap-8 md:grid-cols-4">
               {[
-                { value: parseInt(content['stat_1_val']) || 18, suffix: (content.hasOwnProperty('stat_1_suf') ? content['stat_1_suf'] : ''), label: (content.hasOwnProperty('stat_1_lbl') ? content['stat_1_lbl'] : 'Key projects delivered') },
-                { value: parseInt(content['stat_2_val'] as any) || 4, suffix: (content.hasOwnProperty('stat_2_suf') ? content['stat_2_suf'] : ''), label: (content.hasOwnProperty('stat_2_lbl') ? content['stat_2_lbl'] : 'Prime Egyptian cities') },
-                { value: parseInt(content['stat_3_val'] as any) || 2017, suffix: (content.hasOwnProperty('stat_3_suf') ? content['stat_3_suf'] : ''), label: (content.hasOwnProperty('stat_3_lbl') ? content['stat_3_lbl'] : 'Year established') },
-                { value: parseInt(content['stat_4_val'] as any) || 15, suffix: (content.hasOwnProperty('stat_4_suf') ? content['stat_4_suf'] : ' yrs'), label: (content.hasOwnProperty('stat_4_lbl') ? content['stat_4_lbl'] : 'Max instalment plan') },
-              ].map(({ value, suffix, label }) => (
-                <StaggerItem key={label} className="border-l border-[#f5f2e9]/15 pl-6 first:border-0 first:pl-0 md:first:border-l md:first:pl-6">
+                { 
+                  id: 'stat-1',
+                  value: parseInt(content['stat_1_val']) || 18, 
+                  suffix: (content.hasOwnProperty('stat_1_suf') ? content['stat_1_suf'] : ''), 
+                  label: (content.hasOwnProperty('stat_1_lbl') ? content['stat_1_lbl'] : (lang === 'ar' ? 'مشروعاً بارزاً تم تسليمه' : 'Key projects delivered')) 
+                },
+                { 
+                  id: 'stat-2',
+                  value: parseInt(content['stat_2_val']) || 5000, 
+                  suffix: (content.hasOwnProperty('stat_2_suf') ? content['stat_2_suf'] : '+'), 
+                  label: (content.hasOwnProperty('stat_2_lbl') ? content['stat_2_lbl'] : (lang === 'ar' ? 'عائلة سعيدة' : 'Happy families')) 
+                },
+                { 
+                  id: 'stat-3',
+                  value: parseInt(content['stat_3_val']) || 10, 
+                  suffix: (content.hasOwnProperty('stat_3_suf') ? content['stat_3_suf'] : 'M'), 
+                  label: (content.hasOwnProperty('stat_3_lbl') ? content['stat_3_lbl'] : (lang === 'ar' ? 'متر مربع قيد التطوير' : 'Sqm under development')) 
+                },
+                { 
+                  id: 'stat-4',
+                  value: parseInt(content['stat_4_val']) || 100, 
+                  suffix: (content.hasOwnProperty('stat_4_suf') ? content['stat_4_suf'] : '+'), 
+                  label: (content.hasOwnProperty('stat_4_lbl') ? content['stat_4_lbl'] : (lang === 'ar' ? 'جائزة وتقدير في القطاع' : 'Industry awards')) 
+                },
+              ].map(({ id, value, suffix, label }) => (
+                <StaggerItem key={id} className="border-l border-[#f5f2e9]/15 pl-6 first:border-0 first:pl-0 md:first:border-l md:first:pl-6 rtl:border-l-0 rtl:border-r rtl:border-[#f5f2e9]/15 rtl:pl-0 rtl:pr-6 rtl:first:border-0 rtl:first:pr-0 md:rtl:first:border-r md:rtl:first:pr-6">
                   <CountUp target={value} suffix={suffix} className="font-display text-4xl text-[#f5f2e9] md:text-5xl" />
                   <p className="mt-2 font-mono text-[9px] uppercase tracking-[.18em] text-[#947e82]">{label}</p>
                 </StaggerItem>
@@ -176,33 +207,56 @@ export default function Home() {
           </div>
         </section>
 
-        {/* â”€â”€ TICKER + About us â”€â”€ */}
+        {/* ── TICKER + About us ── */}
         <section className="bg-[#947e82] py-20 md:py-28 overflow-hidden">
           <div className="container-shell mb-12">
             <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-center">
               <FadeIn>
-                <p className="eyebrow">{(content.hasOwnProperty('home_why_eyebrow') ? content['home_why_eyebrow'] : 'Why Capital Hills')}</p>
+                <p className="eyebrow">{(content.hasOwnProperty('home_why_eyebrow') ? content['home_why_eyebrow'] : t('Why Capital Hills', 'لماذا كابيتال هيلز'))}</p>
                 <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
-                  {(content.hasOwnProperty('home_why_title_1') ? content['home_why_title_1'] : 'Invest With')}<br /><span className="italic">{(content.hasOwnProperty('home_why_title_2') ? content['home_why_title_2'] : 'Trust.')}</span>
+                  {(content.hasOwnProperty('home_why_title_1') ? content['home_why_title_1'] : t('Invest With', 'استثمر مع'))}<br /><span className="italic">{(content.hasOwnProperty('home_why_title_2') ? content['home_why_title_2'] : t('Trust.', 'الثقة.'))}</span>
                 </h2>
                 <p className="mt-5 max-w-sm text-sm leading-7 text-[#493337]">
-                  {(content.hasOwnProperty('home_why_desc') ? content['home_why_desc'] : 'We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.')}
+                  {(content.hasOwnProperty('home_why_desc') ? content['home_why_desc'] : t('We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.', 'نؤمن بأن العقار يتجاوز كونه مجرد بناء؛ إنه قرار استراتيجي يرسم ملامح مستقبلك، عائلتك، أعمالك، واستثمارك.'))}
                 </p>
                 <Link href="/about-us" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#421319]" data-testid="link-home-why-us">
-                  Learn more about us <ArrowRight size={15} />
+                  {t('Learn more about us', 'تعرف أكثر علينا')} <ArrowRight size={15} />
                 </Link>
               </FadeIn>
               {/* Values as horizontal numbered list */}
               <StaggerContainer className="space-y-0 divide-y divide-[#947e82]">
                 {(() => {
-                  let items = [];
-                  try { items = content['home_why_list'] ? JSON.parse(content['home_why_list']) : []; } catch(e){}
-                  if (items.length === 0) items = [
-                    { n: '01', title: 'Trusted Relationships', copy: 'Creating spaces where people can live, work, grow, and connect.' },
-                    { n: '02', title: '18 Key Projects', copy: 'Serving residential, commercial & mixed-use across Egypt.' },
-                    { n: '03', title: 'Established Partners', copy: 'Working with brands across industries to deliver lasting value.' },
-                    { n: '04', title: 'People at the Heart', copy: 'A collaborative team committed to making a meaningful impact.' }
-                  ];
+                  let items: any[] = [];
+                  try {
+                    if (content['home_why_list']) {
+                      items = JSON.parse(content['home_why_list']);
+                    }
+                  } catch(e) {
+                    items = [];
+                  }
+
+                  if (!items || items.length === 0) {
+                    if (content['home_why_1_title'] || content['home_why_1_copy']) {
+                      items = [
+                        { n: '01', title: content['home_why_1_title'] || (lang === 'ar' ? 'علاقات مبنية على الثقة' : 'Trusted Relationships'), copy: content['home_why_1_copy'] || (lang === 'ar' ? 'نبتكر مساحات تتيح للناس العيش والعمل والنمو والتواصل.' : 'Creating spaces where people can live, work, grow, and connect.') },
+                        { n: '02', title: content['home_why_2_title'] || (lang === 'ar' ? '18 مشروعاً بارزاً' : '18 Key Projects'), copy: content['home_why_2_copy'] || (lang === 'ar' ? 'تغطي القطاعات السكنية والتجارية ومتعددة الاستخدامات في مختلف أنحاء مصر.' : 'Serving residential, commercial & mixed-use across Egypt.') },
+                        { n: '03', title: content['home_why_3_title'] || (lang === 'ar' ? 'شركاء نجاح راسخون' : 'Established Partners'), copy: content['home_why_3_copy'] || (lang === 'ar' ? 'نتعاون مع كبرى الكيانات عبر مختلف القطاعات لتقديم قيمة مستدامة تدوم طويلاً.' : 'Working with brands across industries to deliver lasting value.') },
+                        { n: '04', title: content['home_why_4_title'] || (lang === 'ar' ? 'الإنسان في صميم اهتمامنا' : 'People at the Heart'), copy: content['home_why_4_copy'] || (lang === 'ar' ? 'فريق عمل متكامل وشغوف يلتزم بصنع فارق حقيقي وملموس.' : 'A collaborative team committed to making a meaningful impact.') }
+                      ];
+                    } else {
+                      items = lang === 'ar' ? [
+                        { n: '01', title: 'علاقات مبنية على الثقة', copy: 'نبتكر مساحات تتيح للناس العيش والعمل والنمو والتواصل.' },
+                        { n: '02', title: '18 مشروعاً بارزاً', copy: 'تغطي القطاعات السكنية والتجارية ومتعددة الاستخدامات في مختلف أنحاء مصر.' },
+                        { n: '03', title: 'شركاء نجاح راسخون', copy: 'نتعاون مع كبرى الكيانات عبر مختلف القطاعات لتقديم قيمة مستدامة تدوم طويلاً.' },
+                        { n: '04', title: 'الإنسان في صميم اهتمامنا', copy: 'فريق عمل متكامل وشغوف يلتزم بصنع فارق حقيقي وملموس.' }
+                      ] : [
+                        { n: '01', title: 'Trusted Relationships', copy: 'Creating spaces where people can live, work, grow, and connect.' },
+                        { n: '02', title: '18 Key Projects', copy: 'Serving residential, commercial & mixed-use across Egypt.' },
+                        { n: '03', title: 'Established Partners', copy: 'Working with brands across industries to deliver lasting value.' },
+                        { n: '04', title: 'People at the Heart', copy: 'A collaborative team committed to making a meaningful impact.' }
+                      ];
+                    }
+                  }
                   return items;
                 })().map(({ n, title, copy }: { n: string; title: string; copy: string }, index: number) => (
                   <StaggerItem key={n || index} className="flex items-start gap-5 py-5">
@@ -270,9 +324,9 @@ export default function Home() {
           <div className="container-shell relative z-10">
             <FadeIn>
               <h2 className="font-display text-4xl leading-tight md:text-5xl text-center mb-6">
-                Our Success<br /><span className="italic text-[#947e82]">Partners.</span>
+                {t('Our Success', 'شركاء')}<br /><span className="italic text-[#947e82]">{t('Partners.', 'النجاح.')}</span>
               </h2>
-              <p className="text-center text-sm text-[#f5f2e9]/50 mb-16 font-mono tracking-widest uppercase text-[10px]">Trusted by leading names across Egypt</p>
+              <p className="text-center text-sm text-[#f5f2e9]/50 mb-16 font-mono tracking-widest uppercase text-[10px]">{t('Trusted by leading names across Egypt', 'موثوق به من قِبل كبرى الكيانات في مصر')}</p>
             </FadeIn>
 
             {/* Logo wall */}
@@ -301,27 +355,27 @@ export default function Home() {
         <section className="bg-[#947e82] px-8 py-24 md:py-32 md:px-16 flex flex-col items-center text-center min-h-[480px] justify-center">
           <FadeIn>
             <div className="flex flex-col items-center">
-              <p className="eyebrow">{(content.hasOwnProperty('home_cta_eyebrow') ? content['home_cta_eyebrow'] : 'One good conversation')}</p>
+              <p className="eyebrow">{(content.hasOwnProperty('home_cta_eyebrow') ? content['home_cta_eyebrow'] : t('One good conversation', 'محادثة قيّمة'))}</p>
               <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl max-w-2xl">
-                {(content.hasOwnProperty('home_cta_title') ? content['home_cta_title'] : "Let's find the place that makes sense for you.")}
+                {(content.hasOwnProperty('home_cta_title') ? content['home_cta_title'] : t("Let's find the place that makes sense for you.", "دعنا نجد المكان المناسب لك تماماً."))}
               </h2>
               <p className="mt-5 max-w-md text-sm leading-6 text-[#493337]">
-                {(content.hasOwnProperty('home_cta_desc') ? content['home_cta_desc'] : 'Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.')}
+                {(content.hasOwnProperty('home_cta_desc') ? content['home_cta_desc'] : t('Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.', 'أخبرنا باختياراتك وميزانيتك ومتطلباتك، وسنوافيك بالخيارات الأمثل دون عروض بيعية تقليدية.'))}
               </p>
               <Link
                 href="/contact"
                 className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#421319] px-6 py-3.5 text-sm font-bold text-[#f5f2e9] transition hover:bg-[#421319]"
                 data-testid="link-contact-cta"
               >
-                Start a conversation <ArrowRight size={15} />
+                {t('Start a conversation', 'تواصل معنا الآن')} <ArrowRight size={15} />
               </Link>
             </div>
           </FadeIn>
         </section>
-      {/* â”€â”€ CHAIRMAN'S MESSAGE â”€â”€ */}
+        {/* ── CHAIRMAN'S MESSAGE ── */}
         <section className="relative bg-[#231f20] overflow-hidden">
 
-          {/* â”€â”€ Decorative geometry layer â”€â”€ */}
+          {/* ── Decorative geometry layer ── */}
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
             {/* Massive faint ring top-right */}
             <div className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] rounded-full border border-[#947e82]/10" />
@@ -333,23 +387,23 @@ export default function Home() {
           </div>
 
           <div className="container-shell relative z-10 py-24 md:py-36">
-            {/* â”€â”€ Top eyebrow â”€â”€ */}
+            {/* ── Top eyebrow ── */}
             <FadeIn>
               <div className="flex items-center gap-6 mb-16">
                 <div className="w-10 h-[2px] bg-[#947e82]" />
-                <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#947e82]">Chairman's Message</p>
+                <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#947e82]">{t("Chairman's Message", "رسالة رئيس مجلس الإدارة")}</p>
               </div>
             </FadeIn>
 
-            <div className="grid md:grid-cols-12 gap-12 md:gap-0 items-start">
+            <div className="grid md:grid-cols-12 gap-10 lg:gap-16 items-start">
 
-              {/* â”€â”€ LEFT: Photo column â”€â”€ */}
-              <FadeIn delay={0.1} className="md:col-span-5 md:sticky md:top-28 self-start">
+              {/* ── Photo column ── */}
+              <FadeIn delay={0.1} className="md:col-span-5 md:sticky md:top-28 self-start w-full min-w-0">
                 <div className="relative">
-                  {/* Accent border frame â€” offset behind photo */}
-                  <div className="absolute -bottom-4 -right-4 w-full h-full border border-[#947e82]/30 rounded-xl" />
+                  {/* Accent border frame — offset behind photo */}
+                  <div className="absolute -bottom-4 ltr:-right-4 rtl:-left-4 w-full h-full border border-[#947e82]/30 rounded-xl pointer-events-none" />
                   {/* Photo */}
-                  <div className="relative overflow-hidden rounded-xl aspect-[3/4]">
+                  <div className="relative overflow-hidden rounded-xl aspect-[3/4] bg-[#231f20]">
                     <img
                       src={(content.hasOwnProperty('home_chairman_img') ? content['home_chairman_img'] : "/chairman.webp")}
                       alt="Eng. Mohamed Salah Abdel Qader — Chairman"
@@ -361,21 +415,21 @@ export default function Home() {
                     <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#421319]/60 to-transparent" />
                     {/* Name badge pinned bottom */}
                     <div className="absolute bottom-0 inset-x-0 p-6">
-                      <p className="font-display text-2xl text-[#f5f2e9] leading-tight">{(content.hasOwnProperty('chairman_name_1') ? content['chairman_name_1'] : 'Eng. Mohamed Salah')}<br />{(content.hasOwnProperty('chairman_name_2') ? content['chairman_name_2'] : 'Abdel Qader')}</p>
-                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">{(content.hasOwnProperty('chairman_title') ? content['chairman_title'] : 'Chairman â€” Capital Hills Developments')}</p>
+                      <p className="font-display text-2xl text-[#f5f2e9] leading-tight">{(content.hasOwnProperty('chairman_name_1') ? content['chairman_name_1'] : (lang === 'ar' ? 'أ. محمد صلاح' : 'Mr. Mohamed Salah'))}<br />{(content.hasOwnProperty('chairman_name_2') ? content['chairman_name_2'] : (lang === 'ar' ? 'عبد القادر' : 'Abdel Qader'))}</p>
+                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">{(content.hasOwnProperty('chairman_title') ? content['chairman_title'] : (lang === 'ar' ? 'رئيس مجلس الإدارة — كابيتال هيلز للتطوير العقاري' : 'Chairman — Capital Hills Developments'))}</p>
                     </div>
                   </div>
                 </div>
               </FadeIn>
 
-              {/* â”€â”€ RIGHT: Quote + body â”€â”€ */}
-              <div className="md:col-span-7 md:pl-16 flex flex-col gap-10">
-                {/* Pull-quote â€” the most visually impactful element */}
+              {/* ── Quote + body ── */}
+              <div className="md:col-span-7 w-full min-w-0 flex flex-col gap-10">
+                {/* Pull-quote — the most visually impactful element */}
                 <FadeIn delay={0.2}>
                   <div className="relative">
-                    <span aria-hidden="true" className="absolute -top-6 -left-2 font-display text-[120px] leading-none text-[#947e82]/20 select-none">"</span>
+                    <span aria-hidden="true" className="absolute -top-6 ltr:-left-2 rtl:-right-2 font-display text-[120px] leading-none text-[#947e82]/20 select-none">"</span>
                     <p className="relative font-display text-3xl md:text-4xl leading-[1.2] text-[#f5f2e9] tracking-tight pt-4">
-                      {(content.hasOwnProperty('chairman_quote') ? content['chairman_quote'] : 'Trust is more than a promise. It is the foundation of everything we build.')}
+                      {(content.hasOwnProperty('chairman_quote') ? content['chairman_quote'] : (lang === 'ar' ? 'الثقة ليست مجرد وعد، بل هي الأساس الراسخ لكل ما نبنيه.' : 'Trust is more than a promise. It is the foundation of everything we build.'))}
                     </p>
                   </div>
                 </FadeIn>
@@ -391,10 +445,10 @@ export default function Home() {
                 {/* Body paragraphs */}
                 <FadeIn delay={0.3}>
                   <div className="space-y-5 text-[15px] leading-8 text-[#f5f2e9]/65 font-sans">
-                    <p>{(content.hasOwnProperty('chairman_p1') ? content['chairman_p1'] : 'At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.')}</p>
-                    <p>{(content.hasOwnProperty('chairman_p2') ? content['chairman_p2'] : "For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs â€” combining thoughtful planning, quality, and strategic locations with a long-term perspective.")}</p>
-                    <p>{(content.hasOwnProperty('chairman_p3') ? content['chairman_p3'] : 'We recognize that every project represents an important decision for our customers â€” whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.')}</p>
-                    <p>{(content.hasOwnProperty('chairman_p4') ? content['chairman_p4'] : 'As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.')}</p>
+                    <p>{(content.hasOwnProperty('chairman_p1') ? content['chairman_p1'] : (lang === 'ar' ? 'في كابيتال هيلز للتطوير العقاري، نؤمن بأن التطوير العقاري يتعدى مجرد التشييد والبناء؛ إنه صياغة للمجتمعات، وخلق لقيمة حقيقية مستدامة، وبناء لجسور ثقة تصمد أمام اختبار الزمن.' : 'At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.'))}</p>
+                    <p>{(content.hasOwnProperty('chairman_p2') ? content['chairman_p2'] : (lang === 'ar' ? 'على مدار السنوات العشر الماضية، رسخنا مكانتنا في القطاع العقاري مسترشدين بالتزامنا بتطوير وجهات تلبي تطلعات عملائنا المتنامية — عبر الجمع بين التخطيط الدقيق، والجودة الفائقة، والمواقع الاستراتيجية برؤية مستقبلية طويلة الأمد.' : "For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs — combining thoughtful planning, quality, and strategic locations with a long-term perspective."))}</p>
+                    <p>{(content.hasOwnProperty('chairman_p3') ? content['chairman_p3'] : (lang === 'ar' ? 'ندرك جيداً أن كل مشروع يمثل قراراً محورياً ومصيرياً لعملائنا — سواء باختيار مسكن الأحلام، أو تنمية الأعمال، أو خوض استثمار واعد. هذه المسؤولية تقود نهجنا اليومي وتعزز التزامنا بتقديم أعلى درجات القيمة في كل مرحلة من مراحل الرحلة.' : 'We recognize that every project represents an important decision for our customers — whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.'))}</p>
+                    <p>{(content.hasOwnProperty('chairman_p4') ? content['chairman_p4'] : (lang === 'ar' ? 'مع استمرار مسيرة نمونا، نبقى ملتزمين ببناء علاقات وثيقة مع عملائنا وشركائنا ومجتمعاتنا، بالتوازي مع تعزيز بيئة عمل ملهمة تُمكّن كوادرنا من التطور والإبداع والنجاح المشترك.' : 'As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.'))}</p>
                   </div>
                 </FadeIn>
 
@@ -405,9 +459,9 @@ export default function Home() {
                       let items = [];
                       try { items = content['chairman_stats_list'] ? JSON.parse(content['chairman_stats_list']) : []; } catch(e){}
                       if (items.length === 0) items = [
-                        { num: '10+', label: 'Years of trust' },
-                        { num: '11', label: 'Landmark projects' },
-                        { num: '100B+', label: 'EGP investments' }
+                        { num: content['chairman_stat_1_val'] || '10+', label: content['chairman_stat_1_lbl'] || (lang === 'ar' ? 'سنوات من الثقة' : 'Years of trust') },
+                        { num: content['chairman_stat_2_val'] || '11', label: content['chairman_stat_2_lbl'] || (lang === 'ar' ? 'مشروعاً علامة فارقة' : 'Landmark projects') },
+                        { num: content['chairman_stat_3_val'] || (lang === 'ar' ? '+100 مليار' : '100B+'), label: content['chairman_stat_3_lbl'] || (lang === 'ar' ? 'جنيه حجم الاستثمارات' : 'EGP investments') }
                       ];
                       return items;
                     })().map(({ num, label }: { num: string; label: string }) => (
@@ -455,7 +509,7 @@ export default function Home() {
                 </button>
                 
                 <p className="font-mono text-[10px] uppercase tracking-widest text-[#947e82] mb-8 md:mb-10">
-                  Partnership Profile
+                  {t('Partnership Profile', 'ملف الشراكة')}
                 </p>
                 
                 <div className="grid gap-8 md:gap-10 md:grid-cols-[1.2fr_2fr] md:items-center">

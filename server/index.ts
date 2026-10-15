@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import multer from 'multer';
 import { db } from './db/index.js';
-import { contentBlocks, projects, directMessages } from './db/schema.js';
+import { contentBlocks, projects, directMessages, visitBookings } from './db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 
 import fs from 'fs';
@@ -40,14 +40,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// Ensure uploads directory exists on GoDaddy
-const uploadsDir = path.resolve(__dirname, 'uploads');
+// Ensure root and uploads directory exist
+const rootDir = fs.existsSync(path.resolve(__dirname, 'package.json'))
+  ? __dirname
+  : path.resolve(__dirname, '..');
+
+const uploadsDir = path.resolve(rootDir, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Copy any bundled seed images from dist/uploads into uploadsDir
-const distPath = path.resolve(__dirname, 'dist');
+const distPath = path.resolve(rootDir, 'dist');
 const bundledUploads = path.resolve(distPath, 'uploads');
 try {
   if (fs.existsSync(bundledUploads)) {
@@ -130,13 +134,22 @@ app.get('/api/content', async (req, res) => {
 
 app.post('/api/content', async (req, res) => {
   try {
-    const { id, value } = req.body;
-    await db.insert(contentBlocks).values({ id, value }).onConflictDoUpdate({
+    const { id, value, valueAr } = req.body;
+    const updateSet: Record<string, any> = { updatedAt: new Date() };
+    if (value !== undefined) updateSet.value = value;
+    if (valueAr !== undefined) updateSet.valueAr = valueAr;
+
+    await db.insert(contentBlocks).values({
+      id,
+      value: value !== undefined ? value : '',
+      valueAr: valueAr !== undefined ? valueAr : null,
+    }).onConflictDoUpdate({
       target: contentBlocks.id,
-      set: { value, updatedAt: new Date() },
+      set: updateSet,
     });
     res.json({ success: true });
   } catch (error) {
+    console.error('Save content error:', error);
     res.status(500).json({ error: 'Failed to save content' });
   }
 });
@@ -210,6 +223,83 @@ app.patch('/api/messages/read', async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to mark as read' });
+  }
+});
+
+app.delete('/api/messages/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await db.delete(directMessages).where(eq(directMessages.id, id));
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete message' });
+  }
+});
+
+// --- VISIT BOOKINGS ROUTES ---
+app.get('/api/visits', async (req, res) => {
+  try {
+    const allVisits = await db.select().from(visitBookings).orderBy(desc(visitBookings.createdAt));
+    res.json(allVisits);
+  } catch (error) {
+    console.error('Failed to fetch visits:', error);
+    res.status(500).json({ error: 'Failed to fetch visit bookings' });
+  }
+});
+
+app.post('/api/visits', async (req, res) => {
+  try {
+    const { projectName, name, phone, date, visitDate } = req.body;
+    const finalDate = (date || visitDate || '').trim();
+    if (!name || !phone || !finalDate) {
+      return res.status(400).json({ error: 'Name, phone, and visit date are required' });
+    }
+    const [inserted] = await db.insert(visitBookings).values({
+      projectName: (projectName || 'General Visit').trim(),
+      name: name.trim(),
+      phone: phone.trim(),
+      visitDate: finalDate,
+      status: 'pending',
+      isRead: false,
+    }).returning();
+    res.json({ success: true, visit: inserted });
+  } catch (error) {
+    console.error('Failed to save visit booking:', error);
+    res.status(500).json({ error: 'Failed to save visit booking' });
+  }
+});
+
+app.patch('/api/visits/read-all', async (req, res) => {
+  try {
+    await db.update(visitBookings).set({ isRead: true });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to mark all visits as read' });
+  }
+});
+
+app.patch('/api/visits/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { status, isRead, notes } = req.body;
+    const updateData: any = {};
+    if (status !== undefined) updateData.status = status;
+    if (isRead !== undefined) updateData.isRead = isRead;
+    if (notes !== undefined) updateData.notes = notes;
+    await db.update(visitBookings).set(updateData).where(eq(visitBookings.id, id));
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update visit' });
+  }
+});
+
+app.delete('/api/visits/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await db.delete(visitBookings).where(eq(visitBookings.id, id));
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete visit' });
   }
 });
 

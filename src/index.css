@@ -120,6 +120,30 @@ button, a { -webkit-tap-highlight-color: transparent; cursor: pointer; }
   text-transform: uppercase;
 }
 
+/* ─── RTL Arabic Typography ─── */
+[dir="rtl"] {
+  font-family: 'Cairo', var(--app-font-sans);
+}
+[dir="rtl"] body {
+  font-family: 'Cairo', sans-serif;
+}
+[dir="rtl"] .font-display,
+[dir="rtl"] .font-times {
+  font-family: 'Cairo', sans-serif !important;
+}
+[dir="rtl"] .font-poppins {
+  font-family: 'Cairo', sans-serif !important;
+}
+[dir="rtl"] .eyebrow {
+  font-family: 'Cairo', sans-serif !important;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+[dir="rtl"] .font-mono {
+  font-family: 'Cairo', sans-serif !important;
+  letter-spacing: normal;
+}
+
 /* ─── Layout ─── */
 .site-shell { min-height: 100dvh; overflow-x: clip; }
 .container-shell { width: min(1220px, calc(100% - 48px)); margin-inline: auto; }

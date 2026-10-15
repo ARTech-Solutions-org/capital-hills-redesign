@@ -7,7 +7,7 @@ import { useData } from '@/context/DataContext';
 
 export default function Contact() {
   const contactInfo = useContactInfo();
-  const { content } = useData();
+  const { content, t } = useData();
   const [sent, setSent] = useState(false);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -66,9 +66,17 @@ export default function Contact() {
                     <Phone size={18} strokeWidth={1.8} className="shrink-0" />
                     <div>
                       <strong className="block text-sm font-bold">{content['contact_call_label'] || 'Call us'}</strong>
-                      <span className="text-xs opacity-75">{content['contact_phone'] || <PhoneNumber />}</span>
+                      <span className="text-xs opacity-75">
+                        {content['contact_phone'] ? (
+                          <span dir="ltr" style={{ direction: 'ltr', unicodeBidi: 'isolate' }}>
+                            {content['contact_phone']}
+                          </span>
+                        ) : (
+                          <PhoneNumber />
+                        )}
+                      </span>
                     </div>
-                    <ArrowRight size={15} className="ml-auto opacity-60" />
+                    <ArrowRight size={15} className="ml-auto opacity-60 rtl:rotate-180" />
                   </a>
                 </StaggerItem>
                 <StaggerItem>
@@ -84,7 +92,7 @@ export default function Contact() {
                       <strong className="block text-sm font-bold">{content['contact_whatsapp_label'] || 'WhatsApp'}</strong>
                       <span className="text-xs text-[#f5f2e9]/55">{content['contact_whatsapp_desc'] || 'Chat with our team'}</span>
                     </div>
-                    <ArrowRight size={15} className="ml-auto opacity-40" />
+                    <ArrowRight size={15} className="ml-auto opacity-40 rtl:rotate-180" />
                   </a>
                 </StaggerItem>
                 <StaggerItem>
@@ -98,7 +106,7 @@ export default function Contact() {
                       <strong className="block text-sm font-bold">{content['contact_email_label'] || 'Email'}</strong>
                       <span className="text-xs text-[#f5f2e9]/55">{content['contact_email'] || 'hello@capitalhillsdevelopments.eg'}</span>
                     </div>
-                    <ArrowRight size={15} className="ml-auto opacity-40" />
+                    <ArrowRight size={15} className="ml-auto opacity-40 rtl:rotate-180" />
                   </a>
                 </StaggerItem>
               </StaggerContainer>
@@ -120,52 +128,52 @@ export default function Contact() {
                 <div className="grid h-12 w-12 place-items-center rounded-full bg-[#947e82]">
                   <Check className="text-[#421319]" size={22} />
                 </div>
-                <h3 className="mt-5 font-display text-2xl text-[#421319]">Message received.</h3>
-                <p className="mt-2 text-sm leading-5 text-[#493337]">We will be in touch with a clear answer soon.</p>
+                <h3 className="mt-5 font-display text-2xl text-[#421319]">{t('Message received.', 'تم استلام رسالتك بنجاح.')}</h3>
+                <p className="mt-2 text-sm leading-5 text-[#493337]">{t('We will be in touch with a clear answer soon.', 'سنتواصل معك في أقرب وقت بتفاصيل وافية.')}</p>
               </div>
             ) : (
               <form onSubmit={submit} className="mt-8 space-y-5">
                 <label className="block">
-                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">Name</span>
+                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">{t('Name', 'الاسم بالكامل')}</span>
                   <input
                     required
                     name="name"
                     autoComplete="name"
                     className="w-full rounded-xl border border-[#947e82] bg-[#f5f2e9] px-4 py-3.5 text-sm outline-none transition focus:border-[#947e82]"
-                    placeholder="Your name"
+                    placeholder={t('Your name', 'اكتب اسمك بالكامل')}
                     data-testid="input-question-name"
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">Mobile Number</span>
+                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">{t('Mobile Number', 'رقم الهاتف / الموبايل')}</span>
                   <input
                     required
                     name="phone"
                     type="tel"
                     autoComplete="tel"
                     className="w-full rounded-xl border border-[#947e82] bg-[#f5f2e9] px-4 py-3.5 text-sm outline-none transition focus:border-[#947e82]"
-                    placeholder="Your mobile number"
+                    placeholder={t('Your mobile number', 'رقم هاتفك للتواصل')}
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">Email Address</span>
+                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">{t('Email Address', 'البريد الإلكتروني')}</span>
                   <input
                     required
                     name="email"
                     type="email"
                     autoComplete="email"
                     className="w-full rounded-xl border border-[#947e82] bg-[#f5f2e9] px-4 py-3.5 text-sm outline-none transition focus:border-[#947e82]"
-                    placeholder="Your email address"
+                    placeholder={t('Your email address', 'بريدك الإلكتروني')}
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">What can we help with?</span>
+                  <span className="mb-2 block font-mono text-[9px] uppercase tracking-[.2em] text-[#493337]">{t('What can we help with?', 'كيف يمكننا مساعدتك؟')}</span>
                   <textarea
                     required
                     name="message"
                     rows={5}
                     className="w-full resize-none rounded-xl border border-[#947e82] bg-[#f5f2e9] px-4 py-3.5 text-sm outline-none transition focus:border-[#947e82]"
-                    placeholder="I would like to understand..."
+                    placeholder={t('I would like to understand...', 'أود الاستفسار بخصوص...')}
                     data-testid="textarea-question"
                   />
                 </label>
@@ -174,14 +182,14 @@ export default function Contact() {
                   className="inline-flex items-center gap-2 rounded-full bg-[#421319] px-7 py-3.5 text-sm font-bold text-[#f5f2e9] transition hover:bg-[#421319]"
                   data-testid="button-submit-question"
                 >
-                  <Send size={14} /> Send inquiry
+                  <Send size={14} /> {t('Send inquiry', 'إرسال الاستفسار')}
                 </button>
               </form>
             )}
 
             {/* Map section below form */}
             <div className="mt-16 border-t border-[#947e82] pt-12">
-              <p className="eyebrow mb-6">Find us</p>
+              <p className="eyebrow mb-6">{t('Find us', 'مقرنا الرئيسي')}</p>
               <div className="overflow-hidden rounded-2xl border border-[#947e82]">
                 <iframe
                   title="Capital Hills Developments HQ"
@@ -195,7 +203,7 @@ export default function Contact() {
                     <MapPin size={14} className="text-[#947e82] shrink-0" /> <span className="whitespace-pre-line font-medium leading-relaxed">{contactInfo.address}</span>
                   </p>
                   <Link href="/projects" className="text-xs font-bold text-[#947e82]" data-testid="link-contact-projects">
-                    Browse projects →
+                    {t('Browse projects →', 'تصفح المشروعات ←')}
                   </Link>
                 </div>
               </div>
