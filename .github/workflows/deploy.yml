@@ -31,7 +31,7 @@ jobs:
       - name: 🔄 Trigger Passenger Restart
         run: |
           mkdir -p tmp
-          touch tmp/restart.txt
+          echo "Restart at $(date -u +'%Y-%m-%d %H:%M:%S UTC')" > tmp/restart.txt
 
       - name: 🚀 Sync files to GoDaddy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
